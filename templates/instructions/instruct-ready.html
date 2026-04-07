@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="main_div">
+<h1>Instructions</h1>
+<hr>
+
+
+<p>In the real task, you will also see the sequence typed by another participant.</p>
+
+<p>However, some parts of their sequence may be hidden, indicated by "?".</p>
+
+<img src="{{ url_for('static', filename='images/vertical_transmission.png') }}" width="450px" height="200px"/>
+
+<br>
+
+<p>
+The previous player's answers can be useful, but they are not necessarily correct.
+</p>
+
+
+</div>
+
+<div id="instruction-status" style="margin-top: 16px; min-height: 24px;"></div>
+
+<div id="button-row" style="margin-top: 28px;">
+<button type="button" class="btn btn-primary btn-lg"
+onclick="dallinger.goToPage('instructions/instruct-2');">
+Previous
+</button>
+
+<button type="button" class="btn btn-success btn-lg"
+style="margin-left: 12px;"
+onclick="dallinger.goToPage('experiment');">
+Begin
+</button>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="main_div">
+<h1>Instructions</h1>
+<hr>
+
+<p>In this experiment there are two tasks: Task A and Task B.</p>
+
+<p>In both tasks you will input a sequence of directions (<strong>↑ ↓ ← →</strong>) using the arrow keys on your keyboard.</p>
+
+<p>
+The correct sequence of directions is different for each task.
+</p>
+
+<p>Here's an example sequence:</p>
+
+<div id="instruction-container">
+<div style="margin-top: 20px;">
+<img src="{{ url_for('static', filename='images/Your_answer.png') }}" width="550px" height="115px"/>
+</div>
+</div>
+
+<br>
+
+<p>After each answer, you may get feedback on some parts of the sequence:</p>
+
+<img src="{{ url_for('static', filename='images/feedback.png') }}" width="550px" height="115px"/>
+
+<p>
+<span style="color: green;"><strong>Green</strong></span> = Correct.
+<span style="color: red;"><strong>Red</strong></span> = Incorrect.
+<span style="color: black;"><strong>White</strong></span> = No feedback.
+</p>
+<p>You should use this feedback to learn the correct sequence.</p>
+
+<div id="instruction-status" style="margin-top: 16px; min-height: 24px;"></div>
+
+<div id="button-row" style="margin-top: 28px;">
+<button type="button" class="btn btn-primary btn-lg"
+onclick="dallinger.goToPage('instructions/instruct-2');">
+Next
+</button>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+dallinger.createParticipant();
+</script>
+{% endblock %}

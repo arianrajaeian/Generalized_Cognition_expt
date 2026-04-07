@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="container" style="max-width: 900px; margin-top: 30px;">
+  <h2>Arrow Sequence Task (Prototype)</h2>
+  <p>
+    Click a square, then press an arrow key (↑ ↓ ← →) to fill it.
+    You can overwrite answers. When you’re done, click Submit.
+  </p>
+
+  <div>
+    <p><strong>Previous player's answers</strong></p>
+    <div id="parent-grid"></div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+    <p><strong>Your answers</strong></p>
+    <div id="grid"></div>
+    </div>
+
+  
+  <div id="button-row" style="margin-top: 24px;">
+    <button id="submit" class="btn btn-primary" disabled>Submit</button>
+    <button id="continue" class="btn btn-secondary" style="display:none; margin-left:10px;">
+    Continue
+  </button>
+  </div>
+  <div id="status" style="margin-top: 15px;"></div>
+</div>
+{% endblock %}
+
+{% block libs %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='scripts/experiment.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+  create_agent();
+</script>
+{% endblock %}

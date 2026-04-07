@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="main_div">
+<h1>Instructions</h1>
+<hr>
+
+<p>Blue boxes always have the same answer in both tasks, but white boxes can be different across tasks.</p>
+
+
+<p> For example, the tasks may look like this:</p>
+
+<br>
+
+<p>Task A</p>
+<img src="{{ url_for('static', filename='images/Task_A.png') }}" width="450px" height="70px"/>
+
+<br>
+<br>
+
+<p>Task B</p>
+<img src="{{ url_for('static', filename='images/Task_B.png') }}" width="225px" height="70px"/>
+
+<br>
+<br>
+
+<p> If you filled out Task A and got the following feedback:</p>
+<img src="{{ url_for('static', filename='images/A_feedback.png') }}" width="450px" height="70px"/>
+
+<br>
+
+<p> Then the correct answers for the first two boxes in Task B must also be: ↓ ↑</p>
+
+<div id="instruction-status" style="margin-top: 16px; min-height: 24px;"></div>
+
+<div id="button-row" style="margin-top: 28px;">
+<button type="button" class="btn btn-primary btn-lg"
+onclick="dallinger.goToPage('instructions/instruct-1');">
+Previous
+</button>
+
+<button type="button" class="btn btn-primary btn-lg"
+style="margin-left: 12px;"
+onclick="dallinger.goToPage('instructions/instruct-ready');">
+Next
+</button>
+</div>
+
+</div>
+
+
+{% endblock %}

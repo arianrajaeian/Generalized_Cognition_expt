@@ -237,7 +237,7 @@ class RogersExperiment(Experiment):
         info = max(node.infos(type=self.models.CulturalInheritance), key=attrgetter("id"))
         return json.loads(info.contents)
 
-    def mutate_s(self, s_value, mutation_rate=0.01, s_inc=1):
+    def mutate_s(self, s_value, mutation_rate=0.05, s_inc=1):
         """Discrete mutation for specialization"""
         draw = random.random()
 

@@ -95,7 +95,7 @@ class RogersExperiment(Experiment):
             env.create_information()
             seq_a = self.models.CorrectSequenceA( # generate a canonical sequence for the whole network
             origin=env,
-            contents=json.dumps(self.random_sequence(length=11)),
+            contents=json.dumps(self.random_sequence(length=11)), # store it as info
             )
             seq_b = self.models.CorrectSequenceB( 
             origin=env,
@@ -115,7 +115,7 @@ class RogersExperiment(Experiment):
         """Return the correct sequence for task A or B in for a network."""
         env = node.network.nodes(type=self.models.RogersEnvironment)[0]
         if task == "A":
-            info = max( # why max?
+            info = max(
             env.infos(type=self.models.CorrectSequenceA),
             key=attrgetter("id"),
             )
@@ -173,7 +173,7 @@ class RogersExperiment(Experiment):
 
     def generalize(self, node): # this is where we create the actual correct answers for participants
         """Return the positions generalized between A and B for this node."""
-        alleles = self.node_alleles(node) # maybe change?
+        alleles = self.node_alleles(node)
         s = int(alleles["s"])
         g = float(alleles["g"])
         seq_a = list(self.correct_sequence_for_task(node, "A"))
@@ -230,7 +230,6 @@ class RogersExperiment(Experiment):
     def node_alleles(self, node):
         """Return allele dict for a node."""
         info = max(node.infos(type=self.models.NodeAlleles), key=attrgetter("id"))
-        # what's the point of getting the one with the highest id? and can this be a problem if getting parent nodes?
         return json.loads(info.contents)
 
     def node_social_info(self, node):

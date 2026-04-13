@@ -631,7 +631,7 @@ class RogersExperiment(Experiment):
         if task == "A":
             to_solve = int(round(6 - s)) # should not use round function I think
         else:
-            to_solve = int(round(6 + s))
+            to_solve = int(round(6 + s)) # same here
 
         to_solve = max(1, min(11, to_solve))
 

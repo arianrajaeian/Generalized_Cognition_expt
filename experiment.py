@@ -71,7 +71,7 @@ class RogersExperiment(Experiment):
         if session and not self.networks():
             self.setup()
 
-    def configure(self): # contains a lot of outdated stuff
+    def configure(self): 
         config = get_config()
         self.experiment_repeats = config.get("experiment_repeats")
         self.generation_size = config.get("generation_size")
@@ -144,7 +144,7 @@ class RogersExperiment(Experiment):
         node = self.models.RogersAgent(network=network, participant=participant)
 
         print("Create_node generation:", generation) # debugging purposes
-        node.generation = generation
+        node.generation = generation # saving it to the node
         node.score = 0 # start with a score of 0
 
         parents = self.choose_parents(network, generation)
@@ -193,7 +193,7 @@ class RogersExperiment(Experiment):
     def generation_for_new_node(self, network):
         """Return generation index for the next participant node in this network."""
         existing_agents = network.nodes(type=self.models.RogersAgent)
-        return len(existing_agents) // self.generation_size
+        return len(existing_agents) // self.generation_size 
 
 
     def parent_pool(self, network, generation):
@@ -293,7 +293,7 @@ class RogersExperiment(Experiment):
         r_parent = random.choice([a1, a2])
         v_parent = random.choice([a1, a2])
 
-        child_s = int(s_parent["s"]) # should be int?
+        child_s = int(s_parent["s"]) 
         child_g = float(g_parent["g"])
         child_r = float(r_parent["r"])
         child_v = float(v_parent["v"])
@@ -316,7 +316,7 @@ class RogersExperiment(Experiment):
 
 
     def choose_parents(self, network, generation):
-        print("choose_parents generation:", generation)
+        print("choose_parents generation:", generation) # debugging
         if generation == 0:
             return {
                 "Parent1_id": None,
@@ -357,7 +357,7 @@ class RogersExperiment(Experiment):
                 "transmitted_answers_b": {}
             }
 
-        parent = random.choice(possible_parents) # allo social info comes from the same parent right now
+        parent = random.choice(possible_parents) # all social info comes from the same parent right now
         if parent is None:
             return {
                 "transmitted_positions_a": [],
@@ -493,37 +493,6 @@ class RogersExperiment(Experiment):
             self.log("Generation finished, recruiting next generation")
             self.recruiter.recruit(n=self.generation_size)
 
-    # def recruit(self):
-    #     """Recruit only the number of participants actually needed."""
-    #     finished_nodes = self.models.RogersAgent.query.filter(
-    #     self.models.RogersAgent.property1.isnot(None), # fitness stored here
-    #     self.models.RogersAgent.failed == False
-    #     ).all()
-    #     num_finished = len(finished_nodes)
-
-    #     total_needed = self.generations * self.generation_size
-    #     if num_finished >= total_needed:
-    #         self.log("All generations complete: closing recruitment", "-----")
-    #         self.recruiter.close_recruitment()
-    #         return
-
-    #     # How many generations are unlocked?
-    #     # Generation 0 is open at the start.
-    #     generations_unlocked = 1 + (num_finished // self.generation_size)
-    #     generations_unlocked = min(generations_unlocked, self.generations)
-
-    #     target_participants = generations_unlocked * self.generation_size
-
-    #     # Count how many participant nodes already exist
-    #     existing_nodes = self.models.RogersAgent.query.filter_by(failed=False).all()
-    #     num_existing = len(existing_nodes)
-
-    #     shortfall = target_participants - num_existing
-
-    #     if shortfall > 0:
-    #         self.log(f"Recruiting {shortfall} participant(s)", "-----")
-    #         self.recruiter.recruit(n=shortfall)
-
 
     def bonus(self, participant): # Rogers
         """Calculate a participants bonus."""
@@ -533,6 +502,7 @@ class RogersExperiment(Experiment):
 
         bonus = min(0.02 * float(node.score), max_bonus) # should cap bonus
         return round(bonus, 2)
+
 
     def score_task_answer(self, node, info): # guessing used each time player submits taskanswer info
         payload = json.loads(info.contents) # get contents of taskanswer info
@@ -551,19 +521,19 @@ class RogersExperiment(Experiment):
         else:
             correct_sequence = seq_b
 
-        answer_correctness = [] # new
+        answer_correctness = []
         num_correct = 0
         num_correct += (11 - to_solve) # give points for pre-solved positions
         feedback_positions = []
         feedback_correctness = {}
-        for i in range(11 - to_solve): # new
+        for i in range(11 - to_solve):
             answer_correctness.append("Correct")
         for i in range(to_solve):
             is_correct = answers[i] == correct_sequence[i]
             if is_correct:
                 num_correct += 1 # wanna add something here where we record if they got answers correct
-                answer_correctness.append("Correct") # new
-            else: # new
+                answer_correctness.append("Correct")
+            else: 
                 answer_correctness.append("Incorrect")
             if random.random() < learning_speed:
                 feedback_positions.append(i)
@@ -588,16 +558,6 @@ class RogersExperiment(Experiment):
 
         environment = network.nodes(type=self.models.RogersEnvironment)[0]
         environment.connect(whom=node)
-
-        # NEW: transmit the task encounter spec
-        spec = {
-        "task": random.choice(["A", "B"]),
-        "required_positions": list(range(6)),  # placeholder; specialization comes later
-        "n_positions": 11,
-        }
-        encounter = self.models.TaskEncounter(origin=environment, contents=json.dumps(spec))
-        environment.transmit(what=self.models.TaskEncounter, to_whom=node)
-
         node.receive()
         self.create_timestep_info(node)
 
@@ -664,7 +624,7 @@ class RogersExperiment(Experiment):
     def build_timestep_payload(self, node):
         """Build one timestep's task/hint payload for the frontend."""
         alleles = self.node_alleles(node)
-        s = int(alleles["s"]) # should be int?
+        s = int(alleles["s"])
         g = float(alleles["g"])
 
         task = "A" if random.random() < p else "B" 

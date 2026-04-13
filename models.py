@@ -14,10 +14,6 @@ import json
 
 
 
-class TaskEncounter(State):
-    """Spec for one timestep/task encounter (A/B + required positions, etc.)."""
-    __mapper_args__ = {"polymorphic_identity": "task_encounter"}
-
 class NodeAlleles(Info):
     __mapper_args__ = {"polymorphic_identity": "node_alleles"}
 

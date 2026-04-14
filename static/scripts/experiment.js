@@ -187,6 +187,16 @@ function handleKeydown(e) {
     return;
   }
 
+  if (e.which === 13) {
+    e.preventDefault();
+    
+    if (!$("#submit").prop("disabled")) {
+    submitTimestep();
+    }
+    
+    return;
+    }
+
   // Backspace deletes the most recent filled answer
 if (e.which === 8) {
   e.preventDefault();

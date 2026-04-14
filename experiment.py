@@ -92,7 +92,6 @@ class RogersExperiment(Experiment):
         for net in self.networks():
             net.max_size = net.max_size + 1  # make room for environment node.
             env = self.models.RogersEnvironment(network=net)
-            env.create_information()
             seq_a = self.models.CorrectSequenceA( # generate a canonical sequence for the whole network
             origin=env,
             contents=json.dumps(self.random_sequence(length=11)), # store it as info

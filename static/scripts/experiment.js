@@ -186,6 +186,29 @@ function handleKeydown(e) {
   if (showingFeedback) {
     return;
   }
+
+  // Backspace deletes the most recent filled answer
+if (e.which === 8) {
+  e.preventDefault();
+  
+  var lastFilled = -1;
+  for (var i = toSolve - 1; i >= 0; i--) {
+  if (answers[i] !== null) {
+  lastFilled = i;
+  break;
+  }
+  }
+  
+  if (lastFilled >= 0) {
+  answers[lastFilled] = null;
+  activeIndex = lastFilled;
+  renderGrid();
+  updateSubmitEnabled();
+  }
+  
+  return;
+  }
+
   var map = { 37: "LEFT", 38: "UP", 39: "RIGHT", 40: "DOWN" };
   var val = map[e.which || e.keyCode];
   if (!val) return;

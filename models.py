@@ -117,25 +117,7 @@ class RogersEnvironment(Source):
 
     __mapper_args__ = {"polymorphic_identity": "rogers_environment"}
 
-    @hybrid_property
-    def proportion(self):
-        """Convert property1 to propoertion."""
-        if self.property1 is None:
-            return None
-        return self.property1
-
-    @proportion.setter
-    def proportion(self, proportion):
-        """Make proportion settable."""
-        if proportion is None:
-            self.property1 = None
-        else:
-            self.property1 = repr(proportion)
-
-    @proportion.expression
-    def proportion(self):
-        """Make proportion queryable."""
-        return cast(self.property1, Float)
+    
 
     def _info_type(self):
         """By default create States."""
@@ -143,15 +125,5 @@ class RogersEnvironment(Source):
 
     def _contents(self):
         """Contents of created infos is either proportion or 1-proportion by default."""
-        if random.random() < 0.5:
-            return self.proportion
-        else:
-            return 1 - self.proportion
+        return None
 
-    def step(self):
-        """Prompt the environment to change."""
-        current_state = max(self.infos(type=State), key=attrgetter("id"))
-        current_contents = float(current_state.contents)
-        new_contents = 1 - current_contents
-        info_out = State(origin=self, contents=new_contents)
-        Transformation(info_in=current_state, info_out=info_out)

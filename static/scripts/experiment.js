@@ -1,7 +1,7 @@
 var my_node_id = null;
 
 var p = 0.5;         
-var s = null;         // fetched from NodeAlleles
+var s = null;         
 var g = null;
 var generalizedPositions = [];
 var transmittedPositions = [];
@@ -12,7 +12,7 @@ var answers = [];
 var activeIndex = 0;
 
 var currentTimestep = 0;
-var lifespanL = 5;    // temporary; later from backend
+var lifespanL = 5;  // established at front end for now 
 
 var feedbackCorrectness = {};
 var showingFeedback = false;
@@ -256,13 +256,8 @@ create_agent = function() {
 };
 
 function initializeTimestep() {
-  console.log("before increment", currentTimestep); //temp
   currentTimestep += 1;
-  console.log("after increment", currentTimestep); //temp
-  loadLatestTimestep();
-}
-
-function loadLatestTimestep() { // maybe not necessary as a separate function
+  
   console.log("Loading latest timestep...");
   $("#submit").prop("disabled", true);
   
@@ -322,7 +317,7 @@ function loadLatestTimestep() { // maybe not necessary as a separate function
   setStatus("Failed to load timestep.");
   $("#submit").prop("disabled", true);
   });
-  }
+}
 
 
 function submitTimestep() {

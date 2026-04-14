@@ -524,8 +524,6 @@ class RogersExperiment(Experiment):
         num_correct += (11 - to_solve) # give points for pre-solved positions
         feedback_positions = []
         feedback_correctness = {}
-        for i in range(11 - to_solve):
-            answer_correctness.append("Correct")
         for i in range(to_solve):
             is_correct = answers[i] == correct_sequence[i]
             if is_correct:
@@ -536,6 +534,9 @@ class RogersExperiment(Experiment):
             if random.random() < learning_speed:
                 feedback_positions.append(i)
                 feedback_correctness[i] = is_correct
+        
+        for i in range(11 - to_solve):
+            answer_correctness.append("Correct")
 
         self.models.AnswerCorrectness(
             origin=node,

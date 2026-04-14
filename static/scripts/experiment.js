@@ -50,10 +50,6 @@ function updateSubmitEnabled() {
   }
 }
 
-function setStatus(msg) {
-  $("#status").text(msg);
-}
-
 function renderGrid() {
   renderParentGrid();
   //temporary
@@ -238,7 +234,6 @@ function enableSubmitIfReady() {
 
 
 create_agent = function() {
-  setStatus("Initializing participant...");
   $("#submit").prop("disabled", true);
 
   $(document).off("keydown.gc").on("keydown.gc", handleKeydown);
@@ -302,7 +297,6 @@ function initializeTimestep() {
   
   if (timestepInfos.length === 0) {
   console.log("No timestep info found");
-  setStatus("No timestep info found.");
   $("#submit").prop("disabled", true);
   return;
   }
@@ -315,7 +309,6 @@ function initializeTimestep() {
   
   if (!payload.task || payload.toSolve === undefined) {
   console.log("Invalid timestep payload:", payload);
-  setStatus("Invalid timestep payload.");
   $("#submit").prop("disabled", true);
   return;
   }
@@ -343,7 +336,6 @@ function initializeTimestep() {
   updateSubmitEnabled(); // not sure why we're calling this
   }).fail(function(err) {
   console.log("Failed to load timestep info:", err);
-  setStatus("Failed to load timestep.");
   $("#submit").prop("disabled", true);
   });
 }
@@ -352,7 +344,6 @@ function initializeTimestep() {
 function submitTimestep() {
   for (var i = 0; i < toSolve; i++) {
     if (answers[i] === null) {
-      setStatus("Please fill in all boxes before submitting.");
       return;
     }
   }
@@ -371,7 +362,6 @@ function submitTimestep() {
     generalizedPositions: generalizedPositions
   };
 
-  setStatus("Submitting...");
   $("#submit").prop("disabled", true);
 
   dallinger.createInfo(my_node_id, {
@@ -401,7 +391,6 @@ function submitTimestep() {
       generalizedPositions = feedback.generalized_positions || [];
       showingFeedback = true;
       
-      setStatus("Feedback shown. Green = correct, red = incorrect.");
       $("#submit").hide();
       $("#continue").show();
       
@@ -410,7 +399,6 @@ function submitTimestep() {
   })
   .fail(function(err) {
     console.log("SUBMIT FAILED:", err);
-    setStatus("Submit failed. Check console.");
     $("#submit").prop("disabled", false);
   });
 }

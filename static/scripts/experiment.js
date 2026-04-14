@@ -257,8 +257,7 @@ create_agent = function() {
 
 function initializeTimestep() {
   currentTimestep += 1;
-  
-  console.log("Loading latest timestep...");
+   
   $("#submit").prop("disabled", true);
   
   dallinger.getInfos(my_node_id).done(function(resp) {

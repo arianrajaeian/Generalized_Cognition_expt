@@ -336,11 +336,8 @@ function initializeTimestep() {
   $("#submit").show();
   $("#submit").prop("disabled", false); 
   
-  setStatus(
-  "Timestep " + currentTimestep +
-  " of " + lifespanL +
-  " | Task " + task
-  );
+ $("#Main-header").html("Task " + task)
+ $("#timestep").html("Timestep " + currentTimestep + "of " + lifespanL)
   
   renderGrid();
   updateSubmitEnabled(); // not sure why we're calling this

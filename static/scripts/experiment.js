@@ -18,7 +18,7 @@ var feedbackCorrectness = {};
 var showingFeedback = false;
 
 CompletedRounds = 0
-TotalRounds = 2 // will eventually want this to equal the number of available networks
+TotalRounds = 5 // will eventually want this to equal the number of available networks
 
 
 

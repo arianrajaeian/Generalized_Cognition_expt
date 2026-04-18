@@ -1,7 +1,7 @@
 [Experiment]
 mode = sandbox
-auto_recruit = true
 experiment_repeats = 2
+auto_recruit = false
 generation_size = 2
 generations = 3
 

@@ -6,9 +6,9 @@ generation_size = 2
 generations = 3
 
 [MTurk]
-title = Judge the dots
-description = Look at some dots and determine if there are more blue or yellow ones
-keywords = Psychology, vision, dots
+title = Sequence Learning Task
+description = Learn sequences across multiple repeats
+keywords = Psychology, learning, sequence
 base_payment = 1.50
 lifetime = 24
 duration = 0.5

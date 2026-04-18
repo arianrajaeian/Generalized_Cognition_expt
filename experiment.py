@@ -35,8 +35,7 @@ def extra_parameters():
     types = {
         "experiment_repeats": int,
         "generations": int,
-        "generation_size": int,
-        "bonus_payment": float,
+        "generation_size": int
     }
 
     for key in types:
@@ -76,7 +75,6 @@ class RogersExperiment(Experiment):
         self.experiment_repeats = config.get("experiment_repeats")
         self.generation_size = config.get("generation_size")
         self.generations = config.get("generations")
-        self.bonus_payment = config.get("bonus_payment")
         self.initial_recruitment_size = self.generation_size
 
     @property # probably not useful
@@ -525,7 +523,7 @@ class RogersExperiment(Experiment):
             else:
                 score_sum += node.score
 
-        bonus = min(0.01 * float(score_sum), max_bonus) # should cap bonus
+        bonus = min(0.02 * float(score_sum), max_bonus) # should cap bonus
         return round(bonus, 2)  
 
 

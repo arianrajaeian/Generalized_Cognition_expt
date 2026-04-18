@@ -202,9 +202,12 @@ function handleKeydown(e) {
     return;
     }
 
-  // Backspace deletes the most recent filled answer
+
 if (e.which === 8) {
   e.preventDefault();
+  if (showingFeedback) {
+    return;
+  }
   
   var lastFilled = -1;
   for (var i = toSolve - 1; i >= 0; i--) {

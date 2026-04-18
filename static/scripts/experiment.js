@@ -274,7 +274,7 @@ create_agent = function() {
       my_node_id = resp.node.id;
 
       dallinger.getInfos(my_node_id, {
-        info_type: "NodeAlleles" // get the node's alleles
+        info_type: "node_alleles" // get the node's alleles
       }).done(function(resp2) {
         var alleleInfo = resp2.infos[0];
         var alleles = JSON.parse(alleleInfo.contents);

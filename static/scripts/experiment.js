@@ -304,7 +304,7 @@ create_agent = function() {
 function finishedRound() {
   CompletedRounds += 1;
   if (CompletedRounds < TotalRounds) {
-    create_agent();
+    dallinger.goToPage("between-rounds");
   } else {
     dallinger.allowExit();
     dallinger.goToPage("questionnaire");

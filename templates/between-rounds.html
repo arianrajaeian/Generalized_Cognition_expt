@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="container" style="max-width: 900px; margin-top: 30px;">
+  <h1 id="Main-header">Round complete!</h1>
+  
+  <br>
+  <br>
+
+  <h3>Initializing next round...</h3>
+
+  <br>
+
+  <p style="color: red;"> Heads up: the correct answers for the tasks will be different in the next round. 
+    The answers you learned in previous rounds will not apply!
+
+  </p>
+  
+  <br>
+  <br>
+  <br>
+
+  <button type="button" class="btn btn-success btn-lg"
+  style="margin-left: 12px;"
+  onclick="dallinger.goToPage('experiment');">
+  Next Round
+  </button>
+
+</div>
+
+{% endblock %}

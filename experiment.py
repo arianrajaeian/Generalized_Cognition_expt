@@ -518,12 +518,15 @@ class RogersExperiment(Experiment):
 
     def bonus(self, participant): # Rogers
         """Calculate a participants bonus."""
-        node = participant.nodes()[0]
-        if node.score is None:
-            return 0.0
+        score_sum = 0
+        for node in participant.nodes():
+            if node.score is None:
+                score_sum = score_sum
+            else:
+                score_sum += node.score
 
-        bonus = min(0.02 * float(node.score), max_bonus) # should cap bonus
-        return round(bonus, 2)
+        bonus = min(0.01 * float(score_sum), max_bonus) # should cap bonus
+        return round(bonus, 2)  
 
 
     def score_task_answer(self, node, info): # guessing used each time player submits taskanswer info

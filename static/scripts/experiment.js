@@ -229,15 +229,23 @@ if (e.which === 8) {
 
   var map = { 37: "LEFT", 38: "UP", 39: "RIGHT", 40: "DOWN" };
   var val = map[e.which || e.keyCode];
-  if (!val) return;
+  if (!val) {
+    return;
+  } else {
+    if (showingFeedback) {
+      return;
+    } else {
+    
+    e.preventDefault();
+    answers[activeIndex] = val;
 
-  e.preventDefault();
-  answers[activeIndex] = val;
+    if (activeIndex < toSolve - 1) activeIndex += 1;
 
-  if (activeIndex < toSolve - 1) activeIndex += 1;
+    renderGrid();
+    updateSubmitEnabled();
+    }
+  }
 
-  renderGrid();
-  updateSubmitEnabled();
 }
 
 function enableSubmitIfReady() {

@@ -1,7 +1,7 @@
 [Experiment]
 mode = sandbox
 auto_recruit = true
-experiment_repeats = 1
+experiment_repeats = 2
 generation_size = 2
 generations = 3
 bonus_payment = 1.0

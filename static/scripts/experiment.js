@@ -50,6 +50,18 @@ function updateSubmitEnabled() {
   }
 }
 
+function pressContinue() {
+  console.log("continue clicked"); //debugging
+  feedbackCorrectness = {};
+  showingFeedback = false;
+  $("#submit").prop("disabled", false);
+  if (currentTimestep < lifespanL) {
+    initializeTimestep();
+  } else {
+    finishedRound();
+  }
+}
+
 function renderGrid() {
   renderParentGrid();
   //temporary
@@ -179,17 +191,14 @@ function renderParentGrid() {
 
   
 function handleKeydown(e) {
-  if (showingFeedback) {
-    return;
-  }
-
   if (e.which === 13) {
     e.preventDefault();
     
     if (!$("#submit").prop("disabled")) {
     submitTimestep();
+    } else if (showingFeedback) {
+      pressContinue();
     }
-    
     return;
     }
 
@@ -239,23 +248,7 @@ create_agent = function() {
   $(document).off("keydown.gc").on("keydown.gc", handleKeydown);
   $("#submit").off("click.gc").on("click.gc", submitTimestep); // ensures submit runs submitTimestep()
 
-  $("#continue").off("click.gc").on("click.gc", function() { // after clicking continue
-    console.log("continue clicked"); //temp
-    feedbackCorrectness = {}; // clearing feedback
-    showingFeedback = false; 
-  
-    $("#continue").hide();
-    $("#submit").show();
-    $("#submit").prop("disabled", false);
-  
-    if (currentTimestep < lifespanL) {
-      initializeTimestep();
-    } else {
-      setStatus("Finished all timesteps.");
-      dallinger.allowExit();
-      dallinger.goToPage("questionnaire");
-    }
-  });
+  $("#continue").off("click.gc").on("click.gc", pressContinue);
 
   dallinger.createAgent() // create backend node
     .done(function(resp) {

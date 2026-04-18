@@ -463,7 +463,7 @@ class RogersExperiment(Experiment):
 
             if node.property3 is None:
                 node.property3 = "0"
-            node.score = node.score + result["num_correct"] # adding correct answers to node's score
+            node.score = node.score + result["answered_correct"] # adding correct answers to node's score
 
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
@@ -546,6 +546,7 @@ class RogersExperiment(Experiment):
         answer_correctness = []
         num_correct = 0
         num_correct += (11 - to_solve) # give points for pre-solved positions
+        answered_correct = 0 # how many they actually answered correct (does not count pre-solved positions)
         feedback_positions = []
         feedback_correctness = {}
         for i in range(to_solve):
@@ -553,6 +554,7 @@ class RogersExperiment(Experiment):
             if is_correct:
                 num_correct += 1 # wanna add something here where we record if they got answers correct
                 answer_correctness.append("Correct")
+                answered_correct += 1
             else: 
                 answer_correctness.append("Incorrect")
             if random.random() < learning_speed:
@@ -571,7 +573,8 @@ class RogersExperiment(Experiment):
         "num_correct": num_correct,
         "feedback_positions": feedback_positions,
         "feedback_correctness": feedback_correctness,
-        "generalized_positions": generalized_positions
+        "generalized_positions": generalized_positions,
+        "answered_correct": answered_correct
         }
 
     def add_node_to_network(self, node, network):

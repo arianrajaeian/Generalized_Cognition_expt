@@ -135,6 +135,30 @@ class RogersExperiment(Experiment):
             generation_size=self.generation_size,
             initial_source=False,
         )
+    
+    def get_network_for_participant(self, participant):
+        """Place participant in a network depending in which they have already completed"""
+        key = participant.id
+        networks_with_space = self.networks(full=False)
+        networks_participated_in = [
+            node.network_id
+            for node in Node.query.with_entities(Node.network_id)
+            .filter_by(participant_id=participant.id)
+            .all()
+        ]
+
+        legal_networks = [
+            net for net in networks_with_space if net.id not in networks_participated_in
+        ]
+
+        if not legal_networks:
+            self.log("No networks available, returning None", key)
+            return None
+        
+        else:
+            return min(legal_networks, key = attrgetter("id"))
+        
+
 
     def create_node(self, network, participant):
         """Make a new node for participants."""

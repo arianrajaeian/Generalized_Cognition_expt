@@ -17,6 +17,9 @@ var lifespanL = 5;  // established at front end for now
 var feedbackCorrectness = {};
 var showingFeedback = false;
 
+CompletedRounds = 0
+TotalRounds = 2 // will eventually want this to equal the number of available networks
+
 
 
 
@@ -255,14 +258,19 @@ function enableSubmitIfReady() {
 
 create_agent = function() {
   $("#submit").prop("disabled", true);
+  $("#continue").hide();
+
+  my_node_id = null;
 
   $(document).off("keydown.gc").on("keydown.gc", handleKeydown);
   $("#submit").off("click.gc").on("click.gc", submitTimestep); // ensures submit runs submitTimestep()
 
   $("#continue").off("click.gc").on("click.gc", pressContinue);
 
+  console.log("starting createAgent")  
   dallinger.createAgent() // create backend node
     .done(function(resp) {
+      console.log("created agent, node id:", resp.node.id)
       my_node_id = resp.node.id;
 
       dallinger.getInfos(my_node_id, {
@@ -274,6 +282,7 @@ create_agent = function() {
         s = alleles.s;
         g = alleles.g;
         currentTimestep = 0;
+        console.log("initializeTimestep, my_node_id:", my_node_id)
         initializeTimestep();
       });
     })
@@ -287,7 +296,21 @@ create_agent = function() {
     });
 };
 
+function finishedRound() {
+  CompletedRounds += 1;
+  if (CompletedRounds < TotalRounds) {
+    create_agent();
+  } else {
+    dallinger.allowExit();
+    dallinger.goToPage("questionnaire");
+  }
+}
+
 function initializeTimestep() {
+  if (my_node_id === null) {
+    console.log("initialize timestep called before node id was set")
+    return;
+  }
   currentTimestep += 1;
    
   $("#submit").prop("disabled", true);
@@ -298,6 +321,8 @@ function initializeTimestep() {
   var timestepInfos = infos.filter(function(info) { // not sure about the filter part here
   return info.type === "timestep_info"; // getting relevant info about how many to solve, generalized, etc.
   }); 
+
+  console.log(timestepInfos)
   
   if (timestepInfos.length === 0) {
   console.log("No timestep info found");

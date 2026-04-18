@@ -278,9 +278,12 @@ create_agent = function() {
       }).done(function(resp2) {
         var alleleInfo = resp2.infos[0];
         var alleles = JSON.parse(alleleInfo.contents);
+        console.log(alleles) // debug. look further into. It's not actually giving us alleles
 
         s = alleles.s;
         g = alleles.g;
+        console.log(s)
+        console.log(g)
         currentTimestep = 0;
         console.log("initializeTimestep, my_node_id:", my_node_id)
         initializeTimestep();
@@ -288,9 +291,11 @@ create_agent = function() {
     })
     .fail(function(rejection) {
       if (rejection.status === 403) {
+        console.log("403 rejection")
         dallinger.allowExit();
         dallinger.goToPage("questionnaire");
       } else {
+        console.log("fail")
         dallinger.error(rejection);
       }
     });
@@ -312,6 +317,7 @@ function initializeTimestep() {
     return;
   }
   currentTimestep += 1;
+  console.log("continue worked")
    
   $("#submit").prop("disabled", true);
   

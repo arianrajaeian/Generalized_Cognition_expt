@@ -29,6 +29,8 @@ mutation_rate = 0.05
 fitness_exponent = 3
 p = 0.5
 
+cog_cost = 0.1
+
 
 def extra_parameters():
     config = get_config()
@@ -468,7 +470,7 @@ class RogersExperiment(Experiment):
             lifespan = payload["lifespan"]
 
             if timestep >= lifespan:
-                node.fitness = self.compute_fitness(node, lifespan, fitness_exponent) # if last timestep in lifespan, compute fitness
+                node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
             else:
                 self.create_timestep_info(node)
 
@@ -588,7 +590,7 @@ class RogersExperiment(Experiment):
         node.receive()
         self.create_timestep_info(node)
 
-    def compute_fitness(self, node, lifespan, exponent=3):
+    def compute_fitness(self, node, lifespan, fitness_exponent=3, cog_cost=0.1):
         """Compute end-of-lifespan fitness from score and allele costs."""
         alleles = self.node_alleles(node)
 
@@ -598,10 +600,10 @@ class RogersExperiment(Experiment):
 
         score = float(node.score or 0)
 
-        cost_term = 0.1 * lifespan * (g + r + v)
+        cost_term = cog_cost * (g + r + v)
         baseline = 0.0001
 
-        return max(baseline, score - cost_term) ** exponent
+        return max(baseline, (score / (11*lifespan)) - cost_term) ** fitness_exponent
 
     def random_wrong_answer(self, correct_answer):
         """Return a random arrow that is not the correct answer."""

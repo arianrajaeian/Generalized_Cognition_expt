@@ -262,32 +262,19 @@ create_agent = function() {
 
   my_node_id = null;
 
-  $(document).off("keydown.gc").on("keydown.gc", handleKeydown);
+  $(document).off("keydown.gc").on("keydown.gc", handleKeydown); //key presses run handleKeydown()
   $("#submit").off("click.gc").on("click.gc", submitTimestep); // ensures submit runs submitTimestep()
 
-  $("#continue").off("click.gc").on("click.gc", pressContinue);
+  $("#continue").off("click.gc").on("click.gc", pressContinue); //continue button runs pressContinue()
 
   console.log("starting createAgent")  
   dallinger.createAgent() // create backend node
     .done(function(resp) {
-      console.log("created agent, node id:", resp.node.id)
+      console.log("created agent, node id:", resp.node.id) // debugging
       my_node_id = resp.node.id;
-
-      dallinger.getInfos(my_node_id, {
-        info_type: "node_alleles" // get the node's alleles
-      }).done(function(resp2) {
-        var alleleInfo = resp2.infos[0];
-        var alleles = JSON.parse(alleleInfo.contents);
-        console.log(alleles) // debug. look further into. It's not actually giving us alleles
-
-        s = alleles.s;
-        g = alleles.g;
-        console.log(s)
-        console.log(g)
-        currentTimestep = 0;
-        console.log("initializeTimestep, my_node_id:", my_node_id)
-        initializeTimestep();
-      });
+      currentTimestep = 0;
+      console.log("initializeTimestep, my_node_id:", my_node_id)
+      initializeTimestep();
     })
     .fail(function(rejection) {
       if (rejection.status === 403) {

@@ -13,17 +13,37 @@ from operator import attrgetter
 
 import json
 
+import numpy as np
+
 max_bonus = 2.00
 
-s = 2
-g = 0.6
-r = 0.55
-v = 0.55
-
+min_s = 0
+max_s = 5
 s_inc = 1
-g_inc = 0.12
+
+min_r = 0
+max_r = 1
 r_inc = 0.12
+
+min_g = 0
+max_g = 1
+g_inc = 0.12
+
+min_v = 0
+max_v = 1
 v_inc = 0.12
+
+
+range_s = np.arange(min_s, max_s + s_inc, s_inc)
+range_r = np.arange(min_r, max_r + r_inc, r_inc)
+range_g = np.arange(min_g, max_g + g_inc, g_inc)
+range_v = np.arange(min_v, max_v + v_inc, v_inc)
+
+s = int(np.random.choice(range_s))
+r = float(np.random.choice(range_r))
+g = float(np.random.choice(range_g))
+v = float(np.random.choice(range_v))
+
 
 mutation_rate = 0.05
 fitness_exponent = 3

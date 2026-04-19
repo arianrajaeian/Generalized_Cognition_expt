@@ -17,8 +17,9 @@ var lifespanL = 5;  // established at front end for now
 var feedbackCorrectness = {};
 var showingFeedback = false;
 
-CompletedRounds = 0
+currentRound = 1
 TotalRounds = 5 // will eventually want this to equal the number of available networks
+
 
 
 
@@ -257,6 +258,11 @@ function enableSubmitIfReady() {
 
 
 create_agent = function() {
+  if (dallinger.storage.get("currentRound") === undefined) {
+    currentRound = currentRound;
+  } else{
+    currentRound = dallinger.storage.get("currentRound");
+  }
   $("#submit").prop("disabled", true);
   $("#continue").hide();
 
@@ -289,8 +295,10 @@ create_agent = function() {
 };
 
 function finishedRound() {
-  CompletedRounds += 1;
-  if (CompletedRounds < TotalRounds) {
+  currentRound += 1;
+  dallinger.storage.set("currentRound", currentRound)
+  
+  if (currentRound <= TotalRounds) {
     dallinger.goToPage("between-rounds");
   } else {
     dallinger.allowExit();

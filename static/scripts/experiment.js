@@ -361,6 +361,7 @@ function initializeTimestep() {
   
  $("#Main-header").html("Task " + task)
  $("#timestep").html("Timestep " + currentTimestep + " of " + lifespanL)
+ $("#round").html("Round " + currentRound + " of " + TotalRounds)
   
   renderGrid();
   updateSubmitEnabled(); // not sure why we're calling this

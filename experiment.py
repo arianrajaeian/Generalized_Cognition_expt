@@ -465,10 +465,10 @@ class RogersExperiment(Experiment):
 
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
-            lifespan_l = payload["lifespanL"]
+            lifespan = payload["lifespan"]
 
-            if timestep >= lifespan_l:
-                node.fitness = self.compute_fitness(node, lifespan_l, fitness_exponent) # if last timestep in lifespan, compute fitness
+            if timestep >= lifespan:
+                node.fitness = self.compute_fitness(node, lifespan, fitness_exponent) # if last timestep in lifespan, compute fitness
             else:
                 self.create_timestep_info(node)
 
@@ -588,7 +588,7 @@ class RogersExperiment(Experiment):
         node.receive()
         self.create_timestep_info(node)
 
-    def compute_fitness(self, node, lifespan_l, exponent=3):
+    def compute_fitness(self, node, lifespan, exponent=3):
         """Compute end-of-lifespan fitness from score and allele costs."""
         alleles = self.node_alleles(node)
 
@@ -598,7 +598,7 @@ class RogersExperiment(Experiment):
 
         score = float(node.score or 0)
 
-        cost_term = 0.1 * lifespan_l * (g + r + v)
+        cost_term = 0.1 * lifespan * (g + r + v)
         baseline = 0.0001
 
         return max(baseline, score - cost_term) ** exponent

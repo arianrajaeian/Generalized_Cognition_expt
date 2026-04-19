@@ -12,13 +12,13 @@ var answers = [];
 var activeIndex = 0;
 
 var currentTimestep = 0;
-var lifespanL = 5;  // established at front end for now 
+var lifespan = 5;  // lifespan established at front end
 
 var feedbackCorrectness = {};
 var showingFeedback = false;
 
 currentRound = 1
-TotalRounds = 5 // will eventually want this to equal the number of available networks
+TotalRounds = 5 // will want this to equal the number of available networks
 
 
 
@@ -59,7 +59,7 @@ function pressContinue() {
   feedbackCorrectness = {};
   showingFeedback = false;
   $("#submit").prop("disabled", false);
-  if (currentTimestep < lifespanL) {
+  if (currentTimestep < lifespan) {
     initializeTimestep();
   } else {
     finishedRound();
@@ -68,8 +68,6 @@ function pressContinue() {
 
 function renderGrid() {
   renderParentGrid();
-  //temporary
-  console.log("renderGrid called. showingFeedback =", showingFeedback, "feedbackCorrectness =", feedbackCorrectness);
   var $grid = $("#grid");
   $grid.empty();
   $grid.css({
@@ -94,7 +92,6 @@ function renderGrid() {
     backgroundColor = "#d0ebff";
     }
 
-    // transmitted hints: make text lighter before feedback
     if (!showingFeedback && transmittedAnswers[key] !== undefined) {
     textColor = "#555";
     }
@@ -317,21 +314,12 @@ function initializeTimestep() {
   $("#submit").prop("disabled", true);
   
   dallinger.getInfos(my_node_id).done(function(resp) {
-  var infos = resp.infos || [];
-  
-  var timestepInfos = infos.filter(function(info) { // not sure about the filter part here
+  var infos = resp.infos;  
+  var timestepInfos = infos.filter(function(info) { 
   return info.type === "timestep_info"; // getting relevant info about how many to solve, generalized, etc.
   }); 
-
-  console.log(timestepInfos)
-  
-  if (timestepInfos.length === 0) {
-  console.log("No timestep info found");
-  $("#submit").prop("disabled", true);
-  return;
-  }
-  
-  var timestepInfo = timestepInfos[timestepInfos.length - 1]; // don't know why
+    
+  var timestepInfo = timestepInfos[timestepInfos.length - 1];
   
   var payload = JSON.parse(timestepInfo.contents);
   
@@ -360,11 +348,11 @@ function initializeTimestep() {
   $("#submit").prop("disabled", false); 
   
  $("#Main-header").html("Task " + task)
- $("#timestep").html("Timestep " + currentTimestep + " of " + lifespanL)
+ $("#timestep").html("Timestep " + currentTimestep + " of " + lifespan)
  $("#round").html("Round " + currentRound + " of " + TotalRounds)
   
   renderGrid();
-  updateSubmitEnabled(); // not sure why we're calling this
+  updateSubmitEnabled();
   }).fail(function(err) {
   console.log("Failed to load timestep info:", err);
   $("#submit").prop("disabled", true);
@@ -384,9 +372,8 @@ function submitTimestep() {
   var payload = {
     kind: "task_answer",
     timestep: currentTimestep,
-    lifespanL: lifespanL,
+    lifespan: lifespan,
     task: task,
-    s: s,
     toSolve: toSolve,
     answers: answers,
     transmittedAnswers: transmittedAnswers,
@@ -403,7 +390,7 @@ function submitTimestep() {
     console.log("TaskAnswer saved successfully");
 
     dallinger.getInfos(my_node_id).done(function(resp) {
-      var infos = resp.infos || [];
+      var infos = resp.infos;
       
       var feedbackInfos = infos.filter(function(info) {
       return info.type === "feedback_info";
@@ -415,7 +402,7 @@ function submitTimestep() {
       return;
       }
       
-      var feedbackInfo = feedbackInfos[feedbackInfos.length - 1]; //idk why
+      var feedbackInfo = feedbackInfos[feedbackInfos.length - 1];
       var feedback = JSON.parse(feedbackInfo.contents);
       
       feedbackCorrectness = feedback.feedback_correctness || {};

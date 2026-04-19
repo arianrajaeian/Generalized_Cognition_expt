@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="main_div">
+<h1>Instructions</h1>
+<hr>
+
+
+<p>You will complete the experiment for <strong>5 rounds</strong>. After you finish each round, the tasks will reset, and
+    you will have to learn a new sequence. You will be notified once each round ends.
+</p>
+
+
+<br>
+<br>
+
+<p>In addition to your base payment, you will receive a bonus of $0.02 for each position you answer correctly. We will
+    accrue your correct answers across the five rounds to calculate your final bonus.
+
+</p>
+
+<br>
+<br>
+
+<p>
+Once you are ready, you may begin the experiment. 
+</p>
+
+<br>
+<br>
+
+<div id="button-row" style="margin-top: 28px;">
+<button type="button" class="btn btn-primary btn-lg"
+onclick="dallinger.goToPage('instructions/instruct-ready');">
+Previous
+</button>
+
+<button type="button" class="btn btn-success btn-lg"
+style="margin-left: 12px;"
+onclick="dallinger.goToPage('experiment');">
+Begin
+</button>
+</div>
+
+
+</div>
+
+{% endblock %}

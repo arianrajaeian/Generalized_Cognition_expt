@@ -39,11 +39,6 @@ range_r = np.arange(min_r, max_r + r_inc, r_inc)
 range_g = np.arange(min_g, max_g + g_inc, g_inc)
 range_v = np.arange(min_v, max_v + v_inc, v_inc)
 
-s = int(np.random.choice(range_s))
-r = float(np.random.choice(range_r))
-g = float(np.random.choice(range_g))
-v = float(np.random.choice(range_v))
-
 
 mutation_rate = 0.05
 fitness_exponent = 3
@@ -182,8 +177,10 @@ class RogersExperiment(Experiment):
 
     def create_node(self, network, participant):
         """Make a new node for participants."""
+        alleles = {}
+
         generation = self.generation_for_new_node(network)        
-        
+        print("create_node called")
         node = self.models.RogersAgent(network=network, participant=participant)
 
         print("Create_node generation:", generation) # debugging purposes
@@ -300,13 +297,15 @@ class RogersExperiment(Experiment):
 
     def inherit_alleles(self, network, generation, parents):
         """Create offspring alleles using sexual reproduction."""
+        print("inherit alleles called")
+        rng = np.random.default_rng()
         # Generation 0 defaults
         if generation == 0:
             return {
-                "s": s,
-                "g": g,
-                "r": r,
-                "v": v,
+                "s": int(rng.choice(range_s)),
+                "g": float(rng.choice(range_g)),
+                "r": float(rng.choice(range_r)),
+                "v": float(rng.choice(range_v)),
             }
 
         parent1 = None
@@ -320,10 +319,10 @@ class RogersExperiment(Experiment):
 
         if parent1 is None or parent2 is None:
             return{
-                "s": s,
-                "g": g,
-                "r": r,
-                "v": v,
+                "s": int(np.random.choice(range_s)),
+                "g": float(np.random.choice(range_g)),
+                "r": float(np.random.choice(range_r)),
+                "v": float(np.random.choice(range_v)),
             }
 
         a1 = self.node_alleles(parent1)

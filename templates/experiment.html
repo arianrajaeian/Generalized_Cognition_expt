@@ -4,35 +4,41 @@
 <div class="container" style="max-width: 900px; margin-top: 30px;">
   
   <div class="container" style="max-width: 900px; margin-top: 30px; display: flex; justify-content: space-between; align-items: baseline;">
-    <h1 id="Main-header" style="color: palevioletred;"></h1>
-    <h4 id="round" style="color: gray;"></h4>
+    <h1 id="Main-header"></h1>
+    <h4 id="timestep" style="color: gray;"></h4>
   </div>
-  <h1 id="Main-header"></h1>
   
   <hr>
 
-  <h4 id="timestep"></h4>
+  <div id="Task-A">
+    <h4 style="color: palevioletred;">Sequence A</h4>
+    <div>
+      <p><strong>Previous player's answers</strong></p>
+      <div id="parent-grid-A"></div>
+      </div>
+      
+      <div style="margin-top: 20px;">
+      <p><strong>Your answers</strong></p>
+      <div id="grid-A"></div>
+      </div>
+  </div>
 
   <br>
-
-  <p>
-    Press arrow keys (↑ ↓ ← →) to fill squares.
-    You may erase and overwrite your answers. When you’re done, click Submit or hit the enter/return key.
-  </p>
-
+  <hr>
   <br>
 
-  <div>
-    <p><strong>Previous player's answers</strong></p>
-    <div id="parent-grid"></div>
-    </div>
-    
-    <br>
-    
-    <div style="margin-top: 20px;">
-    <p><strong>Your answers</strong></p>
-    <div id="grid"></div>
-    </div>
+  <div id="Task-B">
+    <h4 style="color: cadetblue;">Sequence B</h4>
+    <div>
+      <p><strong>Previous player's answers</strong></p>
+      <div id="parent-grid-B"></div>
+      </div>
+      
+      <div style="margin-top: 20px;">
+      <p><strong>Your answers</strong></p>
+      <div id="grid-B"></div>
+      </div>
+  </div>
 
   
   <div id="button-row" style="margin-top: 24px;">

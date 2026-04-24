@@ -68,7 +68,11 @@ function pressContinue() {
 
 function renderGrid() {
   renderParentGrid();
-  var $grid = $("#grid");
+  if (task === "A") {
+    var $grid = $("#grid-A");
+  } else {
+    var $grid = $("#grid-B");
+  }
   $grid.empty();
   $grid.css({
     display: "flex",
@@ -139,8 +143,97 @@ function renderGrid() {
   }
 }
 
+function renderOtherGrid() {
+if (task_other === "A") {
+  var $container = $("#grid-A")
+  var $parent_container = $("#parent-grid-A")
+} else {
+  var $container = $("#grid-B")
+  var $parent_container = $("#parent-grid-B")
+}
+
+$container.empty();
+$parent_container.empty();
+
+// parent row
+var $parentRow = $("<div></div>").css({
+display: "flex",
+gap: "8px"
+});
+
+for (var i = 0; i < toSolve_other; i++) {
+var $cell = $("<div></div>");
+var key = String(i);
+
+var parentValue = transmittedAnswers_other[key];
+
+var backgroundColor = generalizedPositions_other.includes(i)
+? "#d0ebff"
+: "white";
+
+var textColor = parentValue ? "#555" : "#999";
+
+$cell.text(parentValue ? arrowLabel(parentValue) : "?");
+
+$cell.css({
+width: "60px",
+height: "60px",
+border: "1px solid #999",
+backgroundColor: backgroundColor,
+display: "flex",
+alignItems: "center",
+justifyContent: "center",
+fontSize: "30px",
+color: textColor,
+userSelect: "none",
+cursor: "default"
+});
+
+$parentRow.append($cell);
+}
+
+$parent_container.append($parentRow);
+
+// "your answers" row (STATIC, not editable)
+var $row = $("<div></div>").css({
+display: "flex",
+gap: "8px",
+marginTop: "5px"
+});
+
+for (var i = 0; i < toSolve_other; i++) {
+var $cell = $("<div></div>");
+
+var backgroundColor = generalizedPositions_other.includes(i)
+? "#d0ebff"
+: "white";
+
+$cell.text(""); // always blank (not editable)
+
+$cell.css({
+width: "60px",
+height: "60px",
+border: "1px solid #999",
+backgroundColor: backgroundColor,
+display: "flex",
+alignItems: "center",
+justifyContent: "center",
+fontSize: "30px",
+cursor: "default"
+});
+
+$row.append($cell);
+}
+
+$container.append($row);
+}
+
 function renderParentGrid() {
-  var $grid = $("#parent-grid");
+  if (task === "A") {
+    var $grid = $("#parent-grid-A");
+  } else {
+    var $grid = $("#parent-grid-B");
+  }
   $grid.empty();
   $grid.css({
     display: "flex",
@@ -342,16 +435,31 @@ function initializeTimestep() {
   activeIndex = 0;
   showingFeedback = false;
   feedbackCorrectness = {};
+
+  var otherInfos = infos.filter(function(info) { 
+  return info.type === "other_info";
+  }); 
+      
+  var otherInfo = otherInfos[otherInfos.length - 1];
+    
+  var other = JSON.parse(otherInfo.contents);
+    
+    
+  task_other = other.task;
+  toSolve_other = other.toSolve;
+  generalizedPositions_other = other.generalized_positions || [];
+  transmittedPositions_other = other.transmitted_positions || [];
+  transmittedAnswers_other = other.transmitted_answers || {};
   
   $("#continue").hide();
   $("#submit").show();
   $("#submit").prop("disabled", false); 
   
- $("#Main-header").html("Task " + task)
+ $("#Main-header").html("Round " + currentRound + " of " + TotalRounds)
  $("#timestep").html("Timestep " + currentTimestep + " of " + lifespan)
- $("#round").html("Round " + currentRound + " of " + TotalRounds)
   
   renderGrid();
+  renderOtherGrid();
   updateSubmitEnabled();
   }).fail(function(err) {
   console.log("Failed to load timestep info:", err);

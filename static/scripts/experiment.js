@@ -68,6 +68,7 @@ function pressContinue() {
 
 function renderGrid() {
   renderParentGrid();
+  highlightActiveTask();
   if (task === "A") {
     var $grid = $("#grid-A");
   } else {
@@ -226,6 +227,28 @@ $row.append($cell);
 }
 
 $container.append($row);
+}
+
+function highlightActiveTask() {
+  if (task === "A") {
+    $("#Task-A").css({
+      border: "3px solic #000",
+      backgroundColor: "#f4f6fb"
+    })
+    $("#Task-B").css({
+      border: "3px solic #000",
+      backgroundColor: "transparent"
+    })
+  } else {
+    $("#Task-B").css({
+      border: "3px solic #000",
+      backgroundColor: "#f4f6fb"
+    })
+    $("#Task-A").css({
+      border: "3px solic #000",
+      backgroundColor: "transparent"
+    })
+  }
 }
 
 function renderParentGrid() {

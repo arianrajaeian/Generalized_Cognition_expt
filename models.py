@@ -44,6 +44,10 @@ class TaskAnswer(Info):
 class TimestepInfo(Info):
     __mapper_args__ = {"polymorphic_identity": "timestep_info"}
 
+class OtherInfo(Info):
+    """Info regarding task that participants don't have to solve at the current timestep"""
+    __mapper_args__ = {"polymorphic_identity": "other_info"}
+
 
 class RogersAgent(Agent):
     """The Rogers Agent."""

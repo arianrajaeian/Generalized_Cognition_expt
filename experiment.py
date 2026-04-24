@@ -80,6 +80,7 @@ class RogersExperiment(Experiment):
         self.known_classes["NodeAlleles"] = self.models.NodeAlleles
         self.known_classes["FeedbackInfo"] = self.models.FeedbackInfo
         self.known_classes["TimestepInfo"] = self.models.TimestepInfo
+        self.known_classes["OtherInfo"] = self.models.OtherInfo
         self.known_classes["AnswerCorrectness"] = self.models.AnswerCorrectness
         self.known_classes["ParentInfo"] = self.models.ParentInfo
         self.known_classes["CulturalInheritance"] = self.models.CulturalInheritance
@@ -675,36 +676,62 @@ class RogersExperiment(Experiment):
         s = int(alleles["s"])
         g = float(alleles["g"])
 
-        task = "A" if random.random() < p else "B" 
+        to_solve_A = max(1, min(11, int(6 - s)))
+        to_solve_B = max(1, min(11, int(6 + s)))
+        
+        n_generalized = int(round(g * (6 - abs(s))))
+        n_generalized = max(0, n_generalized)
+        generalized_positions = list(range(n_generalized))
 
-        if task == "A":
-            to_solve = int(round(6 - s)) # should not use round function I think
-        else:
-            to_solve = int(round(6 + s)) # same here
+        transmission_A = self.transmitted_info_for_timestep(node, "A", to_solve_A)
+        transmission_B = self.transmitted_info_for_timestep(node, "B", to_solve_B)
 
-        to_solve = max(1, min(11, to_solve))
 
         n_generalized = int(round(g * (6 - abs(s))))
         n_generalized = max(0, n_generalized)
         generalized_positions = list(range(n_generalized))
 
-        transmission = self.transmitted_info_for_timestep(node, task, to_solve)
-
-        return {
-            "task": task,
-            "toSolve": to_solve,
+        task_A = {
+            "task": "A",
+            "toSolve": to_solve_A,
             "generalized_positions": generalized_positions,
-            "transmitted_positions": transmission["transmitted_positions"],
-            "transmitted_answers": transmission["transmitted_answers"],
+            "transmitted_positions": transmission_A["transmitted_positions"],
+            "transmitted_answers": transmission_A["transmitted_answers"]
         }
 
+        task_B = {
+            "task": "B",
+            "toSolve": to_solve_B,
+            "generalized_positions": generalized_positions,
+            "transmitted_positions": transmission_B["transmitted_positions"],
+            "transmitted_answers": transmission_B["transmitted_answers"]
+        }
+
+        return task_A, task_B
+
     def create_timestep_info(self, node):
-        payload = self.build_timestep_payload(node)
+        task_A, task_B = self.build_timestep_payload(node)
         print("Creating timestep info for node") # temp
+        
+        task = "A" if random.random() < p else "B"
+
+        if task == "A":
+            payload = task_A
+            other_info = task_B
+        else:
+            payload = task_B
+            other_info = task_A 
+        
         self.models.TimestepInfo(
         origin=node,
         contents=json.dumps(payload)
         )
+
+        self.models.OtherInfo(
+        origin=node,
+        contents=json.dumps(other_info)
+        )
+
         self.session.commit()
 
     def transmitted_info_for_timestep(self, node, task, to_solve):

@@ -303,10 +303,10 @@ class RogersExperiment(Experiment):
         # Generation 0 defaults
         if generation == 0:
             return {
-                "s": int(rng.choice(range_s)),
-                "g": float(rng.choice(range_g)),
-                "r": float(rng.choice(range_r)),
-                "v": float(rng.choice(range_v)),
+                "s": int(min(5, rng.choice(range_s))),
+                "g": float(min(1, rng.choice(range_g))),
+                "r": float(min(1, rng.choice(range_r))),
+                "v": float(min(1, rng.choice(range_v))),
             }
 
         parent1 = None
@@ -320,10 +320,10 @@ class RogersExperiment(Experiment):
 
         if parent1 is None or parent2 is None:
             return{
-                "s": int(np.random.choice(range_s)),
-                "g": float(np.random.choice(range_g)),
-                "r": float(np.random.choice(range_r)),
-                "v": float(np.random.choice(range_v)),
+                "s": int(min(5, rng.choice(range_s))),
+                "g": float(min(1, rng.choice(range_g))),
+                "r": float(min(1, rng.choice(range_r))),
+                "v": float(min(1, rng.choice(range_v))),
             }
 
         a1 = self.node_alleles(parent1)
@@ -350,10 +350,10 @@ class RogersExperiment(Experiment):
 
 
         return {
-            "s": child_s,
-            "g": child_g,
-            "r": child_r,
-            "v": child_v,
+            "s": min(5, child_s),
+            "g": min(1, child_g),
+            "r": min(1, child_r),
+            "v": min(1, child_v),
         }  
 
 

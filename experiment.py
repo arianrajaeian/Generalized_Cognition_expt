@@ -524,7 +524,7 @@ class RogersExperiment(Experiment):
         # generation complete when enough nodes finished
         end_of_generation = num_finished > 0 and num_finished % self.generation_size == 0
 
-        complete = num_finished >= (self.generations * self.generation_size)
+        complete = num_finished >= (self.generations * self.generation_size * self.experiment_repeats)
 
         if complete:
             self.log("All generations complete: closing recruitment", "-----")

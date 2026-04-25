@@ -421,6 +421,9 @@ function finishedRound() {
 }
 
 function initializeTimestep() {
+  $("#feedback-A").html("")
+  $("#feedback-B").html("")
+
   if (my_node_id === null) {
     console.log("initialize timestep called before node id was set")
     return;
@@ -557,6 +560,14 @@ function submitTimestep() {
       feedbackCorrectness = feedback.feedback_correctness || {};
       generalizedPositions = feedback.generalized_positions || [];
       showingFeedback = true;
+
+      if (Object.keys(feedbackCorrectness).length === 0) {
+        if (task === "A") {
+          $("#feedback-A").html("No feedback received")
+        } else {
+          $("#feedback-B").html("No feedback received")
+        }
+      }
       
       $("#submit").hide();
       $("#continue").show();

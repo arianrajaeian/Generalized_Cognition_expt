@@ -8,6 +8,7 @@ from sqlalchemy.sql.expression import cast
 from dallinger.information import Gene, State
 from dallinger.models import Info
 from dallinger.nodes import Agent, Source
+from dallinger.networks import DiscreteGenerational
 
 import json
 
@@ -101,6 +102,22 @@ class RogersAgent(Agent):
         return cast(self.property3, Integer)
 
 
+class DiscreteGeneration(DiscreteGenerational):
+    __mapper_args__ = {"polymorphic_identity": "discrete_generational"}
+    
+    @hybrid_property
+    def complexity(self):
+        return float(self.property3)
+
+    @complexity.setter
+    def complexity(self, val):
+        self.property3 = repr(val)
+
+    @complexity.expression
+    def complexity(self):
+        return cast(self.property3, Float)
+
+
 class RogersEnvironment(Source):
     """The Rogers environment."""
 
@@ -115,4 +132,3 @@ class RogersEnvironment(Source):
     def _contents(self):
         """Contents of created infos is either proportion or 1-proportion by default."""
         return None
-

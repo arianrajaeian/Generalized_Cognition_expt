@@ -42,7 +42,7 @@ range_v = np.arange(min_v, max_v + v_inc, v_inc)
 
 mutation_rate = 0.05
 fitness_exponent = 3
-p = 0.5
+p_values = [0.5, 0.5, 0.5, 0.9, 0.9]
 
 cog_cost = 0.1
 
@@ -107,6 +107,7 @@ class RogersExperiment(Experiment):
 
         for net in self.networks():
             net.max_size = net.max_size + 1  # make room for environment node.
+            net.complexity = p_values[int(net.id) - 1]
             env = self.models.RogersEnvironment(network=net)
             seq_a = self.models.CorrectSequenceA( # generate a canonical sequence for the whole network
             origin=env,
@@ -146,11 +147,13 @@ class RogersExperiment(Experiment):
 
     def create_network(self):
         """Create a new network."""
-        return DiscreteGenerational(
+        network = self.models.DiscreteGeneration(
             generations=self.generations,
             generation_size=self.generation_size,
             initial_source=False,
         )
+        
+        return network
     
     def get_network_for_participant(self, participant):
         """Place participant in a network depending in which they have already completed"""
@@ -713,6 +716,7 @@ class RogersExperiment(Experiment):
         task_A, task_B = self.build_timestep_payload(node)
         print("Creating timestep info for node") # temp
         
+        p = float(node.network.complexity)
         task = "A" if random.random() < p else "B"
 
         if task == "A":

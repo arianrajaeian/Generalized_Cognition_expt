@@ -100,6 +100,19 @@ class RogersAgent(Agent):
     def score(self):
         """Make score queryable."""
         return cast(self.property3, Integer)
+    
+    @hybrid_property
+    def lifespan(self):
+        """Convert property4 to lifespan."""
+        return int(self.property4)
+
+    @lifespan.setter
+    def lifespan(self, lifespan):
+        self.property4 = repr(lifespan)
+
+    @lifespan.expression
+    def lifespan(self):
+        return cast(self.property4, Integer)
 
 
 class DiscreteGeneration(DiscreteGenerational):
@@ -116,6 +129,19 @@ class DiscreteGeneration(DiscreteGenerational):
     @complexity.expression
     def complexity(self):
         return cast(self.property3, Float)
+    
+    @hybrid_property
+    def lifespan(self):
+        """Convert property4 to lifespan."""
+        return int(self.property4)
+
+    @lifespan.setter
+    def lifespan(self, lifespan):
+        self.property4 = repr(lifespan)
+
+    @lifespan.expression
+    def lifespan(self):
+        return cast(self.property4, Integer)
 
 
 class RogersEnvironment(Source):

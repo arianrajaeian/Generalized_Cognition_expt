@@ -12,13 +12,13 @@ var answers = [];
 var activeIndex = 0;
 
 var currentTimestep = 0;
-var lifespan = 5;  // lifespan established at front end
+var lifespan = null;  // lifespan established at front end
 
 var feedbackCorrectness = {};
 var showingFeedback = false;
 
-currentRound = 1
-TotalRounds = 5 // will want this to equal the number of available networks
+var currentRound = 1;
+var TotalRounds = 5; // will want this to equal the number of available networks
 
 
 
@@ -381,6 +381,7 @@ create_agent = function() {
   $("#continue").hide();
 
   my_node_id = null;
+  lifespan = null;
 
   $(document).off("keydown.gc").on("keydown.gc", handleKeydown); //key presses run handleKeydown()
   $("#submit").off("click.gc").on("click.gc", submitTimestep); // ensures submit runs submitTimestep()
@@ -392,6 +393,7 @@ create_agent = function() {
     .done(function(resp) {
       console.log("created agent, node id:", resp.node.id) // debugging
       my_node_id = resp.node.id;
+      lifespan = resp.node.property4;
       currentTimestep = 0;
       console.log("initializeTimestep, my_node_id:", my_node_id)
       initializeTimestep();

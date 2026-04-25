@@ -43,6 +43,7 @@ range_v = np.arange(min_v, max_v + v_inc, v_inc)
 mutation_rate = 0.05
 fitness_exponent = 3
 p_values = [0.5, 0.5, 0.5, 0.9, 0.9]
+lifespan_values = [8, 2, 13, 8, 2]
 
 cog_cost = 0.1
 
@@ -108,6 +109,7 @@ class RogersExperiment(Experiment):
         for net in self.networks():
             net.max_size = net.max_size + 1  # make room for environment node.
             net.complexity = p_values[int(net.id) - 1]
+            net.lifespan = lifespan_values[int(net.id) - 1]
             env = self.models.RogersEnvironment(network=net)
             seq_a = self.models.CorrectSequenceA( # generate a canonical sequence for the whole network
             origin=env,
@@ -189,6 +191,7 @@ class RogersExperiment(Experiment):
 
         print("Create_node generation:", generation) # debugging purposes
         node.generation = generation # saving it to the node
+        node.lifespan = node.network.lifespan
         node.score = 0 # start with a score of 0
 
         parents = self.choose_parents(network, generation)
@@ -490,7 +493,7 @@ class RogersExperiment(Experiment):
 
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
-            lifespan = payload["lifespan"]
+            lifespan = int(payload["lifespan"])
 
             if timestep >= lifespan:
                 node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness

@@ -485,7 +485,7 @@ function initializeTimestep() {
   $("#submit").prop("disabled", false); 
   
  $("#Main-header").html("Round " + currentRound + " of " + TotalRounds)
- $("#timestep").html("Timestep " + currentTimestep + " of " + lifespan)
+ $("#timestep").html("Attempt " + currentTimestep + " of " + lifespan)
 
  if (currentRound === 1) {
   $("#sequence-A").html("Sequence A").css("color", "palevioletred");

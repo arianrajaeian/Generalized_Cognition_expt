@@ -100,21 +100,6 @@ class RogersAgent(Agent):
         """Make score queryable."""
         return cast(self.property3, Integer)
 
-    # @hybrid_property
-    # def proportion(self):
-    #     """Make property4 proportion."""
-    #     return float(self.property4)
-
-    # @proportion.setter
-    # def proportion(self, proportion):
-    #     """Make proportion settable."""
-    #     self.property4 = repr(proportion)
-
-    # @proportion.expression
-    # def proportion(self):
-    #     """Make proportion queryable."""
-    #     return cast(self.property4, Float)
-
 
 class RogersEnvironment(Source):
     """The Rogers environment."""

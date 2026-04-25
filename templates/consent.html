@@ -1,5 +1,19 @@
 {% extends "base/consent.html" %}
 
+{% block consent_text %}
+<p>This research is being conducted by Dr Thomas Morgan and Arian Rajaiean, researchers in the School of Human Evolution and Social Change at Arizona State University, and is sponsored by the Templeton World Charity Foundation (award number 20648). We are conducting a research study to understand when and how people learn sequences.</p>
+
+<p> During the study, you will be asked to type in sequences of directions with the arrow keys on your keyboard. You may get feedback, or see the sequences typed in by other participants. The study will take around 10 minutes and you will be paid $1.50 upon completing the study and an additional bonus of up to $1.50 depending on your score. </p>
+
+<p>Your participation in this study is voluntary and you may stop your participation at any time. If you choose to withdraw from the study, there will be no penalty, however you will not be paid unless you complete the study.</p>
+
+<p>There are no foreseeable risks or discomforts to your participation. Your responses in this study may be shown to other participants while the study is ongoing, but they will be anonymous. While the study is running your responses will be associated with your Prolific id, this is in order to pay you a bonus when the study completes. However, once the study completes, we will replace your worker id with a random string such that your responses will be irreversibly de-identified. The results of this study may be used in reports, presentations, or publications, but (given the de-identification) your name and Prolific id will not be used. Should the study be published in an academic paper, de-identified data may be released as part of this.</p>
+
+<p>If you have any questions concerning the research study, please contact the lead researcher, Thomas Morgan, at: thomas.j.h.morgan@asu.edu. If you have any questions about your rights as a participant in this research, or if you feel you have been placed at risk, you can contact the Chair of the Human Subjects Institutional Review Board, through the ASU Office of Research Integrity and Assurance, at (480) 965-6788.</p>
+
+<p><b>To give your consent please click the “I agree” button below, otherwise please click the “No thanks” button which will return the study on Prolific.</b></p>
+{% endblock consent_text %}
+
 {% block consent_button %}
     <button type="button" class="btn btn-primary btn-lg"
     onClick="window.location='/instructions/instruct-1?{{query_string | safe}}';"

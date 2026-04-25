@@ -166,15 +166,12 @@ for (var i = 0; i < toSolve_other; i++) {
 var $cell = $("<div></div>");
 var key = String(i);
 
-var parentValue = transmittedAnswers_other[key];
-
 var backgroundColor = generalizedPositions_other.includes(i)
-? "#d0ebff"
-: "white";
 
-var textColor = parentValue ? "#555" : "#999";
 
-$cell.text(parentValue ? arrowLabel(parentValue) : "?");
+var textColor = "#999";
+
+$cell.text("?");
 
 $cell.css({
 width: "60px",

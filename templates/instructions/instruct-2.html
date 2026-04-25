@@ -5,32 +5,20 @@
 <h1>Instructions</h1>
 <hr>
 
-<p>Blue boxes always have the same answer in both sequences within a round, but white boxes can be different across sequences.</p>
 
+<p>In the real task, you will also see the sequence typed by another participant.</p>
 
-<p> For example, the sequence may look like this:</p>
+<p>However, some parts of their sequence may be hidden, indicated by "?".</p>
 
-<br>
-
-<p>Sequence A</p>
-<img src="{{ url_for('static', filename='images/Task_A.png') }}" width="450px" height="70px"/>
+<img src="{{ url_for('static', filename='images/vertical_transmission.png') }}" width="550px" height="250px"/>
 
 <br>
 <br>
 
-<p>Sequence B</p>
-<img src="{{ url_for('static', filename='images/Task_B.png') }}" width="225px" height="70px"/>
+<p>
+The previous player's answers can be useful, but they are not necessarily correct.
+</p>
 
-<br>
-<br>
-
-<p> If you filled out Sequence A and got the following feedback:</p>
-<img src="{{ url_for('static', filename='images/A_feedback.png') }}" width="450px" height="70px"/>
-
-<br>
-<br>
-
-<p> Then the correct answers for the first two boxes in Sequence B must also be: ↓ ↑</p>
 
 <div id="instruction-status" style="margin-top: 16px; min-height: 24px;"></div>
 
@@ -47,7 +35,7 @@ Next
 </button>
 </div>
 
-</div>
 
+</div>
 
 {% endblock %}

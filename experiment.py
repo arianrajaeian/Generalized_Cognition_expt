@@ -23,15 +23,15 @@ s_inc = 1
 
 min_r = 0
 max_r = 1
-r_inc = 0.12
+r_inc = 0.05
 
 min_g = 0
 max_g = 1
-g_inc = 0.12
+g_inc = 0.05
 
 min_v = 0
 max_v = 1
-v_inc = 0.12
+v_inc = 0.05
 
 
 range_s = np.arange(min_s, max_s + s_inc, s_inc)

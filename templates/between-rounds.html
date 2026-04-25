@@ -6,12 +6,16 @@
   
   <br>
   <br>
-  <br>
 
   <h4 style="color: indianred;">The sequences will be different in the next round — what you learned will not apply!</h4>
   
   <br>
   <br>
+
+  <p>
+    To go to the next round, press the button below or press "enter"
+  </p>
+
   <br>
 
   <button type="button" class="btn btn-success btn-lg"
@@ -22,4 +26,15 @@
 
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+  $(document).off("keydown.gc").on("keydown.gc", function(e) {
+    if (e.which === 13) {
+      e.preventDefault();
+      dallinger.goToPage('experiment');
+    }
+  });
+</script>
 {% endblock %}

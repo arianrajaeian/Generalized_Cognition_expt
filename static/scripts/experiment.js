@@ -236,6 +236,8 @@ function highlightActiveTask() {
       border: "3px solic #000",
       backgroundColor: "transparent"
     })
+    $("#sequence-A").css("font-weight", "900");
+    $("#sequence-B").css("font-weight", "400");
   } else {
     $("#Task-B").css({
       border: "3px solic #000",
@@ -245,6 +247,8 @@ function highlightActiveTask() {
       border: "3px solic #000",
       backgroundColor: "transparent"
     })
+    $("#sequence-A").css("font-weight", "400");
+    $("#sequence-B").css("font-weight", "900");
   }
 }
 

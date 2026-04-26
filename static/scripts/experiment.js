@@ -166,7 +166,10 @@ for (var i = 0; i < toSolve_other; i++) {
 var $cell = $("<div></div>");
 var key = String(i);
 
-var backgroundColor = generalizedPositions_other.includes(i)
+var backgroundColor = "white";
+if (generalizedPositions_other.includes(i)) {
+  backgroundColor = "#d0ebff";
+}
 
 
 var textColor = "#999";

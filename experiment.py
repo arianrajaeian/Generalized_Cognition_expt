@@ -15,7 +15,7 @@ import json
 
 import numpy as np
 
-max_bonus = 2.00
+max_bonus = 1.50
 
 min_s = 0
 max_s = 5

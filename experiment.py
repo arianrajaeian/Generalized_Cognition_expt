@@ -417,15 +417,11 @@ class RogersExperiment(Experiment):
         parent_answer_info_a = self.last_task_answer(parent, "A")
         parent_answer_info_b = self.last_task_answer(parent, "B")
 
-        if parent_answer_info_a is not None:
-            parent_correctness_a = self.parent_correctness_by_position(parent, "A", parent_answer_info_a)
-        else:
-            parent_correctness_a = {}
-        if parent_answer_info_b is not None:
-            parent_correctness_b = self.parent_correctness_by_position(parent, "B", parent_answer_info_b)
-        else:
-            parent_correctness_b = {}
 
+        parent_correctness_a = self.parent_correctness_by_position(parent, "A", parent_answer_info_a)
+        parent_correctness_b = self.parent_correctness_by_position(parent, "B", parent_answer_info_b)
+
+        
         alleles = self.node_alleles(node)
         v = float(alleles["v"])
         s = int(alleles["s"])
@@ -446,7 +442,7 @@ class RogersExperiment(Experiment):
 
         # loop through A
         for i in range(to_solve_a):
-            if i not in parent_correctness_a:
+            if parent_correctness_a[i] is None:
                 continue
 
             if random.random() < v:
@@ -461,7 +457,7 @@ class RogersExperiment(Experiment):
 
         # loop through B
         for i in range(to_solve_b):
-            if i not in parent_correctness_b:
+            if parent_correctness_b[i] is None:
                 continue
 
             if random.random() < v:
@@ -652,6 +648,24 @@ class RogersExperiment(Experiment):
 
     def parent_correctness_by_position(self, parent, task, parent_answer_info):
         """Return dict mapping positions to whether parent was correct there."""
+        parent_alleles = self.node_alleles(parent)
+        parent_s = int(parent_alleles["s"])
+
+        if parent_answer_info is None:
+            if task == "A":
+                to_solve = 11 - parent_s
+            else:
+                to_solve = 11 + parent_s
+
+            for i in range(to_solve):
+                correctness[i] = None
+
+            for i in range(to_solve, 11):
+                correctness[i] = True
+
+            return correctness
+        
+        
         payload = json.loads(parent_answer_info.contents)
 
         to_solve = payload["toSolve"]

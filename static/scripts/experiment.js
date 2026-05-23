@@ -527,7 +527,6 @@ function submitTimestep() {
   if (my_node_id === null) return;
 
   var payload = {
-    kind: "task_answer",
     timestep: currentTimestep,
     lifespan: lifespan,
     task: task,

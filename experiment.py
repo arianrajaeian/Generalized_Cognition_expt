@@ -595,7 +595,7 @@ class RogersExperiment(Experiment):
 
         self.models.AnswerCorrectness(
             origin=node,
-            contents=json.dumps([payload, {"Answer_correctness": answer_correctness, "num_correct": num_correct}])
+            contents=json.dumps([payload, {"Answer_correctness": answer_correctness, "num_correct": num_correct, "Individually_correct_answer": correct_sequence}])
             )
 
         return {

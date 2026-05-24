@@ -495,6 +495,7 @@ class RogersExperiment(Experiment):
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
             lifespan = int(payload["lifespan"])
+            answers = payload["answers"]
 
             if timestep >= lifespan:
                 node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
@@ -504,7 +505,9 @@ class RogersExperiment(Experiment):
             feedback_payload = {
                 "feedback_positions": result["feedback_positions"],
                 "feedback_correctness": result["feedback_correctness"],
-                "generalized_positions": result["generalized_positions"]
+                "generalized_positions": result["generalized_positions"],
+                "answers": answers,
+                "individually_correct_answers": result["Individually_correct_answer"]
             }
 
             self.models.FeedbackInfo(
@@ -604,7 +607,8 @@ class RogersExperiment(Experiment):
         "feedback_positions": feedback_positions,
         "feedback_correctness": feedback_correctness,
         "generalized_positions": generalized_positions,
-        "answered_correct": answered_correct
+        "answered_correct": answered_correct,
+        "Individually_correct_answer": correct_sequence
         }
 
     def add_node_to_network(self, node, network):

@@ -477,6 +477,7 @@ class RogersExperiment(Experiment):
             "transmitted_answers_a": transmitted_answers_a,
             "transmitted_positions_b": transmitted_positions_b,
             "transmitted_answers_b": transmitted_answers_b,
+            "teacher_parent": parent.id
         }
 
 

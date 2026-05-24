@@ -507,7 +507,8 @@ class RogersExperiment(Experiment):
                 "feedback_correctness": result["feedback_correctness"],
                 "generalized_positions": result["generalized_positions"],
                 "answers": answers,
-                "individually_correct_answers": result["Individually_correct_answer"]
+                "individually_correct_answers": result["Individually_correct_answer"],
+                "answer_correctness": result["Answer_correctness"]
             }
 
             self.models.FeedbackInfo(
@@ -608,7 +609,8 @@ class RogersExperiment(Experiment):
         "feedback_correctness": feedback_correctness,
         "generalized_positions": generalized_positions,
         "answered_correct": answered_correct,
-        "Individually_correct_answer": correct_sequence
+        "Individually_correct_answer": correct_sequence,
+        "Answer_correctness": answer_correctness
         }
 
     def add_node_to_network(self, node, network):

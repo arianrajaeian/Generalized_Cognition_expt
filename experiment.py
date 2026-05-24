@@ -193,6 +193,7 @@ class RogersExperiment(Experiment):
         node.generation = generation # saving it to the node
         node.lifespan = node.network.lifespan
         node.score = 0 # start with a score of 0
+        node.points = 0 # start with 0 points. This is for bonus calculation
 
         parents = self.choose_parents(network, generation)
         print("create_node chosen parents", parents) # debugging
@@ -487,6 +488,8 @@ class RogersExperiment(Experiment):
                 node.property3 = "0"
             node.score = node.score + result["num_corect"] # adding correct answers to node's score
 
+            node.points = node.points + result["answered_correct"] # adding positions the participants got correct
+
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
             lifespan = int(payload["lifespan"])
@@ -540,14 +543,14 @@ class RogersExperiment(Experiment):
 
     def bonus(self, participant): # Rogers
         """Calculate a participants bonus."""
-        score_sum = 0
+        points_sum = 0
         for node in participant.nodes():
-            if node.score is None:
-                score_sum = score_sum
+            if node.points is None:
+                points_sum = points_sum
             else:
-                score_sum += node.score
+                points_sum += node.points
 
-        bonus = min(0.02 * float(score_sum), max_bonus) # should cap bonus
+        bonus = min(0.02 * float(points_sum), max_bonus) # should cap bonus
         return round(bonus, 2)  
 
 

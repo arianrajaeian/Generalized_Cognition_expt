@@ -488,6 +488,8 @@ class RogersExperiment(Experiment):
                 node.property3 = "0"
             node.score = node.score + result["num_corect"] # adding correct answers to node's score
 
+            if node.points is None:
+                node.points = "0"
             node.points = node.points + result["answered_correct"] # adding positions the participants got correct
 
             payload = json.loads(info.contents)

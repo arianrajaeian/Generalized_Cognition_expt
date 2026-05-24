@@ -486,7 +486,7 @@ class RogersExperiment(Experiment):
 
             if node.property3 is None:
                 node.property3 = "0"
-            node.score = node.score + result["num_corect"] # adding correct answers to node's score
+            node.score = node.score + result["num_correct"] # adding correct answers to node's score
 
             if node.points is None:
                 node.points = "0"

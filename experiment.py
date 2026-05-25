@@ -663,6 +663,8 @@ class RogersExperiment(Experiment):
         parent_alleles = self.node_alleles(parent)
         parent_s = int(parent_alleles["s"])
 
+        correctness = {}
+
         if parent_answer_info is None:
             if task == "A":
                 to_solve = 11 - parent_s
@@ -689,7 +691,6 @@ class RogersExperiment(Experiment):
         else:
             correct_sequence = seq_b
 
-        correctness = {}
 
         # Pre-solved positions count as correct
         for i in range(to_solve, 11):

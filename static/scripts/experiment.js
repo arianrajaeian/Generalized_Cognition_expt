@@ -11,11 +11,11 @@ var toSolve = null;
 var answers = [];
 var activeIndex = 0;
 
-task_other = null;
-toSolve_other = null;
-generalizedPositions_other = [];
-transmittedPositions_other = [];
-transmittedAnswers_other = {};
+var task_other = null;
+var toSolve_other = null;
+var generalizedPositions_other = [];
+var transmittedPositions_other = [];
+var transmittedAnswers_other = {};
 
 var currentTimestep = 0;
 var lifespan = null;  // lifespan established at front end

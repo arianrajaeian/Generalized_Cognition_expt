@@ -549,7 +549,7 @@ class RogersExperiment(Experiment):
 
         elif end_of_generation:
             self.log("Generation finished, recruiting next generation")
-            self.recruiter.recruit(n=int(self.generation_size / self.generation_size))
+            self.recruiter.recruit(n=int(self.generation_size))
 
 
     def bonus(self, participant): # Rogers

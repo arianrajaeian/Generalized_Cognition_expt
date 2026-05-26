@@ -538,7 +538,7 @@ class RogersExperiment(Experiment):
         num_finished = len(finished_nodes)
 
         # generation complete when enough nodes finished
-        end_of_generation = num_finished > 0 and num_finished % self.generation_size == 0
+        end_of_generation = num_finished > 0 and num_finished % (self.generation_size * self.experiment_repeats) == 0
 
         complete = num_finished >= (self.generations * self.generation_size * self.experiment_repeats)
 

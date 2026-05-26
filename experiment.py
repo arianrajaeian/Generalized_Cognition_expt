@@ -671,9 +671,9 @@ class RogersExperiment(Experiment):
 
         if parent_answer_info is None:
             if task == "A":
-                to_solve = 11 - parent_s
+                to_solve = 6 - parent_s
             else:
-                to_solve = 11 + parent_s
+                to_solve = 6 + parent_s
 
             for i in range(to_solve):
                 correctness[i] = None

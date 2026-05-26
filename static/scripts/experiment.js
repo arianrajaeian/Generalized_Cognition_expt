@@ -238,7 +238,7 @@ $container.append($row);
 function highlightActiveTask() {
   if (task === "A") {
     $("#Task-A").css({
-      border: "3px solid #000",
+      border: "1px solid #d6dbe7",
       backgroundColor: "#f4f6fb"
     })
     $("#Task-B").css({
@@ -249,7 +249,7 @@ function highlightActiveTask() {
     $("#sequence-B").css({"font-weight": "400", "font-size": "1.4em"});
   } else {
     $("#Task-B").css({
-      border: "3px solid #000",
+      border: "1px solid #d6dbe7",
       backgroundColor: "#f4f6fb"
     })
     $("#Task-A").css({

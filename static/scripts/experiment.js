@@ -242,7 +242,7 @@ function highlightActiveTask() {
       backgroundColor: "#f4f6fb"
     })
     $("#Task-B").css({
-      border: "3px solid #000",
+      border: "none",
       backgroundColor: "transparent"
     })
     $("#sequence-A").css({"font-weight": "bold", "font-size": "1.8em"});
@@ -253,7 +253,7 @@ function highlightActiveTask() {
       backgroundColor: "#f4f6fb"
     })
     $("#Task-A").css({
-      border: "3px solid #000",
+      border: "none",
       backgroundColor: "transparent"
     })
     $("#sequence-A").css({"font-weight": "400", "font-size": "1.4em"});

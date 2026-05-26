@@ -1,32 +1,32 @@
 [Experiment]
-mode = sandbox
+mode = live
 auto_recruit = false
 experiment_repeats = 5
 generation_size = 2
-generations = 3
+generations = 2
 
-[MTurk]
+[Prolific]
 title = Sequence Learning Task
-description = Learn sequences across multiple repeats
-keywords = Psychology, learning, sequence
+description = Learn sequences of arrows
+prolific_project = Generalized cognition, Arian 2026
+prolific_estimated_completion_minutes = 15
 base_payment = 1.50
-lifetime = 24
 duration = 0.5
-us_only = true
-approve_requirement = 95
+publish_experiment = false
+prolific_recruitment_config = file:prolific_config.json
 contact_email_on_error = arajaeia@asu.edu
-ad_group = RogersGame
-organization_name = Arizona State University
-browser_exclude_rule = MSIE, mobile, tablet
+organization_name = Eccolab@ASU
 
 [Database]
 database_url = postgresql://postgres@localhost/dallinger
-database_size = standard-0
+database_size = standard-2
 
 [Server]
-dyno_type = basic
-num_dynos_web = 1
-num_dynos_worker = 1
+dyno_type = standard-2x
+num_dynos_web = 3
+num_dynos_worker = 2
 redis_size = premium-0
 host = 0.0.0.0
-clock_on = false
+clock_on = true
+logfile = -
+heroku_python_version = 3.12.5

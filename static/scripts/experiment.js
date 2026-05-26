@@ -11,6 +11,12 @@ var toSolve = null;
 var answers = [];
 var activeIndex = 0;
 
+task_other = null;
+toSolve_other = null;
+generalizedPositions_other = [];
+transmittedPositions_other = [];
+transmittedAnswers_other = {};
+
 var currentTimestep = 0;
 var lifespan = null;  // lifespan established at front end
 

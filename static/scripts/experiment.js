@@ -238,22 +238,22 @@ $container.append($row);
 function highlightActiveTask() {
   if (task === "A") {
     $("#Task-A").css({
-      border: "3px solic #000",
+      border: "3px solid #000",
       backgroundColor: "#f4f6fb"
     })
     $("#Task-B").css({
-      border: "3px solic #000",
+      border: "3px solid #000",
       backgroundColor: "transparent"
     })
     $("#sequence-A").css({"font-weight": "bold", "font-size": "1.8em"});
     $("#sequence-B").css({"font-weight": "400", "font-size": "1.4em"});
   } else {
     $("#Task-B").css({
-      border: "3px solic #000",
+      border: "3px solid #000",
       backgroundColor: "#f4f6fb"
     })
     $("#Task-A").css({
-      border: "3px solic #000",
+      border: "3px solid #000",
       backgroundColor: "transparent"
     })
     $("#sequence-A").css({"font-weight": "400", "font-size": "1.4em"});

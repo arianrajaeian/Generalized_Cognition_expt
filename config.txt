@@ -1,20 +1,20 @@
 [Experiment]
-mode = live
 auto_recruit = false
-recruiter = prolific
+mode = debug
 experiment_repeats = 5
 generation_size = 2
 generations = 2
 
 [Prolific]
-title = Sequence Learning Task
-description = Learn sequences of arrows
+title = Sequqnce Learning Task
+description = Learn sequences of directions
 prolific_project = Generalized cognition, Arian 2026
 prolific_estimated_completion_minutes = 15
-base_payment = 1.50
-duration = 0.5
+prolific_workspace = Generalized cognition, Arian 2026
+duration = 1.50
 publish_experiment = false
 prolific_recruitment_config = file:prolific_config.json
+base_payment = 1.50
 contact_email_on_error = arajaeia@asu.edu
 organization_name = Eccolab@ASU
 
@@ -22,12 +22,12 @@ organization_name = Eccolab@ASU
 database_url = postgresql://postgres@localhost/dallinger
 database_size = standard-2
 
-[Server]
+[Server] 
 dyno_type = standard-2x
-num_dynos_web = 3
+num_dynos_web = 2
 num_dynos_worker = 2
 redis_size = premium-0
 host = 0.0.0.0
 clock_on = true
 logfile = -
-heroku_python_version = 3.12.5
+heroku_python_version = 3.11.7

@@ -361,6 +361,10 @@ class RogersExperiment(Experiment):
             "g": min(1, child_g),
             "r": min(1, child_r),
             "v": min(1, child_v),
+            "parent_s": int(s_parent["s"]),
+            "parent_g": float(g_parent["g"]),
+            "parent_r": float(r_parent["r"]),
+            "parent_v": float(v_parent["v"])
         }  
 
 

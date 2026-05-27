@@ -1,6 +1,7 @@
 [Experiment]
 auto_recruit = false
-mode = debug
+mode = live
+recruiter = prolific
 experiment_repeats = 5
 generation_size = 2
 generations = 2

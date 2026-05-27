@@ -30,5 +30,5 @@ num_dynos_worker = 2
 redis_size = premium-0
 host = 0.0.0.0
 clock_on = true
-logfile = -
+logfile = /tmp/dallinger.log
 heroku_python_version = 3.11.7

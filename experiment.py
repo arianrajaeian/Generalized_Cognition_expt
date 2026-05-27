@@ -63,7 +63,7 @@ def extra_parameters():
 class RogersExperiment(Experiment):
     """The experiment class."""
 
-    def __init__(self, session=None):
+    def __init__(self, session=None, no_configure=False):
         """Call the same function in the super (see experiments.py in dallinger).
 
         The models module is imported here because it must be imported at
@@ -73,7 +73,7 @@ class RogersExperiment(Experiment):
 
         Finally, setup() is called.
         """
-        super(RogersExperiment, self).__init__(session)
+        super(RogersExperiment, self).__init__(session, no_configure=no_configure)
         from . import models
 
         self.models = models

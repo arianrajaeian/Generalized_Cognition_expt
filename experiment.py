@@ -177,7 +177,7 @@ class RogersExperiment(Experiment):
             return None
         
         else:
-            return min(legal_networks, key = attrgetter("id"))
+            return random.choice(legal_networks)
         
 
 

@@ -7,15 +7,15 @@ generation_size = 2
 generations = 2
 
 [Prolific]
-title = Sequqnce Learning Task
+title = Sequence Learning Task
 description = Learn sequences of directions
 prolific_project = Generalized cognition, Arian 2026
-prolific_estimated_completion_minutes = 15
+prolific_estimated_completion_minutes = 12
 prolific_workspace = Ecco Lab
 duration = 1.50
 publish_experiment = false
 prolific_recruitment_config = file:prolific_config.json
-base_payment = 1.50
+base_payment = 2.00
 contact_email_on_error = arajaeia@asu.edu
 organization_name = Eccolab@ASU
 

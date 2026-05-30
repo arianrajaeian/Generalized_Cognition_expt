@@ -1,7 +1,7 @@
 import random
 from operator import attrgetter
 
-from sqlalchemy import Float, Integer
+from sqlalchemy import Float, Integer, String
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
 
@@ -159,6 +159,18 @@ class DiscreteGeneration(DiscreteGenerational):
     @lifespan.expression
     def lifespan(self):
         return cast(self.property4, Integer)
+    
+    @hybrid_property
+    def ready_for_next_gen(self):
+        return self.property5
+
+    @ready_for_next_gen.setter
+    def ready_for_next_gen(self, val):
+        self.property5 = val
+
+    @ready_for_next_gen.expression
+    def ready_for_next_gen(self):
+        return cast(self.property5, String)
 
 
 class RogersEnvironment(Source):

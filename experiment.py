@@ -512,7 +512,10 @@ class RogersExperiment(Experiment):
                 if len(horizontal_nodes) < self.generation_size:
                     node.network.ready_for_next_gen = "No"
                 else:
-                    node.network.ready_for_next_gen = "Yes"
+                    if generation + 1 == self.generations:
+                        node.network.ready_for_next_gen = "Complete"
+                    else:
+                        node.network.ready_for_next_gen = "Yes"
             else:
                 self.create_timestep_info(node)
 

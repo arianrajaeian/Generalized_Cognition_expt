@@ -542,17 +542,11 @@ class RogersExperiment(Experiment):
 
     def recruit(self):
         """Recruit participants for next generation."""
-        finished_nodes = self.models.RogersAgent.query.filter(
-        self.models.RogersAgent.fitness.isnot(None),
-        self.models.RogersAgent.failed == False
-        ).all()
 
-        num_finished = len(finished_nodes)
+        networks = self.models.DiscreteGeneration.query.all()
 
-        # generation complete when enough nodes finished
-        end_of_generation = num_finished > 0 and num_finished % (self.generation_size * self.experiment_repeats) == 0
-
-        complete = num_finished >= (self.generations * self.generation_size * self.experiment_repeats)
+        complete = all(net.ready_for_next_gen == "Complete" for net in networks)
+        end_of_generation = all(net.ready_for_next_gen == "Yes" for net in networks)
 
         if complete:
             self.log("All generations complete: closing recruitment", "-----")

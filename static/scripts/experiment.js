@@ -539,6 +539,7 @@ function submitTimestep() {
     toSolve: toSolve,
     answers: answers,
     transmittedAnswers: transmittedAnswers,
+    transmittedPositions: transmittedPositions,
     generalizedPositions: generalizedPositions
   };
 

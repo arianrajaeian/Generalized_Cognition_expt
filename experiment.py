@@ -523,10 +523,6 @@ class RogersExperiment(Experiment):
                 "Timestep": timestep,
                 "feedback_positions": result["feedback_positions"],
                 "feedback_correctness": result["feedback_correctness"],
-                "generalized_positions": result["generalized_positions"],
-                "answers": answers,
-                "individually_correct_answers": result["Individually_correct_answer"],
-                "answer_correctness": result["Answer_correctness"]
             }
 
             self.models.FeedbackInfo(

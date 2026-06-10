@@ -186,10 +186,10 @@ class RogersExperiment(Experiment):
         alleles = {}
 
         generation = self.generation_for_new_node(network)        
-        print("create_node called")
         node = self.models.RogersAgent(network=network, participant=participant)
+        print("??create_node called. Network: ", network, "node: ", node)
 
-        print("Create_node generation:", generation) # debugging purposes
+        print("??Create_node generation:", generation) # debugging purposes
         node.generation = generation # saving it to the node
         node.lifespan = node.network.lifespan
         node.score = 0 # start with a score of 0
@@ -198,7 +198,7 @@ class RogersExperiment(Experiment):
         network.ready_for_next_gen = "No"
 
         parents = self.choose_parents(network, generation)
-        print("create_node chosen parents", parents) # debugging
+        print("??create_node chosen parents", parents) # debugging
 
         self.models.ParentInfo(
             origin=node,
@@ -307,7 +307,7 @@ class RogersExperiment(Experiment):
 
     def inherit_alleles(self, network, generation, parents):
         """Create offspring alleles using sexual reproduction."""
-        print("inherit alleles called")
+        print("??inherit alleles called")
         rng = np.random.default_rng()
         # Generation 0 defaults
         if generation == 0:
@@ -371,7 +371,7 @@ class RogersExperiment(Experiment):
 
 
     def choose_parents(self, network, generation):
-        print("choose_parents generation:", generation) # debugging
+        print("??choose_parents generation:", generation) # debugging
         if generation == 0:
             return {
                 "Parent1_id": None,
@@ -751,7 +751,7 @@ class RogersExperiment(Experiment):
 
     def create_timestep_info(self, node):
         task_A, task_B = self.build_timestep_payload(node)
-        print("Creating timestep info for node") # temp
+        print("??Creating timestep info for node") # temp
         
         p = float(node.network.complexity)
         task = "A" if random.random() < p else "B"

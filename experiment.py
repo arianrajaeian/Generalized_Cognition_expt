@@ -520,7 +520,7 @@ class RogersExperiment(Experiment):
                 self.create_timestep_info(node)
 
             feedback_payload = {
-                "Timestep": timestep,
+                "timestep": timestep,
                 "feedback_positions": result["feedback_positions"],
                 "feedback_correctness": result["feedback_correctness"],
             }

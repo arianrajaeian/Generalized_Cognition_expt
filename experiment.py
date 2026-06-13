@@ -154,6 +154,7 @@ class RogersExperiment(Experiment):
             generation_size=self.generation_size,
             initial_source=False,
         )
+        network.ready_for_next_gen = "No"
         
         return network
     
@@ -195,7 +196,6 @@ class RogersExperiment(Experiment):
         node.score = 0 # start with a score of 0
         node.points = 0 # start with 0 points. This is for bonus calculation
 
-        network.ready_for_next_gen = "No"
 
         parents = self.choose_parents(network, generation)
         print("??create_node chosen parents", parents) # debugging

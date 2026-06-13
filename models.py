@@ -171,6 +171,19 @@ class DiscreteGeneration(DiscreteGenerational):
     @ready_for_next_gen.expression
     def ready_for_next_gen(self):
         return cast(self.property5, String)
+    
+    @hybrid_property
+    def completed_nodes(self):
+        return int(self.property6)
+
+    @completed_nodes.setter
+    def completed_nodes(self, completed_nodes):
+        self.property6 = repr(completed_nodes)
+
+    @completed_nodes.expression
+    def completed_nodes(self):
+        return cast(self.property6, Integer)
+    
 
 
 class RogersEnvironment(Source):

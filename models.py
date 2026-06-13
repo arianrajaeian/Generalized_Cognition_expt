@@ -184,6 +184,18 @@ class DiscreteGeneration(DiscreteGenerational):
     def completed_nodes(self):
         return cast(self.property6, Integer)
     
+    @hybrid_property
+    def unfailed_nodes(self):
+        """How many unfailed nodes (completed or still working) exist in the network"""
+        return int(self.property7)
+
+    @unfailed_nodes.setter
+    def unfailed_nodes(self, unfailed_nodes):
+        self.property7 = repr(unfailed_nodes)
+
+    @unfailed_nodes.expression
+    def unfailed_nodes(self):
+        return cast(self.property7, Integer)
 
 
 class RogersEnvironment(Source):

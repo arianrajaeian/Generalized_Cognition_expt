@@ -802,3 +802,19 @@ class RogersExperiment(Experiment):
             "transmitted_positions": transmitted_positions,
             "transmitted_answers": transmitted_answers,
         }
+
+    
+    def fail_participant(self, participant):
+        """Fail all the nodes of a participant."""
+        participant_nodes = Node.query.filter_by(
+            participant_id=participant.id, failed=False
+        ).all()
+
+        for node in participant_nodes:
+            node.fail()
+            node.network.ready_for_next_gen = "No"
+            node.network.unfailed_nodes -= 1
+            if node.fitness is not None:
+                node.network.completed_nodes -= 1
+            node.fitness = None
+        self.session.commit()

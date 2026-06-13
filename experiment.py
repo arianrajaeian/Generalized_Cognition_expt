@@ -154,6 +154,9 @@ class RogersExperiment(Experiment):
             generation_size=self.generation_size,
             initial_source=False,
         )
+
+        network.unfailed_nodes = 0
+        network.completed_nodes = 0
         network.ready_for_next_gen = "No"
         
         return network
@@ -196,6 +199,7 @@ class RogersExperiment(Experiment):
         node.score = 0 # start with a score of 0
         node.points = 0 # start with 0 points. This is for bonus calculation
 
+        network.unfailed_nodes += 1
 
         parents = self.choose_parents(network, generation)
         print("??create_node chosen parents", parents) # debugging
@@ -506,6 +510,7 @@ class RogersExperiment(Experiment):
 
             if timestep >= lifespan:
                 node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
+                node.network.completed_nodes +=1
                 generation = node.generation
                 network_nodes = node.network.nodes(type=self.models.RogersAgent)
                 horizontal_nodes = [n for n in network_nodes if n.generation == generation and n.failed == False]

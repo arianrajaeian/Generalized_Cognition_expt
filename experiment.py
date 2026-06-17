@@ -529,10 +529,10 @@ class RogersExperiment(Experiment):
                         status["ready_for_next_gen"] = "Complete"
                     else:
                         status["ready_for_next_gen"] = "Yes"
+                node.network.status = json.dumps(status)
             else:
                 self.create_timestep_info(node)
 
-            node.network.status = json.dumps(status)
 
             feedback_payload = {
                 "timestep": timestep,

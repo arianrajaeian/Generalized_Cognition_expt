@@ -811,6 +811,9 @@ class RogersExperiment(Experiment):
         ).all()
 
         for node in participant_nodes:
+            infos = node.infos()
+            for info in infos:
+                info.fail()
             node.fail()
             node.network.ready_for_next_gen = "No"
             node.network.unfailed_nodes -= 1

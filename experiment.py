@@ -155,7 +155,13 @@ class RogersExperiment(Experiment):
             initial_source=False,
         )
 
-        network.status = json.dumps({"unfailed_nodes": 0, "completed_nodes": 0, "ready_for_next_gen": "No"})
+        status = {
+            "unfailed_nodes": 0,
+            "completed_nodes": 0,
+            "ready_for_next_gen": "No",
+            "last_completed_gen": None
+        }
+        network.status = json.dumps(status)
         
         return network
     
@@ -518,6 +524,7 @@ class RogersExperiment(Experiment):
                 if len(horizontal_nodes) < self.generation_size:
                     status["ready_for_next_gen"] = "No"
                 else:
+                    status["last_completed_gen"] = generation + 1
                     if generation + 1 == self.generations:
                         status["ready_for_next_gen"] = "Complete"
                     else:

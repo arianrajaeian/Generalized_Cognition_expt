@@ -514,7 +514,7 @@ class RogersExperiment(Experiment):
                 status["completed_nodes"] +=1
                 generation = node.generation
                 network_nodes = node.network.nodes(type=self.models.RogersAgent)
-                horizontal_nodes = [n for n in network_nodes if n.generation == generation and n.failed == False]
+                horizontal_nodes = [n for n in network_nodes if n.generation == generation and not n.failed and n.fitness is not None]
                 if len(horizontal_nodes) < self.generation_size:
                     status["ready_for_next_gen"] = "No"
                 else:

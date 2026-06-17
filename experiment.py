@@ -821,3 +821,15 @@ class RogersExperiment(Experiment):
                 node.network.completed_nodes -= 1
             node.fitness = None
         self.session.commit()
+
+    
+    def data_check(self, participant):
+        participant_nodes = Node.query.filter_by(
+            participant_id=participant.id).all()
+
+        for node in participant_nodes:
+            if node.failed:
+                return False
+            if len(node.infos(type=self.models.AnswerCorrectness)) != int(node.lifespan):
+                return False
+        return True

@@ -161,15 +161,15 @@ class DiscreteGeneration(DiscreteGenerational):
         return cast(self.property4, Integer)
     
     @hybrid_property
-    def ready_for_next_gen(self):
+    def status(self):
         return self.property5
 
-    @ready_for_next_gen.setter
-    def ready_for_next_gen(self, val):
+    @status.setter
+    def status(self, val):
         self.property5 = val
 
-    @ready_for_next_gen.expression
-    def ready_for_next_gen(self):
+    @status.expression
+    def status(self):
         return cast(self.property5, String)
     
 

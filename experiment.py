@@ -205,6 +205,7 @@ class RogersExperiment(Experiment):
 
         status = json.loads(network.status)
         status["unfailed_nodes"] += 1
+        status["ready_for_next_gen"] = "No"
         network.status = json.dumps(status)
 
         parents = self.choose_parents(network, generation)

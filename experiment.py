@@ -155,9 +155,7 @@ class RogersExperiment(Experiment):
             initial_source=False,
         )
 
-        network.unfailed_nodes = 0
-        network.completed_nodes = 0
-        network.ready_for_next_gen = "No"
+        network.status = json.dumps({"unfailed_nodes": 0, "completed_nodes": 0, "ready_for_next_gen": "No"})
         
         return network
     
@@ -199,7 +197,9 @@ class RogersExperiment(Experiment):
         node.score = 0 # start with a score of 0
         node.points = 0 # start with 0 points. This is for bonus calculation
 
-        network.unfailed_nodes += 1
+        status = json.loads(network.status)
+        status["unfailed_nodes"] += 1
+        network.status = json.dumps(status)
 
         parents = self.choose_parents(network, generation)
         print("??create_node chosen parents", parents) # debugging
@@ -510,19 +510,22 @@ class RogersExperiment(Experiment):
 
             if timestep >= lifespan:
                 node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
-                node.network.completed_nodes +=1
+                status = json.loads(node.network.status)
+                status["completed_nodes"] +=1
                 generation = node.generation
                 network_nodes = node.network.nodes(type=self.models.RogersAgent)
                 horizontal_nodes = [n for n in network_nodes if n.generation == generation and n.failed == False]
                 if len(horizontal_nodes) < self.generation_size:
-                    node.network.ready_for_next_gen = "No"
+                    status["ready_for_next_gen"] = "No"
                 else:
                     if generation + 1 == self.generations:
-                        node.network.ready_for_next_gen = "Complete"
+                        status["ready_for_next_gen"] = "Complete"
                     else:
-                        node.network.ready_for_next_gen = "Yes"
+                        status["ready_for_next_gen"] = "Yes"
             else:
                 self.create_timestep_info(node)
+
+            node.network.status = json.dumps(status)
 
             feedback_payload = {
                 "timestep": timestep,
@@ -547,8 +550,8 @@ class RogersExperiment(Experiment):
 
         networks = self.models.DiscreteGeneration.query.all()
 
-        complete = all(net.ready_for_next_gen == "Complete" for net in networks)
-        end_of_generation = all(net.ready_for_next_gen == "Yes" for net in networks)
+        complete = all(json.loads(net.status)["ready_for_next_gen"] == "Complete" for net in networks)
+        end_of_generation = all(json.loads(net.status)["ready_for_next_gen"] == "Yes" for net in networks)
 
         if complete:
             self.log("All generations complete: closing recruitment", "-----")
@@ -815,11 +818,13 @@ class RogersExperiment(Experiment):
             for info in infos:
                 info.fail()
             node.fail()
-            node.network.ready_for_next_gen = "No"
-            node.network.unfailed_nodes -= 1
+            status = json.loads(node.network.status)
+            status["ready_for_next_gen"] = "No"
+            status["unfailed_nodes"] -= 1
             if node.fitness is not None:
-                node.network.completed_nodes -= 1
+                status["completed_nodes"] -= 1
             node.fitness = None
+            node.network.status = json.dumps(status)
         self.session.commit()
 
     

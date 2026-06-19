@@ -822,6 +822,7 @@ class RogersExperiment(Experiment):
             participant_id=participant.id, failed=False
         ).all()
 
+        print("??Participant ", participant.id, "failed")
         for node in participant_nodes:
             infos = node.infos()
             for info in infos:

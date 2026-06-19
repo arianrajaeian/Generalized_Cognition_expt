@@ -539,6 +539,7 @@ class RogersExperiment(Experiment):
                 "timestep": timestep,
                 "feedback_positions": result["feedback_positions"],
                 "feedback_correctness": result["feedback_correctness"],
+                "num_feedback_positions": int(len(result["feedback_positions"]))
             }
 
             self.models.FeedbackInfo(

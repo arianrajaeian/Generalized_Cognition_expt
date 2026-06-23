@@ -768,7 +768,6 @@ class RogersExperiment(Experiment):
 
     def create_timestep_info(self, node):
         task_A, task_B = self.build_timestep_payload(node)
-        print("??Creating timestep info for node") # temp
         
         p = float(node.network.complexity)
         task = "A" if random.random() < p else "B"

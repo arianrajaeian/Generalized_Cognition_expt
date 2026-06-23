@@ -839,6 +839,7 @@ class RogersExperiment(Experiment):
 
     
     def data_check(self, participant):
+        print("??checking data for Participant ", participant.id)
         participant_nodes = Node.query.filter_by(
             participant_id=participant.id).all()
 
@@ -846,5 +847,6 @@ class RogersExperiment(Experiment):
             if node.failed:
                 return False
             if len(node.infos(type=self.models.AnswerCorrectness)) != int(node.lifespan):
+                print("Node ", node.id, " for Participant ", participant.id, " has bad data")
                 return False
         return True

@@ -257,6 +257,33 @@ class DiscreteGeneration(DiscreteGenerational):
             
             node.parents = json.dumps({"Parent_1": parent1.id, "Parent_2": parent2.id})
 
+        if parent1 is not None and parent2 is not None:
+            # can transmit both alleles and social info here. In the add_node_to_network function in experiment.py, you need to say that
+            # if generation == 0, then have some random value for the alleles, and no social info
+
+            # if we have them transmit answer correctness, the the children will just have the importnat info they need, right?
+            parent1.connect(whom=node)
+            parent1.transmit(to_whom=node, what=[Specialization, Generalization, VerticalTransmission, LearningSpeed])
+            p1_answer_infos = parent1.infos(type=AnswerCorrectness)
+            p1_A_infos = [i for i in p1_answer_infos if i.task == "A"]
+            p1_B_infos = [i for i in p1_answer_infos if i.task == "B"]
+            if len(p1_A_infos) >= 1:
+                parent1.transmit(to_whom=node, what=max(p1_A_infos, key=attrgetter("id")))
+            
+            if len(p1_B_infos) >= 1:
+                parent1.transmit(to_whom=node, what=max(p1_B_infos, key=attrgetter("id"))) 
+
+            parent2.connect(whom=node)
+            parent2.transmit(to_whom=node, what=[Specialization, Generalization, VerticalTransmission, LearningSpeed])
+            p2_answer_infos = parent2.infos(type=AnswerCorrectness)
+            p2_A_infos = [i for i in p2_answer_infos if i.task == "A"]
+            p2_B_infos = [i for i in p2_answer_infos if i.task == "B"]
+            if len(p2_A_infos) >= 1:
+                parent2.transmit(to_whom=node, what=max(p2_A_infos, key=attrgetter("id")))
+            
+            if len(p2_B_infos) >= 1:
+                parent2.transmit(to_whom=node, what=max(p2_B_infos, key=attrgetter("id"))) 
+    
 
 
 class RogersEnvironment(Source):

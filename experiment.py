@@ -320,46 +320,34 @@ class RogersExperiment(Experiment):
 
     
 
+    def inherit_social_info(self, node, A_info, B_info, parent):
         
-            return {
-                "Parent1_id": parent1.id,
-                "Parent2_id": parent2.id
-            }
-
-
-    def inherit_social_info(self, node, parents):
-        parent1 = None
-        parent2 = None
-        if parents["Parent1_id"] is not None:
-            parent1 = self.models.RogersAgent.query.get(parents["Parent1_id"])
-        if parents["Parent2_id"] is not None:
-            parent2 = self.models.RogersAgent.query.get(parents["Parent2_id"])
+        parent_alleles = self.node_alleles(parent)
+        parent_s = int(parent_alleles["s"])
         
-        possible_parents = [p for p in [parent1, parent2] if p is not None]
-        if len(possible_parents) == 0:
-            return {
-                "transmitted_positions_a": [],
-                "transmitted_answers_a": {},
-                "transmitted_positions_b": [],
-                "transmitted_answers_b": {}
-            }
+        if A_info is None:
+            parent_correctness_a = {}
+            par_to_solve_a = 6 - parent_s
+            for i in range(par_to_solve_a):
+                parent_correctness_a[i] = None
 
-        parent = random.choice(possible_parents) # all social info comes from the same parent right now
-        if parent is None:
-            return {
-                "transmitted_positions_a": [],
-                "transmitted_answers_a": {},
-                "transmitted_positions_b": [],
-                "transmitted_answers_b": {}
-            }
+            for i in range(par_to_solve_a, 11):
+                parent_correctness_a[i] = True
 
-        parent_answer_info_a = self.last_task_answer(parent, "A")
-        parent_answer_info_b = self.last_task_answer(parent, "B")
+        else:
+            parent_correctness_a = json.loads(A_info.contents)
 
+        if B_info is None:
+            parent_correctness_b = {}
+            par_to_solve_b = 6 + parent_s
+            for i in range(par_to_solve_b):
+                parent_correctness_b[i] = None
 
-        parent_correctness_a = self.parent_correctness_by_position(parent, "A", parent_answer_info_a)
-        parent_correctness_b = self.parent_correctness_by_position(parent, "B", parent_answer_info_b)
+            for i in range(par_to_solve_b, 11):
+                parent_correctness_b[i] = True
 
+        else:
+            parent_correctness_b = json.loads(B_info.contents)
         
         alleles = self.node_alleles(node)
         v = float(alleles["v"])
@@ -410,7 +398,7 @@ class RogersExperiment(Experiment):
                     )
 
 
-        return {
+        cultural_inheritance =  {
             "transmitted_positions_a": transmitted_positions_a,
             "transmitted_answers_a": transmitted_answers_a,
             "transmitted_positions_b": transmitted_positions_b,
@@ -418,7 +406,13 @@ class RogersExperiment(Experiment):
             "teacher_parent": parent.id
         }
 
+        self.models.CulturalInheritance(
+            origin=node,
+            contents=json.dumps(cultural_inheritance) # record what social info they see 
+        )
 
+
+    
     def info_post_request(self, node, info):
         if isinstance(info, self.models.TaskAnswer):
             result = self.score_task_answer(node, info)

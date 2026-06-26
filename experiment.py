@@ -256,42 +256,9 @@ class RogersExperiment(Experiment):
 
         return seq_a, seq_b, list(range(n_generalized))
 
-    
-    def generation_for_new_node(self, network):
-        """Return generation index for the next participant node in this network."""
-        existing_agents = network.nodes(type=self.models.RogersAgent)
-        return len(existing_agents) // self.generation_size 
 
 
-    def parent_pool(self, network, generation):
-        """Return eligible parents from the previous generation in this network."""
-        if generation == 0:
-            return []
 
-        prev_gen = generation - 1
-        return self.models.RogersAgent.query.filter_by(
-            network_id=network.id,
-            generation=prev_gen,
-            failed=False,
-        ).all()
-
-
-    def sample_parent(self, parents):
-        """Sample one parent weighted by fitness."""
-        if not parents:
-            return None
-
-        weights = []
-        for p in parents:
-            if p.fitness is None:
-                weights.append(0.0)
-            else:
-                weights.append(max(0.0, float(p.fitness)))
-
-        if sum(weights) == 0:
-            return random.choice(parents)
-
-        return random.choices(parents, weights=weights, k=1)[0]
 
 
     def node_alleles(self, node):
@@ -304,107 +271,8 @@ class RogersExperiment(Experiment):
         info = max(node.infos(type=self.models.CulturalInheritance), key=attrgetter("id"))
         return json.loads(info.contents)
 
-    def mutate_s(self, s_value, mutation_rate=0.05, s_inc=1):
-        """Discrete mutation for specialization"""
-        draw = random.random()
+    
 
-        if draw < mutation_rate:
-            s_value -= s_inc
-        elif draw > 1.0 - mutation_rate:
-            s_value += s_inc
-
-        return max(-5, min(5, s_value))
-
-
-    def mutate(self, value, sd):
-        """mutate according to normal distribution. Used for g, v, and r."""
-        value = value + random.gauss(0, sd)
-        return max(0.0, min(1.0, value))
-
-
-    def inherit_alleles(self, network, generation, parents):
-        """Create offspring alleles using sexual reproduction."""
-        print("??inherit alleles called")
-        rng = np.random.default_rng()
-        # Generation 0 defaults
-        if generation == 0:
-            return {
-                "s": int(min(5, rng.choice(range_s))),
-                "g": float(min(1, rng.choice(range_g))),
-                "r": float(min(1, rng.choice(range_r))),
-                "v": float(min(1, rng.choice(range_v))),
-            }
-
-        parent1 = None
-        parent2 = None
-
-
-        if parents["Parent1_id"] is not None:
-            parent1 = self.models.RogersAgent.query.get(parents["Parent1_id"])
-        if parents["Parent2_id"] is not None:
-            parent2 = self.models.RogersAgent.query.get(parents["Parent2_id"])
-
-        if parent1 is None or parent2 is None:
-            return{
-                "s": int(min(5, rng.choice(range_s))),
-                "g": float(min(1, rng.choice(range_g))),
-                "r": float(min(1, rng.choice(range_r))),
-                "v": float(min(1, rng.choice(range_v))),
-            }
-
-        a1 = self.node_alleles(parent1)
-        a2 = self.node_alleles(parent2)
-
-        # for each allele, inherit from one of the parents
-        s_parent = random.choice([a1, a2])
-        g_parent = random.choice([a1, a2])
-        r_parent = random.choice([a1, a2])
-        v_parent = random.choice([a1, a2])
-
-        child_s = int(s_parent["s"]) 
-        child_g = float(g_parent["g"])
-        child_r = float(r_parent["r"])
-        child_v = float(v_parent["v"])
-
-        # Mutate
-        child_s = self.mutate_s(child_s, mutation_rate, s_inc)
-        child_g = self.mutate(child_g, g_inc)
-        child_r = self.mutate(child_r, r_inc)
-        child_v = self.mutate(child_v, v_inc)
-
-        # Cultural Inheritance
-
-
-        return {
-            "s": min(5, child_s),
-            "g": min(1, child_g),
-            "r": min(1, child_r),
-            "v": min(1, child_v),
-            "parent_s": int(s_parent["s"]),
-            "parent_g": float(g_parent["g"]),
-            "parent_r": float(r_parent["r"]),
-            "parent_v": float(v_parent["v"])
-        }  
-
-
-    def choose_parents(self, network, generation):
-        print("??choose_parents generation:", generation) # debugging
-        if generation == 0:
-            return {
-                "Parent1_id": None,
-                "Parent2_id": None
-            } 
-          
-        else:
-            parents = self.parent_pool(network, generation)
-        
-            parent1 = self.sample_parent(parents)
-            parent2 = self.sample_parent(parents)
-
-            tries = 0
-            while parent2.id == parent1.id and tries < 10: # potentially worth it
-                parent2 = self.sample_parent(parents)
-                tries += 1
         
             return {
                 "Parent1_id": parent1.id,

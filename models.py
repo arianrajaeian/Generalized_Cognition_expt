@@ -285,6 +285,24 @@ class DiscreteGeneration(DiscreteGenerational):
                 parent2.transmit(to_whom=node, what=max(p2_B_infos, key=attrgetter("id"))) 
     
 
+    def _select_fit_node_from_generation(self, node_type, generation):
+        prev_agents = node_type.query.filter_by(
+            failed=False, network_id=self.id, generation=(generation),
+        ).all()
+        prev_fits = [p.fitness for p in prev_agents if p.fitness is not None]
+        prev_probs = [(f / (1.0 * sum(prev_fits))) for f in prev_fits]
+
+        rnd = random.random()
+        temp = 0.0
+        for i, probability in enumerate(prev_probs):
+            temp += probability
+            if temp > rnd:
+                return prev_agents[i]
+            
+
+
+
+
 
 class RogersEnvironment(Source):
     """The Rogers environment."""

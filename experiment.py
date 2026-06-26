@@ -244,14 +244,26 @@ class RogersExperiment(Experiment):
         return seq_a, seq_b, list(range(n_generalized))
 
 
-
-
-
-
     def node_alleles(self, node):
         """Return allele dict for a node."""
-        info = max(node.infos(type=self.models.NodeAlleles), key=attrgetter("id"))
-        return json.loads(info.contents)
+        s_info = max(node.infos(type=self.models.Specialization), key=attrgetter("id"))
+        s = int(s_info.contents)
+
+        g_info = max(node.infos(type=self.models.Generalization), key=attrgetter("id"))
+        g = float(g_info.contents)
+
+        v_info = max(node.infos(type=self.models.VerticalTransmission), key=attrgetter("id"))
+        v = float(v_info.contents)
+
+        r_info = max(node.infos(type=self.models.LearningSpeed), key=attrgetter("id"))
+        r = float(r_info.contents)
+
+        return {
+            "s": s,
+            "g": g,
+            "r": r,
+            "v": v
+        }
 
     def node_social_info(self, node):
         """Return social info dict for a node."""

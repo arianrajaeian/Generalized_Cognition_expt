@@ -197,9 +197,7 @@ class RogersExperiment(Experiment):
 
     def create_node(self, network, participant):
         """Make a new node for participants."""
-        alleles = {}
-
-        generation = self.generation_for_new_node(network)        
+  
         node = self.models.RogersAgent(network=network, participant=participant)
         print("??create_node called. Network: ", network, "node: ", node)
 
@@ -214,20 +212,9 @@ class RogersExperiment(Experiment):
         status["ready_for_next_gen"] = "No"
         network.status = json.dumps(status)
 
-        parents = self.choose_parents(network, generation)
-        print("??create_node chosen parents", parents) # debugging
 
-        self.models.ParentInfo(
-            origin=node,
-            contents=json.dumps(parents) # record info of who their parents were
-        )
 
-        alleles = self.inherit_alleles(network, generation, parents) # inherit parent alleles
 
-        self.models.NodeAlleles(
-            origin=node,
-            contents=json.dumps(alleles) # store alleles
-        )
 
         CulturalInheritance = self.inherit_social_info(node, parents)
 

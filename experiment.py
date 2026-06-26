@@ -335,7 +335,11 @@ class RogersExperiment(Experiment):
                 parent_correctness_a[i] = True
 
         else:
-            parent_correctness_a = json.loads(A_info.contents)
+            A_info_full = json.loads(A_info.contents)
+            A_correctness = A_info_full["Answer_correctness"]
+            parent_correctness_a = {}
+            for i in range(len(A_correctness)):
+                parent_correctness_a[i] = A_correctness[i]
 
         if B_info is None:
             parent_correctness_b = {}
@@ -347,7 +351,11 @@ class RogersExperiment(Experiment):
                 parent_correctness_b[i] = True
 
         else:
-            parent_correctness_b = json.loads(B_info.contents)
+            B_info_full = json.loads(B_info.contents)
+            B_correctness = B_info_full["Answer_correctness"]
+            parent_correctness_b = {}
+            for i in range(len(B_correctness)):
+                parent_correctness_b[i] = B_correctness[i]
         
         alleles = self.node_alleles(node)
         v = float(alleles["v"])

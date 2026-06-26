@@ -78,14 +78,18 @@ class RogersExperiment(Experiment):
         from . import models
 
         self.models = models
+        self.known_classes["RogersAgent"] = self.models.RogersAgent
         self.known_classes["TaskAnswer"] = self.models.TaskAnswer
-        self.known_classes["NodeAlleles"] = self.models.NodeAlleles
         self.known_classes["FeedbackInfo"] = self.models.FeedbackInfo
         self.known_classes["TimestepInfo"] = self.models.TimestepInfo
         self.known_classes["OtherInfo"] = self.models.OtherInfo
         self.known_classes["AnswerCorrectness"] = self.models.AnswerCorrectness
         self.known_classes["ParentInfo"] = self.models.ParentInfo
         self.known_classes["CulturalInheritance"] = self.models.CulturalInheritance
+        self.known_classes["Specialization"] = self.models.Specialization
+        self.known_classes["Generalization"] = self.models.Generalization
+        self.known_classes["VerticalTransmission"] = self.models.VerticalTransmission
+        self.known_classes["LearningSpeed"] = self.models.LearningSpeed
 
         if session and not self.networks():
             self.setup()

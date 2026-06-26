@@ -155,22 +155,21 @@ class RogersAgent(Agent):
     def lifespan(self):
         return cast(self.property4, Integer)
     
+
     @hybrid_property
-    def points(self):
-        """Convert property5 to points."""
-        if self.property5 is None:
-            return 0
-        return int(self.property5)
+    def parents(self):
+        """Convert property5 to parents."""
+        return self.property5
 
-    @points.setter
-    def points(self, points):
-        """Mark points settable."""
-        self.property5 = repr(points)
+    @parents.setter
+    def parents(self, parents):
+        self.property5 = repr(parents)
 
-    @points.expression
-    def points(self):
-        """Make points queryable."""
-        return cast(self.property5, Integer)
+    @parents.expression
+    def parents(self):
+        return cast(self.property5, String)
+    
+
 
 
 class DiscreteGeneration(DiscreteGenerational):

@@ -267,13 +267,17 @@ class RogersExperiment(Experiment):
 
     
 
+    def add_node_to_network(self, node, network):
+        """Add participant's node to a network."""
 
-        CulturalInheritance = self.inherit_social_info(node, parents)
+        node.lifespan = network.lifespan
 
-        self.models.CulturalInheritance(
-            origin=node,
-            contents=json.dumps(CulturalInheritance) # record what social info they see 
-        )
+        status = json.loads(network.status)
+        status["unfailed_nodes"] += 1
+        status["ready_for_next_gen"] = "No"
+        network.status = json.dumps(status)
+        
+        network.add_node(node)
 
         return node
 

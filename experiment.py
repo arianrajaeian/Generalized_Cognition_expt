@@ -597,50 +597,6 @@ class RogersExperiment(Experiment):
 
         return max(answers, key=attrgetter("id"))
 
-    def parent_correctness_by_position(self, parent, task, parent_answer_info):
-        """Return dict mapping positions to whether parent was correct there."""
-        parent_alleles = self.node_alleles(parent)
-        parent_s = int(parent_alleles["s"])
-
-        correctness = {}
-
-        if parent_answer_info is None:
-            if task == "A":
-                to_solve = 6 - parent_s
-            else:
-                to_solve = 6 + parent_s
-
-            for i in range(to_solve):
-                correctness[i] = None
-
-            for i in range(to_solve, 11):
-                correctness[i] = True
-
-            return correctness
-        
-        
-        payload = json.loads(parent_answer_info.contents)
-
-        to_solve = payload["toSolve"]
-        answers = payload["answers"]
-
-        seq_a, seq_b, _ = self.generalize(parent)
-        if task == "A":
-            correct_sequence = seq_a
-        else:
-            correct_sequence = seq_b
-
-
-        # Pre-solved positions count as correct
-        for i in range(to_solve, 11):
-            correctness[i] = True
-
-        # Answered positions
-        for i in range(to_solve):
-            correctness[i] = (answers[i] == correct_sequence[i])
-
-        return correctness
-
 
     def build_timestep_payload(self, node):
         """Build one timestep's task/hint payload for the frontend."""

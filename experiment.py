@@ -206,14 +206,66 @@ class RogersExperiment(Experiment):
         node.lifespan = node.network.lifespan
         node.score = 0 # start with a score of 0
         node.points = 0 # start with 0 points. This is for bonus calculation
+    def node_post_request(self, participant, node):
+        """Assign properties to the node, give it its alleles, and start the timestp"""
+
+        if node.generation == 0:
+            rng = np.random.default_rng()
+            
+            s = int(min(5, rng.choice(range_s)))
+            self.models.Specialization(
+                origin=node,
+                contents=s
+            )
 
         status = json.loads(network.status)
         status["unfailed_nodes"] += 1
         status["ready_for_next_gen"] = "No"
         network.status = json.dumps(status)
+            g = float(min(1, rng.choice(range_g)))
+            self.models.Generalization(
+                origin=node,
+                contents=g
+            )
+
+            r = float(min(1, rng.choice(range_r)))
+            self.models.LearningSpeed(
+                origin=node,
+                contents=r
+            )
+
+            v = float(min(1, rng.choice(range_v)))
+            self.models.VerticalTransmission(
+                origin=node,
+                contents=v
+            )
 
 
+            cultural_info = {
+                "transmitted_positions_a": [],
+                "transmitted_answers_a": {},
+                "transmitted_positions_b": [],
+                "transmitted_answers_b": {}
+            }
+            # they won't get cultural inheritnac since they're not receiving info (update creates their cultural inheritanc info)
+            # so we create it here manually
+            self.models.CulturalInheritance(
+                origin=node,
+                contents=json.dumps(cultural_info) # record what social info they see 
+            ) 
 
+        else:
+            node.receive()
+            print("Node received some info")
+        
+        node.score = 0 # start with a score of 0
+        
+        if participant.points is None:
+            participant.points = 0
+
+        self.create_timestep_info(node)
+
+    
 
 
         CulturalInheritance = self.inherit_social_info(node, parents)

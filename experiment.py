@@ -421,9 +421,9 @@ class RogersExperiment(Experiment):
                 node.property3 = "0"
             node.score = node.score + result["num_correct"] # adding correct answers to node's score
 
-            if node.points is None:
-                node.points = "0"
-            node.points = node.points + result["answered_correct"] # adding positions the participants got correct
+            if node.participant.points is None:
+                node.participant.points = "0"
+            node.participant.points += result["answered_correct"] # adding positions the participants got correct
 
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
@@ -488,14 +488,8 @@ class RogersExperiment(Experiment):
 
     def bonus(self, participant):
         """Calculate a participants bonus."""
-        points_sum = 0
-        for node in participant.nodes():
-            if node.points is None:
-                points_sum = points_sum
-            else:
-                points_sum += node.points
 
-        bonus = min(0.02 * float(points_sum), max_bonus) # should cap bonus
+        bonus = min(0.02 * float(participant.points), max_bonus) # should cap bonus
         return round(bonus, 2)  
 
 

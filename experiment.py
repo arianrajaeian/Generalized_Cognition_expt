@@ -533,7 +533,8 @@ class RogersExperiment(Experiment):
 
         self.models.AnswerCorrectness(
             origin=node,
-            contents=json.dumps({"timestep": payload["timestep"],"task": task,"Answer_correctness": answer_correctness, "num_correct": num_correct, "Individually_correct_answer": correct_sequence})
+            contents=json.dumps({"timestep": payload["timestep"],"task": task,"Answer_correctness": answer_correctness, "num_correct": num_correct, "Individually_correct_answer": correct_sequence}),
+            details=task
             )
 
         return {

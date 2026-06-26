@@ -6,9 +6,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
 
 from dallinger.information import Gene, State
-from dallinger.models import Info
+from dallinger.models import Info, Participant
 from dallinger.nodes import Agent, Source
 from dallinger.networks import DiscreteGenerational
+from . import experiment
 
 import json
 
@@ -169,6 +170,40 @@ class RogersAgent(Agent):
     def parents(self):
         return cast(self.property5, String)
     
+
+    def update(self, infos):
+        """Process received infos.
+
+        Update controls the default behavior of a node when it receives infos.
+        By default it does nothing.
+        """
+
+        print("Update called. Infos: ", infos)
+        # check self is not failed
+        if self.failed:
+            raise ValueError("{} cannot update as it has failed.".format(self))
+        
+        parent_s = [s for s in infos if s.type == "specialization"]
+        parent_g = [g for g in infos if g.type == "generalization"]
+        parent_v = [v for v in infos if v.type == "vertical_transmission"]
+        parent_r = [r for r in infos if r.type == "learning_speed"]
+
+        # now that we have the infos that were transmitted to them, we need to use it/save it. For the alleles, for each allele they
+        # need to randomly pick one of the parent's alleles and mutate it. 
+
+        self.mutate(random.choice(parent_s))
+        self.mutate(random.choice(parent_g))
+        self.mutate(random.choice(parent_v))
+        self.mutate(random.choice(parent_r))
+
+        social_info = [s for s in infos if s.type == "answer_correctness"]
+        parents = list({s.origin for s in social_info})
+        teacher_parent = random.choice(parents)
+        A_info = next((a for a in social_info if a.task == "A" and a.origin == teacher_parent), None)
+        B_info = next((b for b in social_info if b.task == "B" and b.origin == teacher_parent), None)
+
+        experiment.inherit_social_info(node = self, A_info = A_info, B_info = B_info, parent = teacher_parent)
+
 
 
 @hybrid_property

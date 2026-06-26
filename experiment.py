@@ -101,7 +101,7 @@ class RogersExperiment(Experiment):
         self.generations = config.get("generations")
         self.initial_recruitment_size = self.generation_size
 
-    @property # probably not useful
+    @property 
     def public_properties(self):
         return {
             "experiment_repeats": self.experiment_repeats,
@@ -116,11 +116,11 @@ class RogersExperiment(Experiment):
             net.complexity = p_values[int(net.id) - 1]
             net.lifespan = lifespan_values[int(net.id) - 1]
             env = self.models.RogersEnvironment(network=net)
-            seq_a = self.models.CorrectSequenceA( # generate a canonical sequence for the whole network
+            self.models.CorrectSequenceA( # generate a canonical sequence for the whole network
             origin=env,
             contents=json.dumps(self.random_sequence(length=11)), # store it as info
             )
-            seq_b = self.models.CorrectSequenceB( 
+            self.models.CorrectSequenceB( 
             origin=env,
             contents=json.dumps(self.random_sequence(length=11)),
             )

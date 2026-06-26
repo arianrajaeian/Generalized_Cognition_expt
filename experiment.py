@@ -428,7 +428,6 @@ class RogersExperiment(Experiment):
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
             lifespan = int(payload["lifespan"])
-            answers = payload["answers"]
 
             if timestep >= lifespan:
                 node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
@@ -487,7 +486,7 @@ class RogersExperiment(Experiment):
             self.recruiter.recruit(n=int(self.generation_size))
 
 
-    def bonus(self, participant): # Rogers
+    def bonus(self, participant):
         """Calculate a participants bonus."""
         points_sum = 0
         for node in participant.nodes():
@@ -598,8 +597,8 @@ class RogersExperiment(Experiment):
         return max(answers, key=attrgetter("id"))
 
 
-    def build_timestep_payload(self, node):
-        """Build one timestep's task/hint payload for the frontend."""
+    def build_info_for_timestep(self, node):
+        """Build one timestep's information for the frontend"""
         alleles = self.node_alleles(node)
         s = int(alleles["s"])
         g = float(alleles["g"])
@@ -638,7 +637,7 @@ class RogersExperiment(Experiment):
         return task_A, task_B
 
     def create_timestep_info(self, node):
-        task_A, task_B = self.build_timestep_payload(node)
+        task_A, task_B = self.build_info_for_timestep(node)
         
         p = float(node.network.complexity)
         task = "A" if random.random() < p else "B"

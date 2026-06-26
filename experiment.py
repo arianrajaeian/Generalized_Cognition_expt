@@ -576,19 +576,6 @@ class RogersExperiment(Experiment):
         options = ["UP", "DOWN", "LEFT", "RIGHT"]
         wrong_options = [x for x in options if x != correct_answer]
         return random.choice(wrong_options)
-    
-    def last_task_answer(self, parent, task):
-        """Return the parent's most recent TaskAnswer for a given task, or None."""
-        answers = []
-        for info in parent.infos(type=self.models.TaskAnswer):
-            payload = json.loads(info.contents)
-            if payload.get("task") == task:
-                answers.append(info)
-
-        if not answers:
-            return None
-
-        return max(answers, key=attrgetter("id"))
 
 
     def build_info_for_timestep(self, node):

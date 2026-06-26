@@ -15,8 +15,49 @@ import json
 
 
 
-class NodeAlleles(Info):
-    __mapper_args__ = {"polymorphic_identity": "node_alleles"}
+class Specialization(Gene):
+    __mapper_args__ = {"polymorphic_identity": "specialization"}
+
+    def _mutated_contents(self, mutation_rate=0.05, s_inc=1):
+        """The mutated contents of an info."""
+        s_value = int(self.contents)
+        
+        draw = random.random()
+
+        if draw < mutation_rate:
+            s_value -= s_inc
+        elif draw > 1.0 - mutation_rate:
+            s_value += s_inc
+
+        return max(-5, min(5, s_value))
+        
+
+class Generalization(Gene):
+    __mapper_args__ = {"polymorphic_identity": "generalization"}
+
+    def _mutated_contents(self, sd=0.05):
+        """Mutate according to a normal distribution. sd is the g_inc."""
+        value = float(self.contents)
+        value = value + random.gauss(0, sd)
+        return max(0.0, min(1.0, value))
+
+class VerticalTransmission(Gene):
+    __mapper_args__ = {"polymorphic_identity": "vertical_transmission"}
+
+    def _mutated_contents(self, sd=0.05):
+        """Mutate according to a normal distribution. sd is the v_inc."""
+        value = float(self.contents)
+        value = value + random.gauss(0, sd)
+        return max(0.0, min(1.0, value))
+
+class LearningSpeed(Gene):
+    __mapper_args__ = {"polymorphic_identity": "learning_speed"}
+
+    def _mutated_contents(self, sd=0.05):
+        """Mutate according to a normal distribution. sd is the r_inc."""
+        value = float(self.contents)
+        value = value + random.gauss(0, sd)
+        return max(0.0, min(1.0, value))
 
 class CorrectSequenceA(State):
     """Canonical correct sequence for Task A within a network."""

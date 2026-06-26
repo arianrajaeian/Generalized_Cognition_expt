@@ -171,6 +171,24 @@ class RogersAgent(Agent):
     
 
 
+@hybrid_property
+def points(self):
+    """Convert property1 to points."""
+    if self.property1 is None:
+        return 0
+    return int(self.property1)
+
+@points.setter
+def points(self, points):
+    """Mark points settable."""
+    self.property1 = repr(points)
+
+@points.expression
+def points(self):
+    """Make points queryable."""
+    return cast(self.property1, Integer)
+Participant.points = points
+    
 
 class DiscreteGeneration(DiscreteGenerational):
     __mapper_args__ = {"polymorphic_identity": "discrete_generational"}

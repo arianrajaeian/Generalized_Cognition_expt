@@ -8,6 +8,7 @@ from dallinger.config import get_config
 from dallinger.experiment import Experiment
 from dallinger.models import Node, Participant
 from dallinger.networks import DiscreteGenerational
+from dallinger.experiment_server.experiment_server import assign_properties
 
 from operator import attrgetter
 
@@ -167,6 +168,7 @@ class RogersExperiment(Experiment):
     
     def get_network_for_participant(self, participant):
         """Place participant in a network depending in which they have already completed"""
+        assign_properties(participant)
         key = participant.id
         networks_with_space = self.networks(full=False)
         networks_participated_in = [

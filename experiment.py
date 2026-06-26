@@ -485,16 +485,16 @@ class RogersExperiment(Experiment):
             is_correct = answers[i] == correct_sequence[i]
             if is_correct:
                 num_correct += 1 # wanna add something here where we record if they got answers correct
-                answer_correctness.append("Correct")
+                answer_correctness.append(True)
                 answered_correct += 1
             else: 
-                answer_correctness.append("Incorrect")
+                answer_correctness.append(False)
             if random.random() < learning_speed:
                 feedback_positions.append(i)
                 feedback_correctness[i] = is_correct
         
         for i in range(11 - to_solve):
-            answer_correctness.append("Correct")
+            answer_correctness.append(True)
 
         self.models.AnswerCorrectness(
             origin=node,

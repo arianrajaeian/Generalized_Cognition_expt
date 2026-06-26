@@ -552,15 +552,6 @@ class RogersExperiment(Experiment):
         "Answer_correctness": answer_correctness
         }
 
-    def add_node_to_network(self, node, network):
-        """Add participant's node to a network."""
-        network.add_node(node)
-        node.receive()
-
-        environment = network.nodes(type=self.models.RogersEnvironment)[0]
-        environment.connect(whom=node)
-        node.receive()
-        self.create_timestep_info(node)
 
     def compute_fitness(self, node, lifespan, fitness_exponent=3, cog_cost=0.1):
         """Compute end-of-lifespan fitness from score and allele costs."""

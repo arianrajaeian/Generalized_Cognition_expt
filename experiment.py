@@ -201,11 +201,8 @@ class RogersExperiment(Experiment):
         node = self.models.RogersAgent(network=network, participant=participant)
         print("??create_node called. Network: ", network, "node: ", node)
 
-        print("??Create_node generation:", generation) # debugging purposes
-        node.generation = generation # saving it to the node
-        node.lifespan = node.network.lifespan
-        node.score = 0 # start with a score of 0
-        node.points = 0 # start with 0 points. This is for bonus calculation
+        return node
+    
     def node_post_request(self, participant, node):
         """Assign properties to the node, give it its alleles, and start the timestp"""
 
@@ -218,10 +215,6 @@ class RogersExperiment(Experiment):
                 contents=s
             )
 
-        status = json.loads(network.status)
-        status["unfailed_nodes"] += 1
-        status["ready_for_next_gen"] = "No"
-        network.status = json.dumps(status)
             g = float(min(1, rng.choice(range_g)))
             self.models.Generalization(
                 origin=node,
@@ -279,7 +272,6 @@ class RogersExperiment(Experiment):
         
         network.add_node(node)
 
-        return node
 
     def generalize(self, node): # this is where we create the actual correct answers for participants
         """Return the positions generalized between A and B for this node."""

@@ -199,8 +199,8 @@ class RogersAgent(Agent):
         social_info = [s for s in infos if s.type == "answer_correctness"]
         parents = list({s.origin for s in social_info})
         teacher_parent = random.choice(parents)
-        A_info = next((a for a in social_info if a.task == "A" and a.origin == teacher_parent), None)
-        B_info = next((b for b in social_info if b.task == "B" and b.origin == teacher_parent), None)
+        A_info = next((a for a in social_info if a.details == "A" and a.origin == teacher_parent), None)
+        B_info = next((b for b in social_info if b.details == "B" and b.origin == teacher_parent), None)
 
         experiment.inherit_social_info(node = self, A_info = A_info, B_info = B_info, parent = teacher_parent)
 
@@ -300,8 +300,8 @@ class DiscreteGeneration(DiscreteGenerational):
             parent1.connect(whom=node)
             parent1.transmit(to_whom=node, what=[Specialization, Generalization, VerticalTransmission, LearningSpeed])
             p1_answer_infos = parent1.infos(type=AnswerCorrectness)
-            p1_A_infos = [i for i in p1_answer_infos if i.task == "A"]
-            p1_B_infos = [i for i in p1_answer_infos if i.task == "B"]
+            p1_A_infos = [i for i in p1_answer_infos if i.details == "A"]
+            p1_B_infos = [i for i in p1_answer_infos if i.details == "B"]
             if len(p1_A_infos) >= 1:
                 parent1.transmit(to_whom=node, what=max(p1_A_infos, key=attrgetter("id")))
             
@@ -311,8 +311,8 @@ class DiscreteGeneration(DiscreteGenerational):
             parent2.connect(whom=node)
             parent2.transmit(to_whom=node, what=[Specialization, Generalization, VerticalTransmission, LearningSpeed])
             p2_answer_infos = parent2.infos(type=AnswerCorrectness)
-            p2_A_infos = [i for i in p2_answer_infos if i.task == "A"]
-            p2_B_infos = [i for i in p2_answer_infos if i.task == "B"]
+            p2_A_infos = [i for i in p2_answer_infos if i.details == "A"]
+            p2_B_infos = [i for i in p2_answer_infos if i.details == "B"]
             if len(p2_A_infos) >= 1:
                 parent2.transmit(to_whom=node, what=max(p2_A_infos, key=attrgetter("id")))
             

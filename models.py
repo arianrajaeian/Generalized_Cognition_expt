@@ -172,6 +172,33 @@ class DiscreteGeneration(DiscreteGenerational):
     def status(self):
         return cast(self.property5, String)
     
+    def add_node(self, node):
+        """Link to the agent from a parent based on the parent's fitness"""
+        num_agents = len(self.nodes(type=RogersAgent))
+        curr_generation = int((num_agents - 1) / float(self.generation_size))
+        node.generation = curr_generation # !!!! Will maybe want generation to come from participant?
+
+        if curr_generation == 0:
+            parent1 = None
+            parent2 = None
+            node.parents = json.dumps({"Parent_1": None, "Parent_2": None})
+        else:
+            parent1 = self._select_fit_node_from_generation(
+                node_type=RogersAgent, generation=curr_generation - 1
+            )
+            parent2 = self._select_fit_node_from_generation(
+                node_type=RogersAgent, generation=curr_generation - 1
+            )
+
+            tries = 0
+            while parent2.id == parent1.id and tries < 10: # potentially worth it
+                parent2 = self._select_fit_node_from_generation(
+                node_type=RogersAgent, generation=curr_generation - 1
+                )
+                tries += 1
+            
+            node.parents = json.dumps({"Parent_1": parent1.id, "Parent_2": parent2.id})
+
 
 
 class RogersEnvironment(Source):

@@ -172,7 +172,6 @@ class RogersExperiment(Experiment):
     
     def get_network_for_participant(self, participant):
         """Place participant in a network depending in which they have already completed"""
-        assign_properties(participant)
         key = participant.id
         networks_with_space = self.networks(full=False)
         networks_participated_in = [
@@ -181,6 +180,26 @@ class RogersExperiment(Experiment):
             .filter_by(participant_id=participant.id)
             .all()
         ]
+
+        if not networks_participated_in:
+            # if they have't started yet, assign them properties
+            assign_properties(participant)
+            participant.points = 0
+            existing_participants = [
+                ppt for ppt in self.session.query(Participant)
+                .filter_by(failed=False)
+                .all()
+            ]
+
+            ppt_generation = int((len(existing_participants) - 1) / int(self.generation_size))
+            participant.ppt_generation = ppt_generation
+
+            num_ppts_in_gen = len([p for p in existing_participants if p.ppt_generation == participant.ppt_generation and p.id != participant.id])
+            participant.generation_pos = num_ppts_in_gen + 1
+
+            if participant.generation_pos > self.generation_size:
+                return None
+
 
         legal_networks = [
             net for net in networks_with_space if net.id not in networks_participated_in
@@ -252,9 +271,6 @@ class RogersExperiment(Experiment):
             print("Node received some info")
         
         node.score = 0 # start with a score of 0
-        
-        if participant.points is None:
-            participant.points = 0
 
         self.create_timestep_info(node)
 

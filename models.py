@@ -238,6 +238,20 @@ def ppt_generation(self):
     return cast(self.property2, Integer)
 Participant.ppt_generation = ppt_generation
 
+
+@hybrid_property
+def generation_pos(self):
+    """Convert property3 to the participant's position in a generation."""
+    return int(self.property3)
+
+@generation_pos.setter
+def generation_pos(self, generation_pos):
+    self.property3 = repr(generation_pos)
+
+@generation_pos.expression
+def generation_pos(self):
+    return cast(self.property3, Integer)
+Participant.generation_pos = generation_pos
     
 
 class DiscreteGeneration(DiscreteGenerational):

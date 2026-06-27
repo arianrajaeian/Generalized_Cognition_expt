@@ -223,6 +223,21 @@ def points(self):
     """Make points queryable."""
     return cast(self.property1, Integer)
 Participant.points = points
+
+@hybrid_property
+def ppt_generation(self):
+    """Convert property2 to the participant generation."""
+    return int(self.property2)
+
+@ppt_generation.setter
+def ppt_generation(self, ppt_generation):
+    self.property2 = repr(ppt_generation)
+
+@ppt_generation.expression
+def ppt_generation(self):
+    return cast(self.property2, Integer)
+Participant.ppt_generation = ppt_generation
+
     
 
 class DiscreteGeneration(DiscreteGenerational):

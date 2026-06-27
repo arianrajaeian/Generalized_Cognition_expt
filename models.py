@@ -313,7 +313,7 @@ class DiscreteGeneration(DiscreteGenerational):
             )
 
             tries = 0
-            while parent2.id == parent1.id and tries < 10: # potentially worth it
+            while parent2.id == parent1.id and tries < 50: # potentially worth it
                 parent2 = self._select_fit_node_from_generation(
                 node_type=RogersAgent, generation=curr_generation - 1
                 )

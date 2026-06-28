@@ -1,4 +1,5 @@
 import random
+import inspect
 from operator import attrgetter
 
 from sqlalchemy import Float, Integer, String
@@ -6,7 +7,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import cast
 
 from dallinger.information import Gene, State
-from dallinger.models import Info, Participant
+from dallinger.models import Info, Participant, Transmission
 from dallinger.nodes import Agent, Source
 from dallinger.networks import DiscreteGenerational
 from . import experiment
@@ -203,6 +204,42 @@ class RogersAgent(Agent):
         B_info = next((b for b in social_info if b.details == "B" and b.origin == teacher_parent), None)
         exp = experiment.RogersExperiment()
         exp.inherit_social_info(node = self, A_info = A_info, B_info = B_info, parent = teacher_parent)
+
+    
+    def transmit(self, what=None, to_whom=None):
+        whats = set()
+        for what in self.flatten([what]):
+            if what is None:
+                what = self._what()
+            if inspect.isclass(what) and issubclass(what, Info):
+                whats.update(self.infos(type=what))
+            else:
+                whats.add(what)
+
+        to_whoms = set()
+        for to_whom in self.flatten([to_whom]):
+            if to_whom is None:
+                to_whom = self._to_whom()
+            if inspect.isclass(to_whom) and issubclass(to_whom, Node):
+                to_whoms.update(self.neighbors(direction="to", type=to_whom))
+            else:
+                to_whoms.add(to_whom)
+
+        transmissions = []
+        vectors = self.vectors(direction="outgoing")
+        for what in whats:
+            for to_whom in to_whoms:
+                try:
+                    vector = [v for v in vectors if v.destination_id == to_whom.id][0]
+                except IndexError:
+                    raise ValueError(
+                        "{} cannot transmit to {} as it does not have "
+                        "a connection to them".format(self, to_whom)
+                    )
+                t = Transmission(info=what, vector=vector)
+                transmissions.append(t)
+
+        return transmissions
 
 
 

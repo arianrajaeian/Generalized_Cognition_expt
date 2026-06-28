@@ -93,10 +93,10 @@ class OtherInfo(Info):
     __mapper_args__ = {"polymorphic_identity": "other_info"}
 
 
-class RogersAgent(Agent):
-    """The Rogers Agent."""
+class CogAgent(Agent):
+    """An Agent in the experiment."""
 
-    __mapper_args__ = {"polymorphic_identity": "rogers_agent"}
+    __mapper_args__ = {"polymorphic_identity": "cognition_agent"}
 
     @hybrid_property
     def fitness(self):
@@ -202,7 +202,7 @@ class RogersAgent(Agent):
         teacher_parent = random.choice(parents)
         A_info = next((a for a in social_info if a.details == "A" and a.origin == teacher_parent), None)
         B_info = next((b for b in social_info if b.details == "B" and b.origin == teacher_parent), None)
-        exp = experiment.RogersExperiment()
+        exp = experiment.GenCogExperiment()
         exp.inherit_social_info(node = self, A_info = A_info, B_info = B_info, parent = teacher_parent)
 
     
@@ -334,7 +334,7 @@ class DiscreteGeneration(DiscreteGenerational):
     
     def add_node(self, node):
         """Link to the agent from a parent based on the parent's fitness"""
-        num_agents = len(self.nodes(type=RogersAgent))
+        num_agents = len(self.nodes(type=CogAgent))
         curr_generation = int((num_agents - 1) / float(self.generation_size))
         node.generation = curr_generation # !!!! Will maybe want generation to come from participant?
 
@@ -344,16 +344,16 @@ class DiscreteGeneration(DiscreteGenerational):
             node.parents = json.dumps({"Parent_1": None, "Parent_2": None})
         else:
             parent1 = self._select_fit_node_from_generation(
-                node_type=RogersAgent, generation=curr_generation - 1
+                node_type=CogAgent, generation=curr_generation - 1
             )
             parent2 = self._select_fit_node_from_generation(
-                node_type=RogersAgent, generation=curr_generation - 1
+                node_type=CogAgent, generation=curr_generation - 1
             )
 
             tries = 0
             while parent2.id == parent1.id and tries < 50: # potentially worth it
                 parent2 = self._select_fit_node_from_generation(
-                node_type=RogersAgent, generation=curr_generation - 1
+                node_type=CogAgent, generation=curr_generation - 1
                 )
                 tries += 1
             
@@ -406,10 +406,10 @@ class DiscreteGeneration(DiscreteGenerational):
 
 
 
-class RogersEnvironment(Source):
-    """The Rogers environment."""
+class ExpEnvironment(Source):
+    """The environment in the experiment."""
 
-    __mapper_args__ = {"polymorphic_identity": "rogers_environment"}
+    __mapper_args__ = {"polymorphic_identity": "experiment_environment"}
 
     
 
@@ -418,5 +418,5 @@ class RogersEnvironment(Source):
         return State
 
     def _contents(self):
-        """Contents of created infos is either proportion or 1-proportion by default."""
+        
         return None

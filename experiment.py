@@ -1,4 +1,4 @@
-"""Replicate Rogers' paradox by simulating evolution with people."""
+"""Evolution of generalized cogniton and learning. Rogers experiment demo was used as a template."""
 
 import random
 
@@ -60,7 +60,7 @@ def extra_parameters():
         config.register(key, types[key])
 
 
-class RogersExperiment(Experiment):
+class GenCogExperiment(Experiment):
     """The experiment class."""
 
     def __init__(self, session=None, no_configure=False):
@@ -73,11 +73,11 @@ class RogersExperiment(Experiment):
 
         Finally, setup() is called.
         """
-        super(RogersExperiment, self).__init__(session, no_configure=no_configure)
+        super(GenCogExperiment, self).__init__(session, no_configure=no_configure)
         from . import models
 
         self.models = models
-        self.known_classes["RogersAgent"] = self.models.RogersAgent
+        self.known_classes["CogAgent"] = self.models.CogAgent
         self.known_classes["TaskAnswer"] = self.models.TaskAnswer
         self.known_classes["FeedbackInfo"] = self.models.FeedbackInfo
         self.known_classes["TimestepInfo"] = self.models.TimestepInfo
@@ -108,13 +108,13 @@ class RogersExperiment(Experiment):
 
     def setup(self):
         """First time setup."""
-        super(RogersExperiment, self).setup()
+        super(GenCogExperiment, self).setup()
 
         for net in self.networks():
             net.max_size = net.max_size + 1  # make room for environment node.
             net.complexity = p_values[int(net.id) - 1]
             net.lifespan = lifespan_values[int(net.id) - 1]
-            env = self.models.RogersEnvironment(network=net)
+            env = self.models.ExpEnvironment(network=net)
             self.models.CorrectSequenceA( # generate a canonical sequence for the whole network
             origin=env,
             contents=json.dumps(self.random_sequence(length=11)), # store it as info
@@ -135,7 +135,7 @@ class RogersExperiment(Experiment):
 
     def correct_sequence_for_task(self, node, task): 
         """Return the correct sequence for task A or B in for a network."""
-        env = node.network.nodes(type=self.models.RogersEnvironment)[0]
+        env = node.network.nodes(type=self.models.ExpEnvironment)[0]
         if task == "A":
             info = max(
             env.infos(type=self.models.CorrectSequenceA),
@@ -216,7 +216,7 @@ class RogersExperiment(Experiment):
     def create_node(self, network, participant):
         """Make a new node for participants."""
   
-        node = self.models.RogersAgent(network=network, participant=participant)
+        node = self.models.CogAgent(network=network, participant=participant)
         print("??create_node called. Network: ", network, "node: ", node)
 
         return node
@@ -457,7 +457,7 @@ class RogersExperiment(Experiment):
                 status = json.loads(node.network.status)
                 status["completed_nodes"] +=1
                 generation = node.generation
-                network_nodes = node.network.nodes(type=self.models.RogersAgent)
+                network_nodes = node.network.nodes(type=self.models.CogAgent)
                 horizontal_nodes = [n for n in network_nodes if n.generation == generation and not n.failed and n.fitness is not None]
                 if len(horizontal_nodes) < self.generation_size:
                     status["ready_for_next_gen"] = "No"

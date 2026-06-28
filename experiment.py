@@ -7,7 +7,6 @@ import six
 from dallinger.config import get_config
 from dallinger.experiment import Experiment
 from dallinger.models import Node, Participant
-from dallinger.networks import DiscreteGenerational
 from dallinger.experiment_server.experiment_server import assign_properties
 
 from operator import attrgetter

@@ -237,6 +237,7 @@ class RogersAgent(Agent):
                         "a connection to them".format(self, to_whom)
                     )
                 t = Transmission(info=what, vector=vector)
+                t.details = t.info.type
                 transmissions.append(t)
 
         return transmissions

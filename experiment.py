@@ -5,7 +5,7 @@ import random
 import six
 
 from dallinger.config import get_config
-from dallinger.experiment import Experiment
+from dallinger.experiment import Experiment, scheduled_task
 from dallinger.models import Node, Participant
 from dallinger.experiment_server.experiment_server import assign_properties
 
@@ -715,3 +715,18 @@ class GenCogExperiment(Experiment):
                 print("Node ", node.id, " for Participant ", participant.id, " has bad data")
                 return False
         return True
+    
+
+    @scheduled_task("interval", minutes=1)
+    @classmethod
+    def participant_check(self):
+        participants = [ppt for ppt in self.session.query(Participant).all()]
+        bad_status = [
+            "abandoned", "bad_data", "returned", "replaced", "did_not_attend", "missing_notification", "overrecruited", "overrecruited",
+            "rejected", "screened_out"
+        ]
+        for p in participants:
+            if p.status in bad_status:
+                for n in p.nodes():
+                    if n.failed != True:
+                        n.fail()

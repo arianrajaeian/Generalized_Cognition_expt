@@ -254,10 +254,15 @@ class CogAgent(Agent):
         if self.failed:
             raise ValueError("{} cannot mutate as it has failed.".format(self))
 
-        from .transformations import Mutation
+        from dallinger.transformations import Mutation
 
         info_out = type(info_in)(origin=self, contents=info_in._mutated_contents())
-        Mutation(info_in=info_in, info_out=info_out)
+        m = Mutation(info_in=info_in, info_out=info_out)
+        m.details = json.dumps({
+            "Info_type": m.info_in.type,
+            "parent_value": m.info_in.contents,
+            "offspring_value": m.info_out.contents
+        })
 
 
 

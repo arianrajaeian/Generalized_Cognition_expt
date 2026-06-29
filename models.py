@@ -241,6 +241,23 @@ class CogAgent(Agent):
                 transmissions.append(t)
 
         return transmissions
+    
+
+    def mutate(self, info_in):
+        """Replicate an info + mutation.
+
+        To mutate an info, that info must have a method called
+        ``_mutated_contents``.
+
+        """
+        # check self is not failed
+        if self.failed:
+            raise ValueError("{} cannot mutate as it has failed.".format(self))
+
+        from .transformations import Mutation
+
+        info_out = type(info_in)(origin=self, contents=info_in._mutated_contents())
+        Mutation(info_in=info_in, info_out=info_out)
 
 
 

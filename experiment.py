@@ -707,10 +707,8 @@ class GenCogExperiment(Experiment):
     
     def data_check(self, participant):
         print("??checking data for Participant ", participant.id)
-        participant_nodes = Node.query.filter_by(
-            participant_id=participant.id).all()
 
-        for node in participant_nodes:
+        for node in participant.nodes():
             if node.failed:
                 return False
             if len(node.infos(type=self.models.AnswerCorrectness)) != int(node.lifespan):

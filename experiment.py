@@ -8,6 +8,7 @@ from dallinger.config import get_config
 from dallinger.experiment import Experiment, scheduled_task
 from dallinger.models import Node, Participant
 from dallinger.experiment_server.experiment_server import assign_properties
+from dallinger import db
 
 from operator import attrgetter
 
@@ -169,6 +170,50 @@ class GenCogExperiment(Experiment):
         
         return network
     
+    def create_participant(
+        self,
+        worker_id,
+        hit_id,
+        assignment_id,
+        mode,
+        recruiter_name=None,
+        fingerprint_hash=None,
+        entry_information=None,
+    ):
+        if not recruiter_name:
+            recruiter = self.recruiter
+            if recruiter:
+                recruiter_name = recruiter.nickname
+
+        participant = self.participant_constructor(
+            recruiter_id=recruiter_name,
+            worker_id=worker_id,
+            assignment_id=assignment_id,
+            hit_id=hit_id,
+            mode=mode,
+            fingerprint_hash=fingerprint_hash,
+            entry_information=entry_information,
+        )
+
+        print("creating participant")
+        assign_properties(participant)
+        participant.points = 0
+        existing_participants = [
+            ppt for ppt in self.session.query(Participant)
+            .filter_by(failed=False)
+            .all()
+            if ppt.ppt_generation is not None
+        ]
+
+        ppt_generation = int((len(existing_participants) - 1) / int(self.generation_size))
+        participant.ppt_generation = ppt_generation
+
+        num_ppts_in_gen = len([p for p in existing_participants if p.ppt_generation == participant.ppt_generation and p.id != participant.id])
+        participant.generation_pos = num_ppts_in_gen + 1
+        db.session.add(participant)
+        return participant
+    
+
     def get_network_for_participant(self, participant):
         """Place participant in a network depending in which they have already completed"""
         key = participant.id
@@ -181,21 +226,6 @@ class GenCogExperiment(Experiment):
         ]
 
         if not networks_participated_in:
-            # if they have't started yet, assign them properties
-            assign_properties(participant)
-            participant.points = 0
-            existing_participants = [
-                ppt for ppt in self.session.query(Participant)
-                .filter_by(failed=False)
-                .all()
-            ]
-
-            ppt_generation = int((len(existing_participants) - 1) / int(self.generation_size))
-            participant.ppt_generation = ppt_generation
-
-            num_ppts_in_gen = len([p for p in existing_participants if p.ppt_generation == participant.ppt_generation and p.id != participant.id])
-            participant.generation_pos = num_ppts_in_gen + 1
-
             if participant.generation_pos > self.generation_size:
                 return None
 

@@ -10,7 +10,6 @@ from dallinger.information import Gene, State
 from dallinger.models import Info, Participant, Transmission
 from dallinger.nodes import Agent, Source
 from dallinger.networks import DiscreteGenerational
-from . import experiment
 
 import json
 
@@ -202,7 +201,8 @@ class CogAgent(Agent):
         teacher_parent = random.choice(parents)
         A_info = next((a for a in social_info if a.details == "A" and a.origin == teacher_parent), None)
         B_info = next((b for b in social_info if b.details == "B" and b.origin == teacher_parent), None)
-        exp = experiment.GenCogExperiment()
+        from .experiment import GenCogExperiment
+        exp = GenCogExperiment()
         exp.inherit_social_info(node = self, A_info = A_info, B_info = B_info, parent = teacher_parent)
 
     

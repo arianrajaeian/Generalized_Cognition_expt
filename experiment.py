@@ -7,7 +7,6 @@ import six
 from dallinger.config import get_config
 from dallinger.experiment import Experiment, scheduled_task
 from dallinger.models import Node, Participant
-from dallinger.experiment_server.experiment_server import assign_properties
 from dallinger import db
 
 from operator import attrgetter
@@ -196,6 +195,7 @@ class GenCogExperiment(Experiment):
         )
 
         print("creating participant")
+        from dallinger.experiment_server.experiment_server import assign_properties
         assign_properties(participant)
         participant.points = 0
         existing_participants = [

@@ -205,7 +205,7 @@ class GenCogExperiment(Experiment):
             if ppt.ppt_generation is not None
         ]
 
-        ppt_generation = int((len(existing_participants) - 1) / int(self.generation_size))
+        ppt_generation = int(len(existing_participants) / int(self.generation_size))
         participant.ppt_generation = ppt_generation
 
         num_ppts_in_gen = len([p for p in existing_participants if p.ppt_generation == participant.ppt_generation and p.id != participant.id])

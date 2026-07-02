@@ -261,7 +261,8 @@ class CogAgent(Agent):
         m.details = json.dumps({
             "Info_type": m.info_in.type,
             "parent_value": m.info_in.contents,
-            "offspring_value": m.info_out.contents
+            "offspring_value": m.info_out.contents,
+            "transmitting_parent": m.info_in.origin_id
         })
 
 

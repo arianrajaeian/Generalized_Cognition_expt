@@ -554,7 +554,7 @@ function submitTimestep() {
     return;
   }
 
-  submittedTimesteps.add(currentTimestep);
+  submittedTimesteps.push(currentTimestep);
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(payload),

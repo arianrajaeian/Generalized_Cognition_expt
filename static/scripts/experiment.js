@@ -547,7 +547,7 @@ function submitTimestep() {
 
   $("#submit").prop("disabled", true);
 
-  if (submittedTimesteps.has(currentTimestep)) {
+  if (submittedTimesteps.includes(currentTimestep)) {
     $("#submit").hide();
     $("#continue").show(); 
     renderGrid();

@@ -26,6 +26,8 @@ var showingFeedback = false;
 var currentRound = 1;
 var TotalRounds = 5; // will want this to equal the number of available networks
 
+var submittedTimesteps = [];
+
 
 
 
@@ -544,6 +546,15 @@ function submitTimestep() {
   };
 
   $("#submit").prop("disabled", true);
+
+  if (submittedTimesteps.has(currentTimestep)) {
+    $("#submit").hide();
+    $("#continue").show(); 
+    renderGrid();
+    return;
+  }
+
+  submittedTimesteps.add(currentTimestep);
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(payload),

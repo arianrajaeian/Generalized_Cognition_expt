@@ -194,6 +194,11 @@ class GenCogExperiment(Experiment):
             entry_information=entry_information,
         )
 
+
+        if participant.fingerprint_hash is None:
+            raise ValueError("Missing fingerprint_hash")
+        
+
         print("??creating participant")
         from dallinger.experiment_server.experiment_server import assign_properties
         assign_properties(participant)

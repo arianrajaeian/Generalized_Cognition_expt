@@ -194,7 +194,7 @@ class GenCogExperiment(Experiment):
             entry_information=entry_information,
         )
 
-        print("creating participant")
+        print("??creating participant")
         from dallinger.experiment_server.experiment_server import assign_properties
         assign_properties(participant)
         participant.points = 0
@@ -227,6 +227,7 @@ class GenCogExperiment(Experiment):
 
         if not networks_participated_in:
             if participant.generation_pos > self.generation_size:
+                print("??Overrecruiting")
                 return None
 
 
@@ -297,7 +298,6 @@ class GenCogExperiment(Experiment):
 
         else:
             node.receive()
-            print("Node received some info")
         
         node.score = 0 # start with a score of 0
 
@@ -742,7 +742,7 @@ class GenCogExperiment(Experiment):
             if node.failed:
                 return False
             if len(node.infos(type=self.models.AnswerCorrectness)) != int(node.lifespan):
-                print("Node ", node.id, " for Participant ", participant.id, " has bad data")
+                print("??Node ", node.id, " for Participant ", participant.id, " has bad data")
                 return False
         return True
     

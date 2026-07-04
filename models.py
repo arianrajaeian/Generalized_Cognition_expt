@@ -164,7 +164,7 @@ class CogAgent(Agent):
 
     @parents.setter
     def parents(self, parents):
-        self.property5 = repr(parents)
+        self.property5 = parents
 
     @parents.expression
     def parents(self):

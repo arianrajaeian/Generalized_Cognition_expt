@@ -26,6 +26,8 @@ var showingFeedback = false;
 var currentRound = 1;
 var TotalRounds = 5; // will want this to equal the number of available networks
 
+var submittedTimesteps = [];
+
 
 
 
@@ -453,8 +455,17 @@ function initializeTimestep() {
   var timestepInfo = timestepInfos[timestepInfos.length - 1];
   
   var payload = JSON.parse(timestepInfo.contents);
+
+  if (payload.timestep !== currentTimestep) {
+    for (var i = timestepInfos.length - 1; i >= 0; i--) {
+      var timestepCandidate = JSON.parse(timestepInfos[i].contents);
+      if (timestepCandidate.timestep === currentTimestep) {
+        payload = timestepCandidate;
+        break;
+      }
+    }
+  }
   
-  console.log("Loaded timestep payload:", payload);
   
   if (!payload.task || payload.toSolve === undefined) {
   console.log("Invalid timestep payload:", payload);
@@ -545,50 +556,82 @@ function submitTimestep() {
 
   $("#submit").prop("disabled", true);
 
+  if (submittedTimesteps.includes(currentTimestep)) {
+    $("#submit").hide();
+    $("#continue").show(); 
+    renderGrid();
+    return;
+  }
+
+  submittedTimesteps.push(currentTimestep);
+
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(payload),
     info_type: "TaskAnswer"
   })
   .done(function() {
-    console.log("TaskAnswer saved successfully");
+    showFeedback();
 
-    dallinger.getInfos(my_node_id).done(function(resp) {
-      var infos = resp.infos;
-      
-      var feedbackInfos = infos.filter(function(info) {
-      return info.type === "feedback_info";
-      });
-      
-      if (feedbackInfos.length === 0) {
-      console.log("No feedback found");
-      $("#submit").prop("disabled", false);
-      return;
-      }
-      
-      var feedbackInfo = feedbackInfos[feedbackInfos.length - 1];
-      var feedback = JSON.parse(feedbackInfo.contents);
-      
-      feedbackCorrectness = feedback.feedback_correctness || {};
-      generalizedPositions = feedback.generalized_positions || [];
-      showingFeedback = true;
-
-      if (Object.keys(feedbackCorrectness).length === 0) {
-        if (task === "A") {
-          $("#feedback-A").html("No feedback received")
-        } else {
-          $("#feedback-B").html("No feedback received")
-        }
-      }
-      
-      $("#submit").hide();
-      $("#continue").show();
-      
-      renderGrid();
-      });
+    
   })
   .fail(function(err) {
     console.log("SUBMIT FAILED:", err);
     $("#submit").prop("disabled", false);
   });
+}
+
+
+function showFeedback() {
+  dallinger.getInfos(my_node_id).done(function(resp) {
+    var infos = resp.infos;
+    
+    var feedbackInfos = infos.filter(function(info) {
+    return info.type === "feedback_info";
+    });
+    
+    if (feedbackInfos.length === 0) {
+      setTimeout(showFeedback, 200);
+      return;
+    }
+    
+    var feedbackInfo = feedbackInfos[feedbackInfos.length - 1];
+    var feedback = JSON.parse(feedbackInfo.contents);
+
+    feedbackTimestep = feedback.timestep;
+
+    if (feedbackTimestep !== currentTimestep) {
+      for (var i = feedbackInfos.length - 1; i >= 0; i--) {
+        var feedbackCandidate = JSON.parse(feedbackInfos[i].contents);
+        if (feedbackCandidate.timestep === currentTimestep) {
+          feedback = feedbackCandidate;
+          break;
+        }
+
+      }
+    }
+       
+    if (feedback.timestep !== currentTimestep) {
+      setTimeout(showFeedback, 200);
+      return;
+    }
+    
+    feedbackCorrectness = feedback.feedback_correctness || {};
+    generalizedPositions = feedback.generalized_positions || [];
+    showingFeedback = true;
+
+    if (Object.keys(feedbackCorrectness).length === 0) {
+      if (task === "A") {
+        $("#feedback-A").html("No feedback received")
+      } else {
+        $("#feedback-B").html("No feedback received")
+      }
+    }
+    
+    $("#submit").hide();
+    $("#continue").show();
+    
+    renderGrid();
+    });
+
 }
 

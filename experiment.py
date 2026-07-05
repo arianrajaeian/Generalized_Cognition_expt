@@ -1,13 +1,13 @@
-"""Replicate Rogers' paradox by simulating evolution with people."""
+"""Evolution of generalized cogniton and learning. Rogers experiment demo was used as a template."""
 
 import random
 
 import six
 
 from dallinger.config import get_config
-from dallinger.experiment import Experiment
+from dallinger.experiment import Experiment, scheduled_task
 from dallinger.models import Node, Participant
-from dallinger.networks import DiscreteGenerational
+from dallinger import db
 
 from operator import attrgetter
 
@@ -60,7 +60,7 @@ def extra_parameters():
         config.register(key, types[key])
 
 
-class RogersExperiment(Experiment):
+class GenCogExperiment(Experiment):
     """The experiment class."""
 
     def __init__(self, session=None, no_configure=False):
@@ -73,18 +73,22 @@ class RogersExperiment(Experiment):
 
         Finally, setup() is called.
         """
-        super(RogersExperiment, self).__init__(session, no_configure=no_configure)
+        super(GenCogExperiment, self).__init__(session, no_configure=no_configure)
         from . import models
 
         self.models = models
+        self.known_classes["CogAgent"] = self.models.CogAgent
         self.known_classes["TaskAnswer"] = self.models.TaskAnswer
-        self.known_classes["NodeAlleles"] = self.models.NodeAlleles
         self.known_classes["FeedbackInfo"] = self.models.FeedbackInfo
         self.known_classes["TimestepInfo"] = self.models.TimestepInfo
         self.known_classes["OtherInfo"] = self.models.OtherInfo
         self.known_classes["AnswerCorrectness"] = self.models.AnswerCorrectness
         self.known_classes["ParentInfo"] = self.models.ParentInfo
         self.known_classes["CulturalInheritance"] = self.models.CulturalInheritance
+        self.known_classes["Specialization"] = self.models.Specialization
+        self.known_classes["Generalization"] = self.models.Generalization
+        self.known_classes["VerticalTransmission"] = self.models.VerticalTransmission
+        self.known_classes["LearningSpeed"] = self.models.LearningSpeed
 
         if session and not self.networks():
             self.setup()
@@ -96,7 +100,7 @@ class RogersExperiment(Experiment):
         self.generations = config.get("generations")
         self.initial_recruitment_size = self.generation_size
 
-    @property # probably not useful
+    @property 
     def public_properties(self):
         return {
             "experiment_repeats": self.experiment_repeats,
@@ -104,18 +108,18 @@ class RogersExperiment(Experiment):
 
     def setup(self):
         """First time setup."""
-        super(RogersExperiment, self).setup()
+        super(GenCogExperiment, self).setup()
 
         for net in self.networks():
             net.max_size = net.max_size + 1  # make room for environment node.
             net.complexity = p_values[int(net.id) - 1]
             net.lifespan = lifespan_values[int(net.id) - 1]
-            env = self.models.RogersEnvironment(network=net)
-            seq_a = self.models.CorrectSequenceA( # generate a canonical sequence for the whole network
+            env = self.models.ExpEnvironment(network=net)
+            self.models.CorrectSequenceA( # generate a canonical sequence for the whole network
             origin=env,
             contents=json.dumps(self.random_sequence(length=11)), # store it as info
             )
-            seq_b = self.models.CorrectSequenceB( 
+            self.models.CorrectSequenceB( 
             origin=env,
             contents=json.dumps(self.random_sequence(length=11)),
             )
@@ -131,7 +135,7 @@ class RogersExperiment(Experiment):
 
     def correct_sequence_for_task(self, node, task): 
         """Return the correct sequence for task A or B in for a network."""
-        env = node.network.nodes(type=self.models.RogersEnvironment)[0]
+        env = node.network.nodes(type=self.models.ExpEnvironment)[0]
         if task == "A":
             info = max(
             env.infos(type=self.models.CorrectSequenceA),
@@ -165,6 +169,56 @@ class RogersExperiment(Experiment):
         
         return network
     
+    def create_participant(
+        self,
+        worker_id,
+        hit_id,
+        assignment_id,
+        mode,
+        recruiter_name=None,
+        fingerprint_hash=None,
+        entry_information=None,
+    ):
+        if not recruiter_name:
+            recruiter = self.recruiter
+            if recruiter:
+                recruiter_name = recruiter.nickname
+
+        participant = self.participant_constructor(
+            recruiter_id=recruiter_name,
+            worker_id=worker_id,
+            assignment_id=assignment_id,
+            hit_id=hit_id,
+            mode=mode,
+            fingerprint_hash=fingerprint_hash,
+            entry_information=entry_information,
+        )
+
+
+        if participant.fingerprint_hash is None:
+            raise ValueError("Missing fingerprint_hash")
+        
+
+        print("??creating participant")
+        from dallinger.experiment_server.experiment_server import assign_properties
+        assign_properties(participant)
+        participant.points = 0
+        existing_participants = [
+            ppt for ppt in self.session.query(Participant)
+            .filter_by(failed=False)
+            .all()
+            if ppt.ppt_generation is not None
+        ]
+
+        ppt_generation = int(len(existing_participants) / int(self.generation_size))
+        participant.ppt_generation = ppt_generation
+
+        num_ppts_in_gen = len([p for p in existing_participants if p.ppt_generation == participant.ppt_generation and p.id != participant.id])
+        participant.generation_pos = num_ppts_in_gen + 1
+        db.session.add(participant)
+        return participant
+    
+
     def get_network_for_participant(self, participant):
         """Place participant in a network depending in which they have already completed"""
         key = participant.id
@@ -175,6 +229,12 @@ class RogersExperiment(Experiment):
             .filter_by(participant_id=participant.id)
             .all()
         ]
+
+        if not networks_participated_in:
+            if participant.generation_pos > self.generation_size:
+                print("??Overrecruiting")
+                return None
+
 
         legal_networks = [
             net for net in networks_with_space if net.id not in networks_participated_in
@@ -191,46 +251,77 @@ class RogersExperiment(Experiment):
 
     def create_node(self, network, participant):
         """Make a new node for participants."""
-        alleles = {}
-
-        generation = self.generation_for_new_node(network)        
-        node = self.models.RogersAgent(network=network, participant=participant)
+  
+        node = self.models.CogAgent(network=network, participant=participant)
         print("??create_node called. Network: ", network, "node: ", node)
 
-        print("??Create_node generation:", generation) # debugging purposes
-        node.generation = generation # saving it to the node
-        node.lifespan = node.network.lifespan
+        return node
+    
+    def node_post_request(self, participant, node):
+        """Assign properties to the node, give it its alleles, and start the timestp"""
+
+        if node.generation == 0:
+            rng = np.random.default_rng()
+            
+            s = int(min(5, rng.choice(range_s)))
+            self.models.Specialization(
+                origin=node,
+                contents=s
+            )
+
+            g = float(min(1, rng.choice(range_g)))
+            self.models.Generalization(
+                origin=node,
+                contents=g
+            )
+
+            r = float(min(1, rng.choice(range_r)))
+            self.models.LearningSpeed(
+                origin=node,
+                contents=r
+            )
+
+            v = float(min(1, rng.choice(range_v)))
+            self.models.VerticalTransmission(
+                origin=node,
+                contents=v
+            )
+
+
+            cultural_info = {
+                "transmitted_positions_a": [],
+                "transmitted_answers_a": {},
+                "transmitted_positions_b": [],
+                "transmitted_answers_b": {}
+            }
+            # they won't get cultural inheritnac since they're not receiving info (update creates their cultural inheritanc info)
+            # so we create it here manually
+            self.models.CulturalInheritance(
+                origin=node,
+                contents=json.dumps(cultural_info) # record what social info they see 
+            ) 
+
+        else:
+            node.receive()
+        
         node.score = 0 # start with a score of 0
-        node.points = 0 # start with 0 points. This is for bonus calculation
+
+        self.create_timestep_info(node, 1)
+
+    
+
+    def add_node_to_network(self, node, network):
+        """Add participant's node to a network."""
+
+        node.lifespan = network.lifespan
 
         status = json.loads(network.status)
         status["unfailed_nodes"] += 1
         status["ready_for_next_gen"] = "No"
         network.status = json.dumps(status)
+        
+        network.add_node(node)
 
-        parents = self.choose_parents(network, generation)
-        print("??create_node chosen parents", parents) # debugging
-
-        self.models.ParentInfo(
-            origin=node,
-            contents=json.dumps(parents) # record info of who their parents were
-        )
-
-        alleles = self.inherit_alleles(network, generation, parents) # inherit parent alleles
-
-        self.models.NodeAlleles(
-            origin=node,
-            contents=json.dumps(alleles) # store alleles
-        )
-
-        CulturalInheritance = self.inherit_social_info(node, parents)
-
-        self.models.CulturalInheritance(
-            origin=node,
-            contents=json.dumps(CulturalInheritance) # record what social info they see 
-        )
-
-        return node
 
     def generalize(self, node): # this is where we create the actual correct answers for participants
         """Return the positions generalized between A and B for this node."""
@@ -250,195 +341,71 @@ class RogersExperiment(Experiment):
 
         return seq_a, seq_b, list(range(n_generalized))
 
-    
-    def generation_for_new_node(self, network):
-        """Return generation index for the next participant node in this network."""
-        existing_agents = network.nodes(type=self.models.RogersAgent)
-        return len(existing_agents) // self.generation_size 
-
-
-    def parent_pool(self, network, generation):
-        """Return eligible parents from the previous generation in this network."""
-        if generation == 0:
-            return []
-
-        prev_gen = generation - 1
-        return self.models.RogersAgent.query.filter_by(
-            network_id=network.id,
-            generation=prev_gen,
-            failed=False,
-        ).all()
-
-
-    def sample_parent(self, parents):
-        """Sample one parent weighted by fitness."""
-        if not parents:
-            return None
-
-        weights = []
-        for p in parents:
-            if p.fitness is None:
-                weights.append(0.0)
-            else:
-                weights.append(max(0.0, float(p.fitness)))
-
-        if sum(weights) == 0:
-            return random.choice(parents)
-
-        return random.choices(parents, weights=weights, k=1)[0]
-
 
     def node_alleles(self, node):
         """Return allele dict for a node."""
-        info = max(node.infos(type=self.models.NodeAlleles), key=attrgetter("id"))
-        return json.loads(info.contents)
+        s_info = max(node.infos(type=self.models.Specialization), key=attrgetter("id"))
+        s = int(s_info.contents)
+
+        g_info = max(node.infos(type=self.models.Generalization), key=attrgetter("id"))
+        g = float(g_info.contents)
+
+        v_info = max(node.infos(type=self.models.VerticalTransmission), key=attrgetter("id"))
+        v = float(v_info.contents)
+
+        r_info = max(node.infos(type=self.models.LearningSpeed), key=attrgetter("id"))
+        r = float(r_info.contents)
+
+        return {
+            "s": s,
+            "g": g,
+            "r": r,
+            "v": v
+        }
 
     def node_social_info(self, node):
         """Return social info dict for a node."""
         info = max(node.infos(type=self.models.CulturalInheritance), key=attrgetter("id"))
         return json.loads(info.contents)
 
-    def mutate_s(self, s_value, mutation_rate=0.05, s_inc=1):
-        """Discrete mutation for specialization"""
-        draw = random.random()
+    
 
-        if draw < mutation_rate:
-            s_value -= s_inc
-        elif draw > 1.0 - mutation_rate:
-            s_value += s_inc
+    def inherit_social_info(self, node, A_info, B_info, parent):
+        
+        parent_alleles = self.node_alleles(parent)
+        parent_s = int(parent_alleles["s"])
+        
+        if A_info is None:
+            parent_correctness_a = {}
+            par_to_solve_a = 6 - parent_s
+            for i in range(par_to_solve_a):
+                parent_correctness_a[i] = None
 
-        return max(-5, min(5, s_value))
+            for i in range(par_to_solve_a, 11):
+                parent_correctness_a[i] = True
 
-
-    def mutate(self, value, sd):
-        """mutate according to normal distribution. Used for g, v, and r."""
-        value = value + random.gauss(0, sd)
-        return max(0.0, min(1.0, value))
-
-
-    def inherit_alleles(self, network, generation, parents):
-        """Create offspring alleles using sexual reproduction."""
-        print("??inherit alleles called")
-        rng = np.random.default_rng()
-        # Generation 0 defaults
-        if generation == 0:
-            return {
-                "s": int(min(5, rng.choice(range_s))),
-                "g": float(min(1, rng.choice(range_g))),
-                "r": float(min(1, rng.choice(range_r))),
-                "v": float(min(1, rng.choice(range_v))),
-            }
-
-        parent1 = None
-        parent2 = None
-
-
-        if parents["Parent1_id"] is not None:
-            parent1 = self.models.RogersAgent.query.get(parents["Parent1_id"])
-        if parents["Parent2_id"] is not None:
-            parent2 = self.models.RogersAgent.query.get(parents["Parent2_id"])
-
-        if parent1 is None or parent2 is None:
-            return{
-                "s": int(min(5, rng.choice(range_s))),
-                "g": float(min(1, rng.choice(range_g))),
-                "r": float(min(1, rng.choice(range_r))),
-                "v": float(min(1, rng.choice(range_v))),
-            }
-
-        a1 = self.node_alleles(parent1)
-        a2 = self.node_alleles(parent2)
-
-        # for each allele, inherit from one of the parents
-        s_parent = random.choice([a1, a2])
-        g_parent = random.choice([a1, a2])
-        r_parent = random.choice([a1, a2])
-        v_parent = random.choice([a1, a2])
-
-        child_s = int(s_parent["s"]) 
-        child_g = float(g_parent["g"])
-        child_r = float(r_parent["r"])
-        child_v = float(v_parent["v"])
-
-        # Mutate
-        child_s = self.mutate_s(child_s, mutation_rate, s_inc)
-        child_g = self.mutate(child_g, g_inc)
-        child_r = self.mutate(child_r, r_inc)
-        child_v = self.mutate(child_v, v_inc)
-
-        # Cultural Inheritance
-
-
-        return {
-            "s": min(5, child_s),
-            "g": min(1, child_g),
-            "r": min(1, child_r),
-            "v": min(1, child_v),
-            "parent_s": int(s_parent["s"]),
-            "parent_g": float(g_parent["g"]),
-            "parent_r": float(r_parent["r"]),
-            "parent_v": float(v_parent["v"])
-        }  
-
-
-    def choose_parents(self, network, generation):
-        print("??choose_parents generation:", generation) # debugging
-        if generation == 0:
-            return {
-                "Parent1_id": None,
-                "Parent2_id": None
-            } 
-          
         else:
-            parents = self.parent_pool(network, generation)
-        
-            parent1 = self.sample_parent(parents)
-            parent2 = self.sample_parent(parents)
+            A_info_full = json.loads(A_info.contents)
+            A_correctness = A_info_full["Answer_correctness"]
+            parent_correctness_a = {}
+            for i in range(len(A_correctness)):
+                parent_correctness_a[i] = A_correctness[i]
 
-            tries = 0
-            while parent2.id == parent1.id and tries < 10: # potentially worth it
-                parent2 = self.sample_parent(parents)
-                tries += 1
-        
-            return {
-                "Parent1_id": parent1.id,
-                "Parent2_id": parent2.id
-            }
+        if B_info is None:
+            parent_correctness_b = {}
+            par_to_solve_b = 6 + parent_s
+            for i in range(par_to_solve_b):
+                parent_correctness_b[i] = None
 
+            for i in range(par_to_solve_b, 11):
+                parent_correctness_b[i] = True
 
-    def inherit_social_info(self, node, parents):
-        parent1 = None
-        parent2 = None
-        if parents["Parent1_id"] is not None:
-            parent1 = self.models.RogersAgent.query.get(parents["Parent1_id"])
-        if parents["Parent2_id"] is not None:
-            parent2 = self.models.RogersAgent.query.get(parents["Parent2_id"])
-        
-        possible_parents = [p for p in [parent1, parent2] if p is not None]
-        if len(possible_parents) == 0:
-            return {
-                "transmitted_positions_a": [],
-                "transmitted_answers_a": {},
-                "transmitted_positions_b": [],
-                "transmitted_answers_b": {}
-            }
-
-        parent = random.choice(possible_parents) # all social info comes from the same parent right now
-        if parent is None:
-            return {
-                "transmitted_positions_a": [],
-                "transmitted_answers_a": {},
-                "transmitted_positions_b": [],
-                "transmitted_answers_b": {}
-            }
-
-        parent_answer_info_a = self.last_task_answer(parent, "A")
-        parent_answer_info_b = self.last_task_answer(parent, "B")
-
-
-        parent_correctness_a = self.parent_correctness_by_position(parent, "A", parent_answer_info_a)
-        parent_correctness_b = self.parent_correctness_by_position(parent, "B", parent_answer_info_b)
-
+        else:
+            B_info_full = json.loads(B_info.contents)
+            B_correctness = B_info_full["Answer_correctness"]
+            parent_correctness_b = {}
+            for i in range(len(B_correctness)):
+                parent_correctness_b[i] = B_correctness[i]
         
         alleles = self.node_alleles(node)
         v = float(alleles["v"])
@@ -489,7 +456,7 @@ class RogersExperiment(Experiment):
                     )
 
 
-        return {
+        cultural_inheritance =  {
             "transmitted_positions_a": transmitted_positions_a,
             "transmitted_answers_a": transmitted_answers_a,
             "transmitted_positions_b": transmitted_positions_b,
@@ -497,7 +464,13 @@ class RogersExperiment(Experiment):
             "teacher_parent": parent.id
         }
 
+        self.models.CulturalInheritance(
+            origin=node,
+            contents=json.dumps(cultural_inheritance) # record what social info they see 
+        )
 
+
+    
     def info_post_request(self, node, info):
         if isinstance(info, self.models.TaskAnswer):
             result = self.score_task_answer(node, info)
@@ -506,21 +479,20 @@ class RogersExperiment(Experiment):
                 node.property3 = "0"
             node.score = node.score + result["num_correct"] # adding correct answers to node's score
 
-            if node.points is None:
-                node.points = "0"
-            node.points = node.points + result["answered_correct"] # adding positions the participants got correct
+            if node.participant.points is None:
+                node.participant.points = "0"
+            node.participant.points += result["answered_correct"] # adding positions the participants got correct
 
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
             lifespan = int(payload["lifespan"])
-            answers = payload["answers"]
 
             if timestep >= lifespan:
                 node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
                 status = json.loads(node.network.status)
                 status["completed_nodes"] +=1
                 generation = node.generation
-                network_nodes = node.network.nodes(type=self.models.RogersAgent)
+                network_nodes = node.network.nodes(type=self.models.CogAgent)
                 horizontal_nodes = [n for n in network_nodes if n.generation == generation and not n.failed and n.fitness is not None]
                 if len(horizontal_nodes) < self.generation_size:
                     status["ready_for_next_gen"] = "No"
@@ -532,7 +504,7 @@ class RogersExperiment(Experiment):
                         status["ready_for_next_gen"] = "Yes"
                 node.network.status = json.dumps(status)
             else:
-                self.create_timestep_info(node)
+                self.create_timestep_info(node, timestep + 1)
 
 
             feedback_payload = {
@@ -572,16 +544,10 @@ class RogersExperiment(Experiment):
             self.recruiter.recruit(n=int(self.generation_size))
 
 
-    def bonus(self, participant): # Rogers
+    def bonus(self, participant):
         """Calculate a participants bonus."""
-        points_sum = 0
-        for node in participant.nodes():
-            if node.points is None:
-                points_sum = points_sum
-            else:
-                points_sum += node.points
 
-        bonus = min(0.02 * float(points_sum), max_bonus) # should cap bonus
+        bonus = min(0.02 * float(participant.points), max_bonus) # should cap bonus
         return round(bonus, 2)  
 
 
@@ -612,20 +578,21 @@ class RogersExperiment(Experiment):
             is_correct = answers[i] == correct_sequence[i]
             if is_correct:
                 num_correct += 1 # wanna add something here where we record if they got answers correct
-                answer_correctness.append("Correct")
+                answer_correctness.append(True)
                 answered_correct += 1
             else: 
-                answer_correctness.append("Incorrect")
+                answer_correctness.append(False)
             if random.random() < learning_speed:
                 feedback_positions.append(i)
                 feedback_correctness[i] = is_correct
         
         for i in range(11 - to_solve):
-            answer_correctness.append("Correct")
+            answer_correctness.append(True)
 
         self.models.AnswerCorrectness(
             origin=node,
-            contents=json.dumps({"timestep": payload["timestep"],"task": task,"Answer_correctness": answer_correctness, "num_correct": num_correct, "Individually_correct_answer": correct_sequence})
+            contents=json.dumps({"timestep": payload["timestep"],"task": task,"Answer_correctness": answer_correctness, "num_correct": num_correct, "Individually_correct_answer": correct_sequence}),
+            details=task
             )
 
         return {
@@ -638,15 +605,6 @@ class RogersExperiment(Experiment):
         "Answer_correctness": answer_correctness
         }
 
-    def add_node_to_network(self, node, network):
-        """Add participant's node to a network."""
-        network.add_node(node)
-        node.receive()
-
-        environment = network.nodes(type=self.models.RogersEnvironment)[0]
-        environment.connect(whom=node)
-        node.receive()
-        self.create_timestep_info(node)
 
     def compute_fitness(self, node, lifespan, fitness_exponent=3, cog_cost=0.1):
         """Compute end-of-lifespan fitness from score and allele costs."""
@@ -668,67 +626,10 @@ class RogersExperiment(Experiment):
         options = ["UP", "DOWN", "LEFT", "RIGHT"]
         wrong_options = [x for x in options if x != correct_answer]
         return random.choice(wrong_options)
-    
-    def last_task_answer(self, parent, task):
-        """Return the parent's most recent TaskAnswer for a given task, or None."""
-        answers = []
-        for info in parent.infos(type=self.models.TaskAnswer):
-            payload = json.loads(info.contents)
-            if payload.get("task") == task:
-                answers.append(info)
-
-        if not answers:
-            return None
-
-        return max(answers, key=attrgetter("id"))
-
-    def parent_correctness_by_position(self, parent, task, parent_answer_info):
-        """Return dict mapping positions to whether parent was correct there."""
-        parent_alleles = self.node_alleles(parent)
-        parent_s = int(parent_alleles["s"])
-
-        correctness = {}
-
-        if parent_answer_info is None:
-            if task == "A":
-                to_solve = 6 - parent_s
-            else:
-                to_solve = 6 + parent_s
-
-            for i in range(to_solve):
-                correctness[i] = None
-
-            for i in range(to_solve, 11):
-                correctness[i] = True
-
-            return correctness
-        
-        
-        payload = json.loads(parent_answer_info.contents)
-
-        to_solve = payload["toSolve"]
-        answers = payload["answers"]
-
-        seq_a, seq_b, _ = self.generalize(parent)
-        if task == "A":
-            correct_sequence = seq_a
-        else:
-            correct_sequence = seq_b
 
 
-        # Pre-solved positions count as correct
-        for i in range(to_solve, 11):
-            correctness[i] = True
-
-        # Answered positions
-        for i in range(to_solve):
-            correctness[i] = (answers[i] == correct_sequence[i])
-
-        return correctness
-
-
-    def build_timestep_payload(self, node):
-        """Build one timestep's task/hint payload for the frontend."""
+    def build_info_for_timestep(self, node, timestep):
+        """Build one timestep's information for the frontend"""
         alleles = self.node_alleles(node)
         s = int(alleles["s"])
         g = float(alleles["g"])
@@ -749,6 +650,7 @@ class RogersExperiment(Experiment):
         generalized_positions = list(range(n_generalized))
 
         task_A = {
+            "timestep": timestep,
             "task": "A",
             "toSolve": to_solve_A,
             "generalized_positions": generalized_positions,
@@ -757,6 +659,7 @@ class RogersExperiment(Experiment):
         }
 
         task_B = {
+            "timestep": timestep,
             "task": "B",
             "toSolve": to_solve_B,
             "generalized_positions": generalized_positions,
@@ -766,8 +669,8 @@ class RogersExperiment(Experiment):
 
         return task_A, task_B
 
-    def create_timestep_info(self, node):
-        task_A, task_B = self.build_timestep_payload(node)
+    def create_timestep_info(self, node, timestep):
+        task_A, task_B = self.build_info_for_timestep(node, timestep)
         
         p = float(node.network.complexity)
         task = "A" if random.random() < p else "B"
@@ -817,6 +720,8 @@ class RogersExperiment(Experiment):
     
     def fail_participant(self, participant):
         """Fail all the nodes of a participant."""
+        participant.fail()
+
         participant_nodes = Node.query.filter_by(
             participant_id=participant.id, failed=False
         ).all()
@@ -839,13 +744,60 @@ class RogersExperiment(Experiment):
     
     def data_check(self, participant):
         print("??checking data for Participant ", participant.id)
-        participant_nodes = Node.query.filter_by(
-            participant_id=participant.id).all()
 
-        for node in participant_nodes:
+        for node in participant.nodes():
             if node.failed:
                 return False
             if len(node.infos(type=self.models.AnswerCorrectness)) != int(node.lifespan):
-                print("Node ", node.id, " for Participant ", participant.id, " has bad data")
+                print("??Node ", node.id, " for Participant ", participant.id, " has bad data")
                 return False
         return True
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # @scheduled_task("interval", minutes=1)
+    # @classmethod
+    # def participant_check(self):
+    #     participants = [ppt for ppt in dallinger.db.session.query(Participant).all()]
+    #     bad_status = [
+    #         "abandoned", "bad_data", "returned", "replaced", "did_not_attend", "missing_notification", "overrecruited", "overrecruited",
+    #         "rejected", "screened_out"
+    #     ]
+    #     for p in participants:
+    #         if p.status in bad_status:
+    #             for n in p.nodes():
+    #                 if n.failed != True:
+    #                     n.fail()
+
+    
+
+    # @scheduled_task("interval", minutes=1)
+    # @classmethod
+    # def check_aproved_ppts(self):
+    #     approved_participants = [
+    #         ppt for ppt in self.session.query(Participant)
+    #         .filter_by(status="approved")
+    #         .all()
+    #     ]
+
+    #     for ppt in approved_participants:
+    #         good_participant = len(ppt.nodes()) == int(self.experiment_repeats) and all(len(node.infos(type=self.models.AnswerCorrectness)) == int(node.lifespan) for node in ppt.nodes())
+    #         if not good_participant:
+    #             self.fail_participant(ppt)
+    #             ppt.status = "bad_data"
+

@@ -752,16 +752,50 @@ class GenCogExperiment(Experiment):
         return True
     
 
-    @scheduled_task("interval", minutes=1)
-    @classmethod
-    def participant_check(self):
-        participants = [ppt for ppt in self.session.query(Participant).all()]
-        bad_status = [
-            "abandoned", "bad_data", "returned", "replaced", "did_not_attend", "missing_notification", "overrecruited", "overrecruited",
-            "rejected", "screened_out"
-        ]
-        for p in participants:
-            if p.status in bad_status:
-                for n in p.nodes():
-                    if n.failed != True:
-                        n.fail()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # @scheduled_task("interval", minutes=1)
+    # @classmethod
+    # def participant_check(self):
+    #     participants = [ppt for ppt in dallinger.db.session.query(Participant).all()]
+    #     bad_status = [
+    #         "abandoned", "bad_data", "returned", "replaced", "did_not_attend", "missing_notification", "overrecruited", "overrecruited",
+    #         "rejected", "screened_out"
+    #     ]
+    #     for p in participants:
+    #         if p.status in bad_status:
+    #             for n in p.nodes():
+    #                 if n.failed != True:
+    #                     n.fail()
+
+    
+
+    # @scheduled_task("interval", minutes=1)
+    # @classmethod
+    # def check_aproved_ppts(self):
+    #     approved_participants = [
+    #         ppt for ppt in self.session.query(Participant)
+    #         .filter_by(status="approved")
+    #         .all()
+    #     ]
+
+    #     for ppt in approved_participants:
+    #         good_participant = len(ppt.nodes()) == int(self.experiment_repeats) and all(len(node.infos(type=self.models.AnswerCorrectness)) == int(node.lifespan) for node in ppt.nodes())
+    #         if not good_participant:
+    #             self.fail_participant(ppt)
+    #             ppt.status = "bad_data"
+

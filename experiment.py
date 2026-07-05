@@ -306,7 +306,7 @@ class GenCogExperiment(Experiment):
         
         node.score = 0 # start with a score of 0
 
-        self.create_timestep_info(node)
+        self.create_timestep_info(node, 1)
 
     
 
@@ -504,7 +504,7 @@ class GenCogExperiment(Experiment):
                         status["ready_for_next_gen"] = "Yes"
                 node.network.status = json.dumps(status)
             else:
-                self.create_timestep_info(node)
+                self.create_timestep_info(node, timestep + 1)
 
 
             feedback_payload = {
@@ -628,7 +628,7 @@ class GenCogExperiment(Experiment):
         return random.choice(wrong_options)
 
 
-    def build_info_for_timestep(self, node):
+    def build_info_for_timestep(self, node, timestep):
         """Build one timestep's information for the frontend"""
         alleles = self.node_alleles(node)
         s = int(alleles["s"])
@@ -650,6 +650,7 @@ class GenCogExperiment(Experiment):
         generalized_positions = list(range(n_generalized))
 
         task_A = {
+            "timestep": timestep,
             "task": "A",
             "toSolve": to_solve_A,
             "generalized_positions": generalized_positions,
@@ -658,6 +659,7 @@ class GenCogExperiment(Experiment):
         }
 
         task_B = {
+            "timestep": timestep,
             "task": "B",
             "toSolve": to_solve_B,
             "generalized_positions": generalized_positions,
@@ -667,8 +669,8 @@ class GenCogExperiment(Experiment):
 
         return task_A, task_B
 
-    def create_timestep_info(self, node):
-        task_A, task_B = self.build_info_for_timestep(node)
+    def create_timestep_info(self, node, timestep):
+        task_A, task_B = self.build_info_for_timestep(node, timestep)
         
         p = float(node.network.complexity)
         task = "A" if random.random() < p else "B"

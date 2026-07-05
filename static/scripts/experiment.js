@@ -455,8 +455,17 @@ function initializeTimestep() {
   var timestepInfo = timestepInfos[timestepInfos.length - 1];
   
   var payload = JSON.parse(timestepInfo.contents);
+
+  if (payload.timestep !== currentTimestep) {
+    for (var i = timestepInfos.length - 1; i >= 0; i--) {
+      var timestepCandidate = JSON.parse(timestepInfos[i].contents);
+      if (timestepCandidate.timestep === currentTimestep) {
+        payload = timestepCandidate;
+        break;
+      }
+    }
+  }
   
-  console.log("Loaded timestep payload:", payload);
   
   if (!payload.task || payload.toSolve === undefined) {
   console.log("Invalid timestep payload:", payload);

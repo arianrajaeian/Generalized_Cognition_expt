@@ -591,6 +591,17 @@ function showFeedback() {
     feedbackTimestep = feedback.timestep;
 
     if (feedbackTimestep !== currentTimestep) {
+      for (var i = feedbackInfos.length - 1; i >= 0; i--) {
+        var feedbackCandidate = JSON.parse(feedbackInfos[i].contents);
+        if (feedbackCandidate.timestep === currentTimestep) {
+          feedback = feedbackCandidate;
+          break;
+        }
+
+      }
+    }
+       
+    if (feedback.timestep !== currentTimestep) {
       setTimeout(showFeedback, 200);
       return;
     }

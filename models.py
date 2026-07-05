@@ -361,6 +361,13 @@ class DiscreteGeneration(DiscreteGenerational):
         curr_generation = int((num_agents - 1) / float(self.generation_size))
         node.generation = curr_generation # !!!! Will maybe want generation to come from participant?
 
+        if node.generation != node.participant.ppt_generation:
+            from .experiment import GenCogExperiment
+            exp = GenCogExperiment()
+            exp.fail_participant(node.participant)
+            raise ValueError("Participant generation does not match node generation. Failing participant.")
+            
+
         if curr_generation == 0:
             parent1 = None
             parent2 = None

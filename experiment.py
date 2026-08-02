@@ -720,6 +720,9 @@ class GenCogExperiment(Experiment):
     
     def fail_participant(self, participant):
         """Fail all the nodes of a participant."""
+        if participant.failed:
+            return
+        
         participant.fail()
 
         participant_nodes = Node.query.filter_by(

@@ -44,6 +44,7 @@ mutation_rate = 0.05
 fitness_exponent = 3
 p_values = [0.5, 0.5, 0.5, 0.9, 0.9]
 lifespan_values = [8, 2, 13, 8, 2]
+lifespan_values = [10, 4, 16, 10, 4]
 
 cog_cost = 0.1
 

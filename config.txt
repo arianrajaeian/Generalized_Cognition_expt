@@ -15,7 +15,7 @@ prolific_workspace = Ecco Lab
 duration = 1.50
 publish_experiment = false
 prolific_recruitment_config = file:prolific_config.json
-base_payment = 2.00
+base_payment = 3.00
 contact_email_on_error = arajaeia@asu.edu
 organization_name = Eccolab@ASU
 

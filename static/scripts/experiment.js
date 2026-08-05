@@ -405,6 +405,7 @@ create_agent = function() {
       console.log("created agent, node id:", resp.node.id) // debugging
       my_node_id = resp.node.id;
       lifespan = resp.node.property4;
+      submittedTimesteps = [];
       currentTimestep = 0;
       console.log("initializeTimestep, my_node_id:", my_node_id)
       initializeTimestep();

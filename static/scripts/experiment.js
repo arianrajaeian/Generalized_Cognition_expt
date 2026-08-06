@@ -63,7 +63,7 @@ function updateSubmitEnabled() {
 }
 
 function pressContinue() {
-  console.log("continue clicked"); //debugging
+  $("#continue").prop("disabled", true);
   feedbackCorrectness = {};
   showingFeedback = false;
   $("#submit").prop("disabled", false);
@@ -628,6 +628,7 @@ function showFeedback() {
     }
     
     $("#submit").hide();
+    $("#continue").prop("disabled", false);
     $("#continue").show();
     
     renderGrid();

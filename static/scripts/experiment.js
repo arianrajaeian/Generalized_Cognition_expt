@@ -564,13 +564,12 @@ function submitTimestep() {
     return;
   }
 
-  submittedTimesteps.push(currentTimestep);
-
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(payload),
     info_type: "TaskAnswer"
   })
   .done(function() {
+    submittedTimesteps.push(currentTimestep);
     showFeedback();
 
     

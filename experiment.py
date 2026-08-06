@@ -7,7 +7,7 @@ import six
 from dallinger.config import get_config
 from dallinger.experiment import Experiment, scheduled_task
 from dallinger.models import Node, Participant
-from dallinger import db
+from dallinger import db, recruiters
 
 from operator import attrgetter
 
@@ -184,6 +184,9 @@ class GenCogExperiment(Experiment):
             recruiter = self.recruiter
             if recruiter:
                 recruiter_name = recruiter.nickname
+
+        q = db.get_queue()
+        q.enqueue(recruiters.run_status_check)
 
         participant = self.participant_constructor(
             recruiter_id=recruiter_name,

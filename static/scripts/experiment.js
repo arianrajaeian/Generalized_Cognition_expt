@@ -28,6 +28,9 @@ var TotalRounds = 5; // will want this to equal the number of available networks
 
 var submittedTimesteps = [];
 
+var transitioning = false;
+var submitting = false;
+
 
 
 
@@ -63,6 +66,12 @@ function updateSubmitEnabled() {
 }
 
 function pressContinue() {
+  if (transitioning) {
+    return;
+  }
+
+  transitioning = true;
+
   $("#continue").prop("disabled", true);
   feedbackCorrectness = {};
   showingFeedback = false;
@@ -527,6 +536,7 @@ function initializeTimestep() {
   
   renderGrid();
   renderOtherGrid();
+  transitioning = false;
   updateSubmitEnabled();
   }).fail(function(err) {
   console.log("Failed to load timestep info:", err);
@@ -536,6 +546,11 @@ function initializeTimestep() {
 
 
 function submitTimestep() {
+
+  if (submitting) {
+    return;
+  }
+
   for (var i = 0; i < toSolve; i++) {
     if (answers[i] === null) {
       return;
@@ -569,6 +584,7 @@ function submitTimestep() {
     info_type: "TaskAnswer"
   })
   .done(function() {
+    submitting = true;
     submittedTimesteps.push(currentTimestep);
     showFeedback();
 
@@ -582,6 +598,9 @@ function submitTimestep() {
 
 
 function showFeedback() {
+
+  submitting = false;
+
   dallinger.getInfos(my_node_id).done(function(resp) {
     var infos = resp.infos;
     

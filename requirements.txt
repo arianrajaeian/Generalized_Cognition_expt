@@ -1,2 +1,2 @@
-dallinger==12.2.0
+dallinger==12.2.1
 numpy

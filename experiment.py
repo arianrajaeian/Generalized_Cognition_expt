@@ -45,7 +45,7 @@ fitness_exponent = 3
 p_values = [0.5, 0.5, 0.5, 0.9, 0.9]
 lifespan_values = [10, 4, 16, 10, 4]
 
-cog_cost = 0.1
+cog_cost = 0.075
 
 
 def extra_parameters():
@@ -609,7 +609,7 @@ class GenCogExperiment(Experiment):
         }
 
 
-    def compute_fitness(self, node, lifespan, fitness_exponent=3, cog_cost=0.1):
+    def compute_fitness(self, node, lifespan, fitness_exponent=3, cog_cost=0.075):
         """Compute end-of-lifespan fitness from score and allele costs."""
         alleles = self.node_alleles(node)
 

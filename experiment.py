@@ -43,7 +43,7 @@ range_v = np.arange(min_v, max_v + v_inc, v_inc)
 mutation_rate = 0.05
 fitness_exponent = 3
 p_values = [0.5, 0.5, 0.5, 0.9, 0.9]
-lifespan_values = [10, 4, 16, 10, 4]
+lifespan_values = [10, 3, 16, 10, 3]
 
 cog_cost = 0.075
 

@@ -6,19 +6,14 @@
 <hr>
 
 <p>
-    In this experiment your goal is to learn sequences of directions (<strong>↑ ↓ ← →</strong>).
-    Each sequence will contain a row of boxes, which you can fill using the arrow keys on your keyboard.
-</p>
-
-<p>
-	There are 10 sequences in total, divided across 5 rounds (2 sequences per round).
-    In each round, you will have multiple attempts to get the sequences right.
-    On each attempt, you will be asked to type one of the two sequences for that round.
+    In this experiment your goal is to learn several different sequences of directions (<strong>↑ ↓ ← →</strong>) across multiple attempts.
+    Each sequence will contain a row of boxes, which you can fill using the arrow keys on your keyboard.       
+    <img src="{{ url_for('static', filename='images/arrow-keys.png') }}" style="height: 2.5em; vertical-align: bottom; margin-left: 10px;">
 </p>
 
 <hr>
 
-<p>Here's an example sequence:</p>
+<p>Here's an example of a filled-in sequence:</p>
 
 <div id="instruction-container">
 <div style="margin-top: 20px;">
@@ -36,12 +31,12 @@
 <p>
 <span style="color: green;"><strong>Green</strong></span> = Correct.
 <span style="color: red;"><strong>Red</strong></span> = Incorrect.
-<span style="color: black;"><strong>White</strong></span> = No feedback.
+<span style="color: black;"><strong>White</strong></span> = No feedback (you do not learn whether your answer was correct or incorrect).
 </p>
 
 <br>
 
-<p>You should use this feedback to learn the correct sequence.</p>
+<p>Use the feedback from each attempt to improve your next guess.</p>
 
 <div id="button-row" style="margin-top: 28px;">
 <button type="button" class="btn btn-primary btn-lg"

@@ -6,41 +6,42 @@
 <hr>
 
 <p>
-    In each round, the two sequences may share some positions: blue boxes have the same answer in both sequences, 
-    but white boxes may differ. For the blue boxes, you can use what you learn about one sequence to complete the other. 
-
+    Finally, you will complete 5 rounds of this experiment in total, with each round containing its own unique pair of sequences. You
+    will complete multiple attempts per round. On each attempt, you will interact with one of the two sequences for that round. 
+    Once you move on to the next round, both sequences are replaced with new ones that have different correct answers. 
 </p>
 
 <br>
+<br>
 
-<p>Here's an example of what an attempt might look like:</p>
+<h3>Payment</h3>
 
-<img src="{{ url_for('static', filename='images/attempt.png') }}" width="700px" height="550px"/>
+<p>In addition to your base payment, you will receive an extra $0.02 for each box you answer correctly on each attempt, with a maximum bonus of $2.00</p>
 
 <br>
 <br>
 
-<p>Your task is to complete the highlighted sequence (Sequence B in this example).</p>
+<p>
+    If you fully understand the instructions, press "Continue". Otherwise, you may go back and re-read them.
+</p>
 
-
-
-
-<div id="instruction-status" style="margin-top: 16px; min-height: 24px;"></div>
+<br>
+<br>
 
 <div id="button-row" style="margin-top: 28px;">
 <button type="button" class="btn btn-primary btn-lg"
-onclick="dallinger.goToPage('instructions/instruct-2');">
+onclick="dallinger.goToPage('instructions/instruct-3');">
 Previous
 </button>
 
-<button type="button" class="btn btn-primary btn-lg"
+<button type="button" class="btn btn-success btn-lg"
 style="margin-left: 12px;"
-onclick="dallinger.goToPage('instructions/instruct-ready2');">
-Next
+onclick="dallinger.goToPage('instructions/comprehension');">
+Continue
 </button>
 </div>
 
-</div>
 
+</div>
 
 {% endblock %}

@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="main_div">
+<h1>Instructions</h1>
+<hr>
+
+
+<br>
+
+<p>There will always be two sequences on the page at a time. On each attempt, you will be asked to complete on of the two sequences, which 
+    will be highlighted (Sequence B in the below example). </p>
+
+<img src="{{ url_for('static', filename='images/attempt.png') }}" width="700px" height="500px"/>
+
+<br>
+<br>
+
+
+<p>
+    Each sequence has a separate correct answer. However, the two sequences may share the same answer for some boxes. 
+    These boxes will be highlighted in <span style="color: #88bde3;"><strong>blue</strong></span>.
+</p>
+
+<p>
+    If you discover the correct answer for a blue box in one sequence, you have also discovered the correct answer for that box 
+    in the other sequence.
+</p>
+
+<p>
+    White boxes are independent and may have different answers.
+</p>
+
+
+
+
+<div id="instruction-status" style="margin-top: 16px; min-height: 24px;"></div>
+
+<div id="button-row" style="margin-top: 28px;">
+<button type="button" class="btn btn-primary btn-lg"
+onclick="dallinger.goToPage('instructions/instruct-2');">
+Previous
+</button>
+
+<button type="button" class="btn btn-primary btn-lg"
+style="margin-left: 12px;"
+onclick="dallinger.goToPage('instructions/instruct-ready');">
+Next
+</button>
+</div>
+
+</div>
+
+
+{% endblock %}

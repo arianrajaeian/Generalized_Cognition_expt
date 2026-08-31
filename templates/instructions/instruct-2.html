@@ -6,17 +6,20 @@
 <hr>
 
 
-<p>You may also see parts of the sequence typed by another participant.</p>
+<p>During your attempt of a sequence, you may also see parts of the answer left by a previous participant who was attempting to answer 
+    the same sequence.</p>
 
-<p>Hidden parts of their sequence are shown as "?".</p>
+<p>Hidden parts of the participant's answer are shown as "?".</p>
 
-<img src="{{ url_for('static', filename='images/vertical_transmission.png') }}" width="550px" height="250px"/>
+<br>
+
+<img src="{{ url_for('static', filename='images/vertical-transmission.png') }}" width="550px" height="250px"/>
 
 <br>
 <br>
 
 <p>
-The previous participant's answers can be useful, but they are not necessarily correct.
+The previous participant's guesses are not guaranteed to be correct, though you may use them if you find them helpful.
 </p>
 
 
@@ -28,7 +31,7 @@ Previous
 
 <button type="button" class="btn btn-primary btn-lg"
 style="margin-left: 12px;"
-onclick="dallinger.goToPage('instructions/instruct-ready');">
+onclick="dallinger.goToPage('instructions/instruct-3');">
 Next
 </button>
 </div>

@@ -635,7 +635,6 @@ function showFeedback() {
     }
     
     feedbackCorrectness = feedback.feedback_correctness || {};
-    generalizedPositions = feedback.generalized_positions || [];
     showingFeedback = true;
 
     if (Object.keys(feedbackCorrectness).length === 0) {

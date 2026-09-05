@@ -13,9 +13,11 @@
 <br>
 <br>
 
+
+
 <div class = "card mb-5">
     <div class = "card-body">
-        <h4>1) Will you get feedback on the sequence?</h4>
+        <h4>1) Will you see the answer of a previous player?</h4>
         <h6 id = "Q1"><b>...</b></h6>
 
 
@@ -36,32 +38,30 @@
         </button>
     </div>
 </div> 
-
 </div>
 </div>
 
-<br>
 
 <div class = "card mb-5">
     <div class = "card-body">
-        <h4>2) Will you see the answer of a previous player?</h4>
+        <h4>2) Which statement best describes the answer from the previous player?</h4>
         <h6 id = "Q2"><b>...</b></h6>
 
 
 <div class = "row mt-3">
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q2', 'Yes, for all boxes on every attempt', 'incorrect')">
-            Yes, for all boxes on every attempt
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q2', 'They are incorrect, because they were completing a different sequence', 'incorrect')">
+            They are incorrect, because they were completing a different sequence
         </button>
     </div>
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q2', 'Yes, for some boxes on some attempts', 'correct')">
-            Yes, for some boxes on some attempts
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q2', 'They are correct, because they got the sequence right', 'incorrect')">
+            They are correct, because they got the sequence right
         </button>
     </div>
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q2', 'No', 'incorrect')">
-            No
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q2', 'They may be correct because they completed the same sequence, but they might have gotten it wrong', 'correct')">
+            They may be correct because they completed the same sequence, but they might have gotten it wrong
         </button>
     </div>
 </div> 
@@ -69,26 +69,27 @@
 </div>
 
 
+
 <div class = "card mb-5">
     <div class = "card-body">
-        <h4>3) Which statement best describes the answer from the previous player?</h4>
+        <h4>3) What is the meaning of blue versus white boxes?</h4>
         <h6 id = "Q3"><b>...</b></h6>
 
 
 <div class = "row mt-3">
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q3', 'They are incorrect, because they were completing a different sequence', 'incorrect')">
-            They are incorrect, because they were completing a different sequence
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q3', 'Blue boxes have the same answer for both sequences in a round, white boxes are independent', 'correct')">
+            Blue boxes have the same answer for both sequences in a round, white boxes are independent
         </button>
     </div>
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q3', 'They are correct, because they got the sequence right', 'incorrect')">
-            They are correct, because they got the sequence right
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q3', 'White boxes have the same answer for both sequences in a round, blue boxes are independent', 'incorrect')">
+            White boxes have the same answer for both sequences in a round, blue boxes are independent
         </button>
     </div>
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q3', 'They may be correct because they completed the same sequence, but they might have gotten it wrong', 'correct')">
-            They may be correct because they completed the same sequence, but they might have gotten it wrong
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q3', 'The first 2 boxes are blue, the rest are white', 'incorrect')">
+            The first 2 boxes are blue, the rest are white
         </button>
     </div>
 </div> 
@@ -99,26 +100,30 @@
 <div class = "card mb-5">
     <div class = "card-body">
         <h4>
-            4) Suppose the first box is blue in both sequences of the current round. You discover that the correct answer for that box in 
-            one sequence is ↑. What does this tell you?
+            4) Suppose you observed the following feedback after an attempt. What does this tell you about sequence G?
         </h4>
+        <div class="text-center my-4">
+            <img src="{{ url_for('static', filename='images/G_feedback.png') }}"
+                 class="img-fluid"
+                 style="max-width:350px;">
+        </div>
         <h6 id = "Q4"><b>...</b></h6>
 
 
 <div class = "row mt-3">
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q4', 'Nothing about the other sequence', 'incorrect')">
-            Nothing about the other sequence
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q4', 'The correct answer for the second box is ↑', 'incorrect')">
+            The correct answer for the second box is ↑
         </button>
     </div>
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q4', 'The first box in the other sequence is also ↑', 'correct')">
-            The first box in the other sequence is also ↑
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q4', 'The correct answer for the second box is →', 'correct')">
+            The correct answer for the second box is →
         </button>
     </div>
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q4', 'It only tells you about the current attempt', 'incorrect')">
-            It only tells you about the current attempt
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q4', 'It does not tell you anything', 'incorrect')">
+            It does not tell you anything
         </button>
     </div>
 </div> 
@@ -126,33 +131,38 @@
 </div>
 
 
-
 <div class = "card mb-5">
     <div class = "card-body">
-        <h4>5) What is the meaning of blue versus white boxes?</h4>
+        <h4>
+            5) Suppose you observed the following feedback for Sequence F. Does this tell you anything about Sequence E?
+        </h4>
+        <div class="text-center my-4">
+            <img src="{{ url_for('static', filename='images/F_feedback.png') }}"
+                 class="img-fluid"
+                 style="max-width:500px;">
+        </div>
         <h6 id = "Q5"><b>...</b></h6>
 
 
 <div class = "row mt-3">
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q5', 'Blue boxes have the same answer for both sequences in a round, white boxes are independent', 'correct')">
-            Blue boxes have the same answer for both sequences in a round, white boxes are independent
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q5', 'It does not tell you anything', 'incorrect')">
+            It does not tell you anything
         </button>
     </div>
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q5', 'White boxes have the same answer for both sequences in a round, blue boxes are independent', 'incorrect')">
-            White boxes have the same answer for both sequences in a round, blue boxes are independent
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q5', 'The correct answer for the second box is → and the correct answer for the fifth box is not →', 'incorrect')">
+            The correct answer for the second box is → and the correct answer for the fifth box is not →
         </button>
     </div>
     <div class = "col-md-12 mb-2">
-        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q5', 'The first 2 boxes are blue, the rest are white', 'incorrect')">
-            The first 2 boxes are blue, the rest are white
+        <button type = "button" class = "btn btn-outline-primary" onClick="pingButton('Q5', 'The correct answer for the second box is →', 'correct')">
+            The correct answer for the second box is →
         </button>
     </div>
 </div> 
 </div>
 </div>
-
 
 <h4 id = "warning" style = "display:none;color:red">
     One or more of your answers was incorrect. Check your answers carefully and try again.
@@ -197,7 +207,7 @@ var Question_3 = "";
 var Question_4 = "";
 var Question_5 = "";
 
-attempts = 0
+var attempts = 0
 
 function pingButton(type, response, correctness){
     if(type == "Task"){

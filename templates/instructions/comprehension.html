@@ -234,6 +234,9 @@ function attemptAdvance() {
     attempts += 1
 
     if (Question_1 == "correct" && Question_2 == "correct" && Question_3 == "correct" && Question_4 == "correct" && Question_5 == "correct") {
+        
+        dallinger.storage.set("comp_attempts", attempts);
+
         $("#correct").show();
         $("#begin").show();
         $("#warning").hide();

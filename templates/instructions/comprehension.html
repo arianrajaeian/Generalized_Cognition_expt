@@ -235,6 +235,7 @@ function pingButton(type, response, correctness){
 }
 
 function attemptAdvance() {
+    $("#submit").prop("disabled", true);
     attempts += 1;
     createCompQuestion().done(function() {
         if (Question_1 == "correct" && Question_2 == "correct" && Question_3 == "correct" && Question_4 == "correct" && Question_5 == "correct") {
@@ -249,6 +250,7 @@ function attemptAdvance() {
 
     } else {
     if (attempts == 1) {
+        $("#submit").prop("disabled", false);
         $("#warning").show()
     } 
     if (attempts == 2) {

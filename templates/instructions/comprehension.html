@@ -235,30 +235,48 @@ function pingButton(type, response, correctness){
 }
 
 function attemptAdvance() {
-    attempts += 1
+    attempts += 1;
+    createCompQuestion().done(function() {
+        if (Question_1 == "correct" && Question_2 == "correct" && Question_3 == "correct" && Question_4 == "correct" && Question_5 == "correct") {
 
-    if (Question_1 == "correct" && Question_2 == "correct" && Question_3 == "correct" && Question_4 == "correct" && Question_5 == "correct") {
-        
-        dallinger.storage.set("comp_attempts", attempts);
+    dallinger.storage.set("comp_attempts", attempts);
 
-        $("#correct").show();
-        $("#begin").show();
-        $("#warning").hide();
-        $("#re-read").hide();
+    $("#correct").show();
+    $("#begin").show();
+    $("#warning").hide();
+    $("#re-read").hide();
 
 
     } else {
-        if (attempts == 1) {
-            $("#warning").show()
-        } 
-        if (attempts == 2) {
-            $("#warning").html('You seem to be having trouble with the instructions. You will now be sent back to re-read the instructions. Press the "Re-read" button to go back to the instructions. Otherwise, you may also return the study if you wish.')
-            $("#submit").hide();
-            $("#re-read").show();
-        }
-        
+    if (attempts == 1) {
+        $("#warning").show()
+    } 
+    if (attempts == 2) {
+        $("#warning").html('You seem to be having trouble with the instructions. You will now be sent back to re-read the instructions. Press the "Re-read" button to go back to the instructions. Otherwise, you may also return the study if you wish.')
+        $("#submit").hide();
+        $("#re-read").show();
     }
+
+    }
+    })
+
 }
+
+
+function createCompQuestion() {
+    return dallinger.post('/question/' + dallinger.identity.participantId, {
+      question: "comprehension_attempt",
+      number: 1,
+      response: JSON.stringify({
+        "Attempt": attempts, 
+        "Question 1": Question_1, 
+        "Question 2": Question_2, 
+        "Question 3": Question_3, 
+        "Question 4": Question_4, 
+        "Question 5": Question_5})
+    });
+}
+
 
 </script>
 {% endblock %}

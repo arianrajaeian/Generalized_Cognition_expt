@@ -181,13 +181,22 @@ class GenCogExperiment(Experiment):
         return json.loads(info.contents)
 
 
-    def create_network(self):
+    def create_network(self, net_role):
         """Create a new network."""
-        network = self.models.DiscreteGeneration(
-            generations=self.generations,
-            generation_size=self.generation_size,
-            initial_source=False,
-        )
+        
+        if net_role == "practice":
+            network = self.models.PracticeNetwork(
+                role=net_role
+            )
+        
+        
+        if net_role == "experiment":
+            network = self.models.DiscreteGeneration(
+                generations=self.generations,
+                generation_size=self.generation_size,
+                initial_source=False,
+                role = net_role
+            )
 
         status = {
             "unfailed_nodes": 0,

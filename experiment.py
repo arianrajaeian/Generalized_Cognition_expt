@@ -76,6 +76,7 @@ class GenCogExperiment(Experiment):
         super(GenCogExperiment, self).__init__(session, no_configure=no_configure)
         from . import models
 
+        self.practice_repeats = 1
         self.models = models
         self.known_classes["CogAgent"] = self.models.CogAgent
         self.known_classes["TaskAnswer"] = self.models.TaskAnswer

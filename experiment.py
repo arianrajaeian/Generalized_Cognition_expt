@@ -386,7 +386,7 @@ class GenCogExperiment(Experiment):
             else:
                 node.receive()
             
-            node.score = 0 # start with a score of 0
+        node.score = 0 # start with a score of 0
 
         self.create_timestep_info(node, 1)
 

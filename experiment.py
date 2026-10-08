@@ -328,12 +328,11 @@ class GenCogExperiment(Experiment):
                 contents=1
             )
 
-
-            cultural_info = {
-                "transmitted_positions_a": [],
-                "transmitted_answers_a": {},
-                "transmitted_positions_b": [],
-                "transmitted_answers_b": {}
+            cultural_info = { # some correct, some incorrect
+                "transmitted_positions_a": [0, 2, 3],
+                "transmitted_answers_a": {0: "UP", 2: "LEFT", 3: "UP"},
+                "transmitted_positions_b": [1, 5, 6, 7],
+                "transmitted_answers_b": {1: "RIGHT", 5: "RIGHT", 6: "LEFT", 7: "DOWN"}
             }
             # they won't get cultural inheritnac since they're not receiving info (update creates their cultural inheritanc info)
             # so we create it here manually

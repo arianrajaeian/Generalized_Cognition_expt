@@ -262,7 +262,7 @@ class GenCogExperiment(Experiment):
     
 
     def get_network_for_participant(self, participant):
-        """Place participant in a network depending in which they have already completed"""
+        """Place participant in a network depending on which they have already completed"""
         key = participant.id
         networks_with_space = self.networks(full=False)
         networks_participated_in = [

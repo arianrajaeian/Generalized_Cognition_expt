@@ -751,9 +751,16 @@ class GenCogExperiment(Experiment):
 
     def create_timestep_info(self, node, timestep):
         task_A, task_B = self.build_info_for_timestep(node, timestep)
-        
-        p = float(node.network.complexity)
-        task = "A" if random.random() < p else "B"
+
+        if node.network.role == "experiment": 
+            p = float(node.network.complexity)
+            task = "A" if random.random() < p else "B" 
+        else:
+            if timestep == 1:
+                task = "A"
+            else:
+                task = "B"
+
 
         if task == "A":
             payload = task_A

@@ -78,6 +78,9 @@ class GenCogExperiment(Experiment):
 
         self.practice_repeats = 1
         self.models = models
+        self.known_classes["PracticeNetwork"] = self.models.PracticeNetwork
+        self.known_classes["ExpEnvironment"] = self.models.ExpEnvironment
+        self.known_classes['DiscreteGeneration'] = self.models.DiscreteGeneration
         self.known_classes["CogAgent"] = self.models.CogAgent
         self.known_classes["TaskAnswer"] = self.models.TaskAnswer
         self.known_classes["FeedbackInfo"] = self.models.FeedbackInfo

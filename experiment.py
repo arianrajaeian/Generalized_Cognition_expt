@@ -112,7 +112,33 @@ class GenCogExperiment(Experiment):
 
     def setup(self):
         """First time setup."""
-        super(GenCogExperiment, self).setup()
+        
+        if not self.networks():
+            for _ in range(self.practice_repeats):
+                network = self.create_network("practice")
+                db.session.add(network)
+            for _ in range(self.experiment_repeats):
+                network = self.create_network("experiment")
+                db.session.add(network)
+            db.session.commit()
+
+
+        for net in self.networks(role="practice"):
+            net.max_size = net.max_size + 1  # make room for environment node.
+            net.lifespan = 2
+            env = self.models.ExpEnvironment(network=net)
+            A_answer = ["UP", "LEFT", "RIGHT", "UP", "LEFT", "DOWN", "DOWN", "UP", "RIGHT", "RIGHT", "LEFT"]
+            B_answer = ["RIGHT", "DOWN", "LEFT", "LEFT", "UP", "RIGHT", "UP", "DOWN", "RIGHT", "LEFT", "DOWN"]
+            self.models.CorrectSequenceA(
+                origin=env,
+                contents=json.dumps(A_answer),
+            )
+            self.models.CorrectSequenceB(
+                origin=env,
+                contents=json.dumps(B_answer),
+            )
+            self.session.commit()
+        
 
         for net in self.networks():
             net.max_size = net.max_size + 1  # make room for environment node.

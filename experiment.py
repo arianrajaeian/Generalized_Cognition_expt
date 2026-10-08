@@ -285,6 +285,11 @@ class GenCogExperiment(Experiment):
         if not legal_networks:
             self.log("No networks available, returning None", key)
             return None
+
+        legal_practice_networks = [net for net in legal_networks if net.role == "practice"]
+        
+        if legal_practice_networks:
+            return legal_practice_networks[0]
         
         else:
             return random.choice(legal_networks)

@@ -341,10 +341,52 @@ class GenCogExperiment(Experiment):
                 contents=json.dumps(cultural_info) # record what social info they see 
             ) 
 
-        else:
-            node.receive()
+        if node.network.role == "experiment":
         
-        node.score = 0 # start with a score of 0
+            if node.generation == 0:
+                rng = np.random.default_rng()
+                
+                s = int(min(5, rng.choice(range_s)))
+                self.models.Specialization(
+                    origin=node,
+                    contents=s
+                )
+
+                g = float(min(1, rng.choice(range_g)))
+                self.models.Generalization(
+                    origin=node,
+                    contents=g
+                )
+
+                r = float(min(1, rng.choice(range_r)))
+                self.models.LearningSpeed(
+                    origin=node,
+                    contents=r
+                )
+
+                v = float(min(1, rng.choice(range_v)))
+                self.models.VerticalTransmission(
+                    origin=node,
+                    contents=v
+                )
+
+
+                cultural_info = {
+                    "transmitted_positions_a": [],
+                    "transmitted_answers_a": {},
+                    "transmitted_positions_b": [],
+                    "transmitted_answers_b": {}
+                }
+
+                self.models.CulturalInheritance(
+                    origin=node,
+                    contents=json.dumps(cultural_info) # record what social info they see 
+                ) 
+
+            else:
+                node.receive()
+            
+            node.score = 0 # start with a score of 0
 
         self.create_timestep_info(node, 1)
 

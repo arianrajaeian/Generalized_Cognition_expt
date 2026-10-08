@@ -140,7 +140,7 @@ class GenCogExperiment(Experiment):
             self.session.commit()
         
 
-        for net in self.networks():
+        for net in self.networks(role="experiment"):
             net.max_size = net.max_size + 1  # make room for environment node.
             net.complexity = p_values[int(net.id) - 1]
             net.lifespan = lifespan_values[int(net.id) - 1]

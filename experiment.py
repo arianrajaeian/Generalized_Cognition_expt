@@ -334,8 +334,6 @@ class GenCogExperiment(Experiment):
                 "transmitted_positions_b": [1, 5, 6, 7],
                 "transmitted_answers_b": {1: "RIGHT", 5: "RIGHT", 6: "LEFT", 7: "DOWN"}
             }
-            # they won't get cultural inheritnac since they're not receiving info (update creates their cultural inheritanc info)
-            # so we create it here manually
             self.models.CulturalInheritance(
                 origin=node,
                 contents=json.dumps(cultural_info) # record what social info they see 

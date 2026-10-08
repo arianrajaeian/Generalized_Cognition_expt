@@ -307,31 +307,25 @@ class GenCogExperiment(Experiment):
     def node_post_request(self, participant, node):
         """Assign properties to the node, give it its alleles, and start the timestp"""
 
-        if node.generation == 0:
-            rng = np.random.default_rng()
-            
-            s = int(min(5, rng.choice(range_s)))
+        if node.network.role == "practice":
             self.models.Specialization(
                 origin=node,
-                contents=s
+                contents=2
             )
 
-            g = float(min(1, rng.choice(range_g)))
             self.models.Generalization(
                 origin=node,
-                contents=g
+                contents=0.6
             )
 
-            r = float(min(1, rng.choice(range_r)))
             self.models.LearningSpeed(
                 origin=node,
-                contents=r
+                contents=1
             )
 
-            v = float(min(1, rng.choice(range_v)))
             self.models.VerticalTransmission(
                 origin=node,
-                contents=v
+                contents=1
             )
 
 

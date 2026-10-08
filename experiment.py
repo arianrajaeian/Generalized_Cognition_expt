@@ -394,11 +394,11 @@ class GenCogExperiment(Experiment):
         """Add participant's node to a network."""
 
         node.lifespan = network.lifespan
-
-        status = json.loads(network.status)
-        status["unfailed_nodes"] += 1
-        status["ready_for_next_gen"] = "No"
-        network.status = json.dumps(status)
+        if network.role == "experiment": 
+            status = json.loads(network.status)
+            status["unfailed_nodes"] += 1
+            status["ready_for_next_gen"] = "No"
+            network.status = json.dumps(status)
         
         network.add_node(node)
 

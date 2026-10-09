@@ -569,7 +569,8 @@ function submitTimestep() {
     transmittedPositions: transmittedPositions,
     generalizedPositions: generalizedPositions
   };
-
+  
+  submitting = true;
   $("#submit").prop("disabled", true);
 
   if (submittedTimesteps.includes(currentTimestep)) {
@@ -584,7 +585,7 @@ function submitTimestep() {
     info_type: "TaskAnswer"
   })
   .done(function() {
-    submitting = true;
+    
     submittedTimesteps.push(currentTimestep);
     showFeedback();
 

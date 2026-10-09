@@ -124,7 +124,7 @@ class GenCogExperiment(Experiment):
 
 
         for net in self.networks(role="practice"):
-            net.max_size = net.max_size + 1  # make room for environment node.
+            net.max_size = 2000 
             net.lifespan = 2
             env = self.models.ExpEnvironment(network=net)
             A_answer = ["UP", "LEFT", "RIGHT", "UP", "LEFT", "DOWN", "DOWN", "UP", "RIGHT", "RIGHT", "LEFT"]

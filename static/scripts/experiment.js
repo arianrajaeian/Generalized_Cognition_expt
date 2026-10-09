@@ -441,8 +441,9 @@ function finishedRound() {
   if (experimentRound <= TotalRounds) {
     if ((currentRound - 1) === 1) {
       dallinger.goToPage("instructions/instruct-ready");
+    } else {
+      dallinger.goToPage("between-rounds");
     }
-    dallinger.goToPage("between-rounds");
   } else {
     dallinger.allowExit();
     dallinger.goToPage("questionnaire");

@@ -185,18 +185,17 @@ class GenCogExperiment(Experiment):
         """Create a new network."""
         
         if net_role == "practice":
-            network = self.models.PracticeNetwork(
-                role=net_role
-            )
+            network = self.models.PracticeNetwork()
+            network.role = net_role
         
         
         if net_role == "experiment":
             network = self.models.DiscreteGeneration(
                 generations=self.generations,
                 generation_size=self.generation_size,
-                initial_source=False,
-                role = net_role
+                initial_source=False
             )
+            network.role = net_role
 
         status = {
             "unfailed_nodes": 0,

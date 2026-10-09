@@ -23,8 +23,11 @@ var lifespan = null;  // lifespan established at front end
 var feedbackCorrectness = {};
 var showingFeedback = false;
 
+
+var practiceRounds = 1;
 var currentRound = 1;
 var TotalRounds = 5; // will want this to equal the number of available networks
+var experimentRound = currentRound - practiceRounds;
 
 var submittedTimesteps = [];
 

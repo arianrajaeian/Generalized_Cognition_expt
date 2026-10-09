@@ -560,7 +560,9 @@ class GenCogExperiment(Experiment):
 
             if node.participant.points is None:
                 node.participant.points = "0"
-            node.participant.points += result["answered_correct"] # adding positions the participants got correct
+
+            if node.network.role == "experiment":
+                node.participant.points += result["answered_correct"] # adding positions the participants got correct
 
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
@@ -821,13 +823,14 @@ class GenCogExperiment(Experiment):
             for info in infos:
                 info.fail()
             node.fail()
-            status = json.loads(node.network.status)
-            status["ready_for_next_gen"] = "No"
-            status["unfailed_nodes"] -= 1
-            if node.fitness is not None:
-                status["completed_nodes"] -= 1
-            node.fitness = None
-            node.network.status = json.dumps(status)
+            if node.network.role == "experiment":
+                status = json.loads(node.network.status)
+                status["ready_for_next_gen"] = "No"
+                status["unfailed_nodes"] -= 1
+                if node.fitness is not None:
+                    status["completed_nodes"] -= 1
+                node.fitness = None
+                node.network.status = json.dumps(status)
         self.session.commit()
 
     

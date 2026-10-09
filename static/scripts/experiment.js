@@ -520,19 +520,22 @@ function initializeTimestep() {
  $("#Main-header").html("Round " + currentRound + " of " + TotalRounds)
  $("#timestep").html("Attempt " + currentTimestep + " of " + lifespan)
 
- if (currentRound === 1) {
+ if (currentRound <= practiceRounds) {
+   $("#Main-header").html("Practice Trial " + currentRound);
+   $("#timestep").html("Attempt " + currentTimestep + " of " + lifespan);
+ } else if (experimentRound === 1) {
   $("#sequence-A").html("Sequence A").css("color", "palevioletred");
   $("#sequence-B").html("Sequence B").css("color", "cadetblue")
- } else if (currentRound === 2) {
+ } else if (experimentRound === 2) {
   $("#sequence-A").html("Sequence C").css("color", "firebrick");
   $("#sequence-B").html("Sequence D").css("color", "teal")
- } else if (currentRound === 3) {
+ } else if (experimentRound === 3) {
   $("#sequence-A").html("Sequence E").css("color", "slateblue");
   $("#sequence-B").html("Sequence F").css("color", "darkslategray")
- } else if (currentRound === 4) {
+ } else if (experimentRound === 4) {
   $("#sequence-A").html("Sequence G").css("color", "sienna");
   $("#sequence-B").html("Sequence H").css("color", "midnightblue")
- } else if (currentRound === 5) {
+ } else if (experimentRound === 5) {
   $("#sequence-A").html("Sequence I").css("color", "peru");
   $("#sequence-B").html("Sequence J").css("color", "darkolivegreen")
  } 

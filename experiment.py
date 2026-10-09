@@ -569,21 +569,23 @@ class GenCogExperiment(Experiment):
             lifespan = int(payload["lifespan"])
 
             if timestep >= lifespan:
-                node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
-                status = json.loads(node.network.status)
-                status["completed_nodes"] +=1
-                generation = node.generation
-                network_nodes = node.network.nodes(type=self.models.CogAgent)
-                horizontal_nodes = [n for n in network_nodes if n.generation == generation and not n.failed and n.fitness is not None]
-                if len(horizontal_nodes) < self.generation_size:
-                    status["ready_for_next_gen"] = "No"
-                else:
-                    status["last_completed_gen"] = generation + 1
-                    if generation + 1 == self.generations:
-                        status["ready_for_next_gen"] = "Complete"
+                if node.network.role == "experiment": 
+                    node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
+                    status = json.loads(node.network.status)
+                    status["completed_nodes"] +=1
+                    generation = node.generation
+                    network_nodes = node.network.nodes(type=self.models.CogAgent)
+                    horizontal_nodes = [n for n in network_nodes if n.generation == generation and not n.failed and n.fitness is not None]
+                    if len(horizontal_nodes) < self.generation_size:
+                        status["ready_for_next_gen"] = "No"
                     else:
-                        status["ready_for_next_gen"] = "Yes"
-                node.network.status = json.dumps(status)
+                        status["last_completed_gen"] = generation + 1
+                        if generation + 1 == self.generations:
+                            status["ready_for_next_gen"] = "Complete"
+                        else:
+                            status["ready_for_next_gen"] = "Yes"
+                    node.network.status = json.dumps(status)
+
             else:
                 self.create_timestep_info(node, timestep + 1)
 

@@ -438,7 +438,10 @@ function finishedRound() {
   currentRound += 1;
   dallinger.storage.set("currentRound", currentRound)
   
-  if (currentRound <= TotalRounds) {
+  if (experimentRound <= TotalRounds) {
+    if (experimentRound === 1) {
+      dallinger.goToPage("instructions/instruct-ready");
+    }
     dallinger.goToPage("between-rounds");
   } else {
     dallinger.allowExit();

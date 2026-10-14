@@ -527,6 +527,9 @@ function initializeTimestep() {
  if (currentRound <= practiceRounds) {
    $("#Main-header").html("Practice Trial " + currentRound);
    $("#timestep").html("Attempt " + currentTimestep + " of " + lifespan);
+   $("#sequence-A").html("Sequence X").css("color", "palevioletred");
+   $("#sequence-B").html("Sequence Y").css("color", "cadetblue")
+
  } else if (experimentRound === 1) {
   $("#sequence-A").html("Sequence A").css("color", "palevioletred");
   $("#sequence-B").html("Sequence B").css("color", "cadetblue")

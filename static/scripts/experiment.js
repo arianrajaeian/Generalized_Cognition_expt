@@ -468,6 +468,21 @@ function initializeTimestep() {
   }
   currentTimestep += 1;
   console.log("continue worked")
+
+  if (roundType === "practice") {
+
+    if (currentTimestep === 1) {
+      showPracticeMessage(
+      "Practice",
+      "You will now attempt a practice round showing that the experiment will look like. You will first interact with Sequence X, since that is the currently highlighted sequence."
+    )
+    } else if (currentTimestep === 2) {
+      showPracticeMessage(
+      "Practice",
+      "O"
+    )
+    }
+  }
    
   $("#submit").prop("disabled", true);
   
@@ -672,6 +687,16 @@ function showFeedback() {
     $("#continue").show();
     
     renderGrid();
+
+    if (roundType === "practice") {
+    if (currentTimestep === 1) {
+      showPracticeMessage(
+      "Practice",
+      "You will now see full feedback on your attempt of Sequence X. After you have a chance to view your feedback and press contiue, you will then attempt Sequence Y. Pay attention to which parts of your feedback on Sequence X give you information about Sequence"
+    )
+    }
+  }
+
     });
 
 }

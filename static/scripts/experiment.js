@@ -702,11 +702,8 @@ function showFeedback() {
 }
 
 function showPracticeMessage(title, message) {
-    $("#practice-modal-title").html(title);
-    $("#practice-modal-body").html(message);
-
-    var modalElement = document.getElementById("practice-modal");
-    var modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-    modal.show();
+  $("#practice-modal-title").html(title);
+  $("#practice-modal-body").html(message);
+  $("#practice-modal").modal("show");
 }
 

@@ -27,7 +27,7 @@ var showingFeedback = false;
 var practiceRounds = 1;
 var currentRound = 1;
 var TotalRounds = 5; // will want this to equal the number of available networks
-var experimentRound = currentRound - practiceRounds;
+var roundType = "practice"; // "practice" or "experiment"
 
 var submittedTimesteps = [];
 
@@ -437,17 +437,25 @@ create_agent = function() {
 function finishedRound() {
   currentRound += 1;
   dallinger.storage.set("currentRound", currentRound)
-  
-  if (experimentRound <= TotalRounds) {
-    if ((currentRound - 1) === 1) {
-      dallinger.goToPage("instructions/instruct-ready");
-    } else {
+  if (currentRound > practiceRounds) {
+    roundType = "experiment";
+  } else {
+    roundType = "practice";
+  }
+  if (roundType === "experiment") {
+    $(".practice-only").hide();
+    var experimentRound = currentRound - practiceRounds;
+    
+    if (experimentRound <= TotalRounds) {
       dallinger.goToPage("between-rounds");
+    } else {
+      dallinger.allowExit();
+      dallinger.goToPage("questionnaire");
     }
   } else {
-    dallinger.allowExit();
-    dallinger.goToPage("questionnaire");
+    dallinger.goToPage("instructions/instruct-ready");
   }
+
 }
 
 function initializeTimestep() {

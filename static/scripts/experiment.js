@@ -34,6 +34,8 @@ var submittedTimesteps = [];
 var transitioning = false;
 var submitting = false;
 
+var practiceMessageShowing = false;
+
 
 
 
@@ -702,8 +704,14 @@ function showFeedback() {
 }
 
 function showPracticeMessage(title, message) {
-  $("#practice-modal-title").html(title);
-  $("#practice-modal-body").html(message);
-  $("#practice-modal").modal("show");
+    $("#practice-modal-title").html(title);
+    $("#practice-modal-body").html(message);
+
+    practiceMessageShowing = true;
+    $("#practice-modal").css("display", "flex");
 }
 
+function hidePracticeMessage() {
+    practiceMessageShowing = false;
+    $("#practice-modal").hide();
+}

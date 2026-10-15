@@ -78,36 +78,46 @@
 
 </div>
 
-
 <!-- Practice instructions popup -->
-<div class="modal fade"
-     id="practice-modal"
-     tabindex="-1"
-     data-backdrop="static"
-     data-keyboard="false">
+<div id="practice-modal"
+     style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+        align-items: center;
+        justify-content: center;
+     ">
 
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+    <div style="
+        background-color: white;
+        width: 500px;
+        max-width: 90%;
+        border-radius: 6px;
+        padding: 24px;
+     ">
 
-            <div class="modal-header">
-                <h4 class="modal-title" id="practice-modal-title">
-                    Practice
-                </h4>
-            </div>
+        <h4 id="practice-modal-title">
+            Practice
+        </h4>
 
-            <div class="modal-body" id="practice-modal-body">
-            </div>
-
-            <div class="modal-footer">
-                <button type="button"
-                        class="btn btn-primary"
-                        id="practice-modal-continue"
-                        onclick="$('#practice-modal').modal('hide');">
-                    Got it
-                </button>
-            </div>
-
+        <div id="practice-modal-body"
+             style="margin-top: 15px;">
         </div>
+
+        <div style="margin-top: 20px; text-align: right;">
+            <button type="button"
+                    class="btn btn-primary"
+                    id="practice-modal-continue"
+                    onclick="hidePracticeMessage();">
+                Got it
+            </button>
+        </div>
+
     </div>
 </div>
 

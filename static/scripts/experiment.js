@@ -476,7 +476,19 @@ function initializeTimestep() {
     if (currentTimestep === 1) {
       showPracticeMessage(
       "Practice",
-      "You will now attempt a practice round showing that the experiment will look like. You will first interact with Sequence X, since that is the currently highlighted sequence."
+      `
+      <p>
+      You will now attempt a practice round of the experiment. This round will consist of two attempts. 
+      You will first attempt Sequence X, since that is the currently highlighted sequence.
+      </p>
+
+      <p>
+      Above your sequence, you can see parts of the answer from a previous player who attempted the same sequence. Once you 
+      have filled your sequence and are happy with your answer, you can submit them by clicking the 'Submit' button or pressing 
+      the 'Enter' key on you keyboard.
+      </p>
+      
+      `
     )
     }
   }
@@ -689,7 +701,17 @@ function showFeedback() {
     if (currentTimestep === 1) {
       showPracticeMessage(
       "Practice",
-      "You will now see full feedback on your attempt of Sequence X. After you have a chance to view your feedback and press contiue, you will then attempt Sequence Y. Pay attention to which parts of your feedback on Sequence X give you information about Sequence"
+      `
+      <p>
+      You will now see full feedback on your attempt of Sequence X. After you have a chance to view your feedback, you can press 
+      'Continue' or the 'Enter' key on your keyboard to move on to your next attempt.
+      </p>
+      
+      <p>
+      Your next attempt will be on Sequence Y. Pay attention to what parts of your feedback on Sequence X can help you on Sequence Y.
+      </p>
+      `
+      
     )
     }
   }

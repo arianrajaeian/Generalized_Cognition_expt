@@ -69,7 +69,7 @@
 
 
 
-<div id="button-row" style="margin-top: 28px;">
+<div id="button-row" style="margin-top: 40px; display:none;">
     <button
         type="button"
         class="btn btn-primary btn-lg"
@@ -257,6 +257,9 @@ function submitTutorial() {
 
     // Redraw grid with feedback
     renderTutorialGrid();
+
+    //show the continue button
+    $("#button-row").show();
 }
 
 

@@ -27,7 +27,7 @@ var showingFeedback = false;
 var practiceRounds = 1;
 var currentRound = 1;
 var TotalRounds = 5; // will want this to equal the number of available networks
-var roundType = "practice"; // "practice" or "experiment"
+var roundType = ""; // "practice" or "experiment"
 
 var submittedTimesteps = [];
 
@@ -439,13 +439,8 @@ create_agent = function() {
 function finishedRound() {
   currentRound += 1;
   dallinger.storage.set("currentRound", currentRound)
-  if (currentRound > practiceRounds) {
-    roundType = "experiment";
-  } else {
-    roundType = "practice";
-  }
+
   if (roundType === "experiment") {
-    $(".practice-only").hide();
     var experimentRound = currentRound - practiceRounds;
     
     if (experimentRound <= TotalRounds) {
@@ -454,7 +449,7 @@ function finishedRound() {
       dallinger.allowExit();
       dallinger.goToPage("questionnaire");
     }
-  } else {
+  } else if (roundType === "practice") {
     dallinger.goToPage("instructions/instruct-ready");
   }
 
@@ -470,6 +465,12 @@ function initializeTimestep() {
   }
   currentTimestep += 1;
   console.log("continue worked")
+
+  if (currentRound > practiceRounds) {
+    roundType = "experiment";
+  } else {
+    roundType = "practice";
+  }
 
   if (roundType === "practice") {
 
@@ -491,8 +492,11 @@ function initializeTimestep() {
       `
     )
     }
+  } else if (roundType === "experiment") {
+      experimentRound = currentRound - practiceRounds;
+      hidePracticeMessage();
   }
-   
+
   $("#submit").prop("disabled", true);
   
   dallinger.getInfos(my_node_id).done(function(resp) {

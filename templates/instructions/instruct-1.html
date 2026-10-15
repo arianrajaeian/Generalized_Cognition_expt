@@ -13,42 +13,165 @@
 
 <hr>
 
-<p>Here's an example of a filled-in sequence:</p>
-
-<div id="instruction-container">
-<div style="margin-top: 20px;">
-<img src="{{ url_for('static', filename='images/sequence.png') }}" width="760px" height="70px"/>
-</div>
-</div>
-
-<br>
-<br>
-
-<p>After each attempt, you may get feedback on some parts of the sequence:</p>
-
-<img src="{{ url_for('static', filename='images/seq_feedback.png') }}" width="760px" height="70px"/>
-
 <p>
-<span style="color: green;"><strong>Green</strong></span> = Correct.
-<span style="color: red;"><strong>Red</strong></span> = Incorrect.
-<span style="color: black;"><strong>White</strong></span> = No feedback
+    Try filling in the boxes below using the arrow keys on your keyboard.
+    You can enter any sequence of directions you like. You can use the
+    Backspace key to delete your most recent answer.
 </p>
 
-<br>
+<div id="tutorial-grid"></div>
 
-<p>Use the feedback from each attempt to improve your next answer.</p>
+<p style="margin-top: 20px;">
+    Once you feel comfortable entering sequences, click "Continue" to proceed
+    to the next set of instructions.
+</p>
 
-<div id="button-row" style="margin-top: 28px;">
-<button type="button" class="btn btn-primary btn-lg"
-onclick="dallinger.goToPage('instructions/instruct-2');">
-Next
+<button
+    id="tutorial-continue"
+    type="button"
+    class="btn btn-primary btn-lg"
+    disabled>
+    Continue
 </button>
-</div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script type="text/javascript">
 dallinger.createParticipant();
+
+var tutorialAnswers = [null, null, null, null, null, null];
+var tutorialActiveIndex = 0;
+
+
+function tutorialArrowLabel(value) {
+    switch (value) {
+        case "UP": return "↑";
+        case "DOWN": return "↓";
+        case "LEFT": return "←";
+        case "RIGHT": return "→";
+        default: return "";
+    }
+}
+
+
+function renderTutorialGrid() {
+    var $grid = $("#tutorial-grid");
+
+    $grid.empty();
+
+    $grid.css({
+        display: "flex",
+        flexDirection: "row",
+        gap: "8px"
+    });
+
+    for (var i = 0; i < tutorialAnswers.length; i++) {
+        var $cell = $("<div></div>");
+
+        var borderStyle = "1px solid #999";
+
+        // Highlight the currently active box
+        if (i === tutorialActiveIndex) {
+            borderStyle = "3px solid #000";
+        }
+
+        $cell.text(tutorialArrowLabel(tutorialAnswers[i]));
+
+        $cell.css({
+            width: "60px",
+            height: "60px",
+            border: borderStyle,
+            backgroundColor: "white",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "30px",
+            userSelect: "none"
+        });
+
+        $grid.append($cell);
+    }
+
+    // Enable Continue once all six boxes are filled
+    var allFilled = tutorialAnswers.every(function(answer) {
+        return answer !== null;
+    });
+
+    $("#tutorial-continue").prop("disabled", !allFilled);
+}
+
+
+function handleTutorialKeydown(e) {
+
+    // Backspace
+    if (e.which === 8) {
+        e.preventDefault();
+
+        var lastFilled = -1;
+
+        for (var i = tutorialAnswers.length - 1; i >= 0; i--) {
+            if (tutorialAnswers[i] !== null) {
+                lastFilled = i;
+                break;
+            }
+        }
+
+        if (lastFilled >= 0) {
+            tutorialAnswers[lastFilled] = null;
+            tutorialActiveIndex = lastFilled;
+            renderTutorialGrid();
+        }
+
+        return;
+    }
+
+
+    // Arrow keys
+    var map = {
+        37: "LEFT",
+        38: "UP",
+        39: "RIGHT",
+        40: "DOWN"
+    };
+
+    var val = map[e.which || e.keyCode];
+
+    // Ignore keys other than the four arrow keys
+    if (!val) {
+        return;
+    }
+
+    e.preventDefault();
+
+    // Put the selected arrow into the active box
+    tutorialAnswers[tutorialActiveIndex] = val;
+
+    // Move to the next box unless we're already at the last one
+    if (tutorialActiveIndex < tutorialAnswers.length - 1) {
+        tutorialActiveIndex += 1;
+    }
+
+    renderTutorialGrid();
+}
+
+
+// Listen for keyboard input while this tutorial page is active
+$(document).on("keydown.tutorial", handleTutorialKeydown);
+
+
+// Continue to the next instructions page
+$("#tutorial-continue").on("click", function() {
+
+    // Remove this page's keyboard listener
+    $(document).off("keydown.tutorial");
+
+    dallinger.goToPage("instructions/instruct-2");
+});
+
+
+// Draw the empty grid when the page first loads
+renderTutorialGrid();
+
 </script>
 {% endblock %}

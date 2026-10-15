@@ -478,11 +478,6 @@ function initializeTimestep() {
       "Practice",
       "You will now attempt a practice round showing that the experiment will look like. You will first interact with Sequence X, since that is the currently highlighted sequence."
     )
-    } else if (currentTimestep === 2) {
-      showPracticeMessage(
-      "Practice",
-      "O"
-    )
     }
   }
    

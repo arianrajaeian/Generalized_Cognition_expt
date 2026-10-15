@@ -20,25 +20,60 @@
     Backspace key to delete your most recent answer.
 </p>
 
-<br>
-<br>
-
-<div id="tutorial-grid"></div>
-
-<p style="margin-top: 20px;">
-    Once you feel comfortable entering sequences, click "Continue" to proceed
-    to the next set of instructions.
+<p> You can press the submit button to submit your answer for a sequence, or press the
+    Enter key on your keyboard.
 </p>
 
 <br>
 <br>
 
+<div id="tutorial-grid"></div>
+
+<button
+    style="margin-top: 20px;"
+    id="tutorial-submit"
+    type="button"
+    class="btn btn-primary btn-lg"
+    disabled>
+    Submit
+</button>
+
+
+
+<div id="tutorial-feedback-explanation"
+     style="display: none; margin-top: 25px;">
+
+    <p>
+        After submitting an answer, you may receive feedback about some of the boxes.
+    </p>
+
+    <p>
+        A <strong style="color: green;">green</strong> answer means that your answer
+        was correct, while a <strong style="color: red;">red</strong> answer means
+        that your answer was incorrect.
+    </p>
+
+    <p>
+       In this example, the second box is red, so you know that your answer for the second box was 
+       incorrect. The fourth box is green, so you know that your answer for the fourth box was correct.
+    </p>
+
+    <p>
+        Notice that the other boxes did not change color. This means that you did not receive feedback 
+        about those answers. You will not always receive feedback for every box, and might sometimes
+        receive feedback for none of the boxes. 
+    </p>
+
+</div>
+
+
+
+
 <div id="button-row" style="margin-top: 28px;">
     <button
-        id="tutorial-continue"
         type="button"
         class="btn btn-primary btn-lg"
-        disabled>
+        onclick="dallinger.goToPage('instructions/instruct-2');">
         Continue
     </button>
 </div>
@@ -54,6 +89,7 @@ dallinger.createParticipant();
 
 var tutorialAnswers = [null, null, null, null, null, null];
 var tutorialActiveIndex = 0;
+var tutorialShowingFeedback = false;
 
 
 function tutorialArrowLabel(value) {
@@ -82,10 +118,29 @@ function renderTutorialGrid() {
         var $cell = $("<div></div>");
 
         var borderStyle = "1px solid #999";
+        var backgroundColor = "white";
+        var textColor = "black";
 
-        // Highlight the currently active box
-        if (i === tutorialActiveIndex) {
+        // Highlight the active box while entering answers
+        if (!tutorialShowingFeedback && i === tutorialActiveIndex) {
             borderStyle = "3px solid #000";
+        }
+
+        // Demonstration feedback:
+        // second box = incorrect
+        // fourth box = correct
+        if (tutorialShowingFeedback) {
+            if (i === 1) {
+                borderStyle = "3px solid red";
+                backgroundColor = "#f8d7da";
+                textColor = "red";
+            }
+
+            if (i === 3) {
+                borderStyle = "3px solid green";
+                backgroundColor = "#d4edda";
+                textColor = "green";
+            }
         }
 
         $cell.text(tutorialArrowLabel(tutorialAnswers[i]));
@@ -94,7 +149,8 @@ function renderTutorialGrid() {
             width: "60px",
             height: "60px",
             border: borderStyle,
-            backgroundColor: "white",
+            backgroundColor: backgroundColor,
+            color: textColor,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -105,18 +161,37 @@ function renderTutorialGrid() {
         $grid.append($cell);
     }
 
-    // Enable Continue once all six boxes are filled
+    // Submit is enabled only after all six boxes have answers
     var allFilled = tutorialAnswers.every(function(answer) {
         return answer !== null;
     });
 
-    $("#tutorial-continue").prop("disabled", !allFilled);
+    $("#tutorial-submit").prop(
+        "disabled",
+        !allFilled || tutorialShowingFeedback
+    );
 }
 
 
 function handleTutorialKeydown(e) {
 
-    // Backspace
+    // Don't allow answers to change after submission
+    if (tutorialShowingFeedback) {
+        return;
+    }
+
+    // Enter = Submit
+    if (e.which === 13) {
+        e.preventDefault();
+
+        if (!$("#tutorial-submit").prop("disabled")) {
+            submitTutorial();
+        }
+
+        return;
+    }
+
+    // Backspace = remove most recent answer
     if (e.which === 8) {
         e.preventDefault();
 
@@ -138,7 +213,6 @@ function handleTutorialKeydown(e) {
         return;
     }
 
-
     // Arrow keys
     var map = {
         37: "LEFT",
@@ -149,17 +223,15 @@ function handleTutorialKeydown(e) {
 
     var val = map[e.which || e.keyCode];
 
-    // Ignore keys other than the four arrow keys
     if (!val) {
         return;
     }
 
     e.preventDefault();
 
-    // Put the selected arrow into the active box
     tutorialAnswers[tutorialActiveIndex] = val;
 
-    // Move to the next box unless we're already at the last one
+    // Move to the next box
     if (tutorialActiveIndex < tutorialAnswers.length - 1) {
         tutorialActiveIndex += 1;
     }
@@ -168,21 +240,37 @@ function handleTutorialKeydown(e) {
 }
 
 
-// Listen for keyboard input while this tutorial page is active
+function submitTutorial() {
+
+    // Prevent accidental double submission
+    if (tutorialShowingFeedback) {
+        return;
+    }
+
+    tutorialShowingFeedback = true;
+
+    // Submit is no longer needed
+    $("#tutorial-submit").hide();
+
+    // Show explanation of feedback
+    $("#tutorial-feedback-explanation").show();
+
+    // Redraw grid with feedback
+    renderTutorialGrid();
+}
+
+
+// Keyboard controls
 $(document).on("keydown.tutorial", handleTutorialKeydown);
 
 
-// Continue to the next instructions page
-$("#tutorial-continue").on("click", function() {
-
-    // Remove this page's keyboard listener
-    $(document).off("keydown.tutorial");
-
-    dallinger.goToPage("instructions/instruct-2");
+// Submit button
+$("#tutorial-submit").on("click", function() {
+    submitTutorial();
 });
 
 
-// Draw the empty grid when the page first loads
+// Draw empty grid when page loads
 renderTutorialGrid();
 
 </script>

@@ -668,3 +668,9 @@ function showFeedback() {
 
 }
 
+function showPracticeMessage(title, message) {
+  $("#practice-modal-title").html(title);
+  $("#practice-modal-body").html(message);
+  $("#practice-modal").modal("show");
+}
+

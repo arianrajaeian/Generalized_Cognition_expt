@@ -557,7 +557,7 @@ function initializeTimestep() {
   $("#submit").show();
   $("#submit").prop("disabled", false); 
   
- $("#Main-header").html("Round " + currentRound + " of " + TotalRounds)
+ $("#Main-header").html("Round " + experimentRound + " of " + TotalRounds)
  $("#timestep").html("Attempt " + currentTimestep + " of " + lifespan)
 
  if (currentRound <= practiceRounds) {

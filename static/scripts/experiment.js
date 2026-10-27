@@ -29,6 +29,8 @@ var currentRound = 1;
 var TotalRounds = 5; // will want this to equal the number of available networks
 var roundType = ""; // "practice" or "experiment"
 
+var experimentRound = 0;
+
 var submittedTimesteps = [];
 
 var transitioning = false;
@@ -441,7 +443,7 @@ function finishedRound() {
   dallinger.storage.set("currentRound", currentRound)
 
   if (roundType === "experiment") {
-    var experimentRound = currentRound - practiceRounds;
+    experimentRound = currentRound - practiceRounds;
     
     if (experimentRound <= TotalRounds) {
       dallinger.goToPage("between-rounds");
@@ -471,6 +473,8 @@ function initializeTimestep() {
   } else {
     roundType = "practice";
   }
+
+  console.log("Round type", roundType);
 
   if (roundType === "practice") {
 

@@ -256,23 +256,27 @@ $container.append($row);
 function highlightActiveTask() {
   if (task === "A") {
     $("#Task-A").css({
-      border: "1px solid #d6dbe7",
-      backgroundColor: "#f4f6fb"
+      border: "2px solid #b8c2d6",
+      backgroundColor: "#eef2f8",
+      padding: "15px"
     })
     $("#Task-B").css({
-      border: "none",
-      backgroundColor: "transparent"
+      border: "2px solid transparent",
+      backgroundColor: "transparent",
+      padding: "15px"
     })
     $("#sequence-A").css({"font-weight": "bold", "font-size": "1.8em"});
     $("#sequence-B").css({"font-weight": "400", "font-size": "1.4em"});
   } else {
     $("#Task-B").css({
-      border: "1px solid #d6dbe7",
-      backgroundColor: "#f4f6fb"
+      border: "2px solid #b8c2d6",
+      backgroundColor: "#eef2f8",
+      padding: "15px"
     })
     $("#Task-A").css({
-      border: "none",
-      backgroundColor: "transparent"
+      border: "2px solid transparent",
+      backgroundColor: "transparent",
+      padding: "15px"
     })
     $("#sequence-A").css({"font-weight": "400", "font-size": "1.4em"});
     $("#sequence-B").css({"font-weight": "bold", "font-size": "1.8em"});

@@ -336,6 +336,10 @@ function renderParentGrid() {
 
   
 function handleKeydown(e) {
+    if (practiceMessageShowing) {
+      return;
+    }
+  
   if (e.which === 13) {
     e.preventDefault();
     

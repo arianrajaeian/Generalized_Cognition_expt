@@ -318,7 +318,7 @@ function renderParentGrid() {
   $cell.css({
   width: "60px",
   height: "60px",
-  border: "1px solid #999",
+  border: "2px dashed #aaa",
   backgroundColor: backgroundColor,
   display: "flex",
   alignItems: "center",

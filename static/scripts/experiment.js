@@ -192,7 +192,7 @@ var key = String(i);
 
 var backgroundColor = "white";
 if (generalizedPositions_other.includes(i)) {
-  backgroundColor = "#d0ebff";
+  backgroundColor = "transparent";
 }
 
 
@@ -310,11 +310,11 @@ function renderParentGrid() {
   }
   
   
-  var backgroundColor = "white";
+  var backgroundColor = "transparent";
   var textColor = "#555"
   
   if (generalizedPositions.includes(i)) {
-  backgroundColor = "#d0ebff";
+  backgroundColor = "#e8f5ff";
   }
 
   if (parentValue == null) {
@@ -492,7 +492,7 @@ function initializeTimestep() {
       `
       <p>
       You will now attempt a practice round of the experiment. This round will consist of two attempts. 
-      You will first attempt Sequence X, since that is the currently highlighted sequence.
+      You will first attempt Sequence X, which is currently highlighted.
       </p>
 
       <p>

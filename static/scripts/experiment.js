@@ -203,7 +203,7 @@ $cell.text("?");
 $cell.css({
 width: "60px",
 height: "60px",
-border: "2px dashed #aaa",
+border: "1px dashed #bbb",
 backgroundColor: backgroundColor,
 display: "flex",
 alignItems: "center",
@@ -324,7 +324,7 @@ function renderParentGrid() {
   $cell.css({
   width: "60px",
   height: "60px",
-  border: "2px dashed #aaa",
+  border: "1px dashed #bbb",
   backgroundColor: backgroundColor,
   display: "flex",
   alignItems: "center",

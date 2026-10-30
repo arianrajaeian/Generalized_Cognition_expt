@@ -18,6 +18,7 @@
     Try filling in the boxes below.
     You can enter any sequence of directions you like. You can use the
     Backspace key to delete your current answer for the last box that you have filled in.
+    You can also click on a box to select it.
 </p>
 
 <p> Once you are happy with your answer for a sequence, you can submit it by clicking the "Submit" button below or 
@@ -157,6 +158,17 @@ function renderTutorialGrid() {
             fontSize: "30px",
             userSelect: "none"
         });
+
+        (function(index) {
+        $cell.on("click", function() {
+        if (tutorialShowingFeedback) {
+            return;
+        }
+
+        tutorialActiveIndex = index;
+        renderTutorialGrid();
+        });
+        })(i);
 
         $grid.append($cell);
     }

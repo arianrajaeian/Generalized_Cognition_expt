@@ -311,7 +311,7 @@ function renderParentGrid() {
   
   
   var backgroundColor = "transparent";
-  var textColor = "#555"
+  var textColor = "#777";
   
   if (generalizedPositions.includes(i)) {
   backgroundColor = "#e8f5ff";

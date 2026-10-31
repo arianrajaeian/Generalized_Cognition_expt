@@ -91,62 +91,97 @@ function pressContinue() {
 }
 
 function renderGrid() {
-  renderParentGrid();
   highlightActiveTask();
+
   if (task === "A") {
     var $grid = $("#grid-A");
   } else {
     var $grid = $("#grid-B");
   }
+
   $grid.empty();
+
   $grid.css({
     display: "flex",
-    flexDirection: "row", 
+    flexDirection: "row",
     gap: "8px"
-  })
+  });
 
   for (var i = 0; i < toSolve; i++) {
+
+    var key = String(i);
+
+    // Each position contains player and parent answers
+    var $position = $("<div></div>");
+
+    $position.css({
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "5px"
+    });
+
+
+
+    // Player's asnwer
+
+
     var $cell = $("<div></div>");
+
     $cell.addClass("gc-cell");
     $cell.attr("data-index", i);
     $cell.text(arrowLabel(answers[i]));
 
-    var key = String(i);
     var borderStyle = "1px solid #999";
     var backgroundColor = "white";
     var textColor = "black";
 
-    // generalized positions always blue
     if (generalizedPositions.includes(i)) {
-    backgroundColor = "#d0ebff";
+      backgroundColor = "#d0ebff";
     }
 
     if (!showingFeedback && transmittedAnswers[key] !== undefined) {
-    textColor = "#555";
+      textColor = "#555";
     }
 
-    // feedback overrides background
-    if (showingFeedback && feedbackCorrectness[key] !== undefined) {
-    if (feedbackCorrectness[key]) {
-    borderStyle = "3px solid green";
-    backgroundColor = "#d4edda";
-    } else {
-    borderStyle = "3px solid red";
-    backgroundColor = "#f8d7da";
-    }
+    if (
+      showingFeedback &&
+      feedbackCorrectness[key] !== undefined
+    ) {
+
+      if (feedbackCorrectness[key]) {
+        borderStyle = "3px solid green";
+        backgroundColor = "#d4edda";
+      } else {
+        borderStyle = "3px solid red";
+        backgroundColor = "#f8d7da";
+      }
+
     } else if (!showingFeedback && i === activeIndex) {
-    borderStyle = "3px solid #000";
-    }
 
+      borderStyle = "3px solid #000";
+
+    }
 
     $cell.css({
       width: "60px",
       height: "60px",
       border: borderStyle,
       backgroundColor: backgroundColor,
-      color: showingFeedback && Object.prototype.hasOwnProperty.call(feedbackCorrectness, key)
-        ? (feedbackCorrectness[key] === true ? "green" : "red")
-        : textColor,
+
+      color:
+        showingFeedback &&
+        Object.prototype.hasOwnProperty.call(
+          feedbackCorrectness,
+          key
+        )
+          ? (
+              feedbackCorrectness[key] === true
+                ? "green"
+                : "red"
+            )
+          : textColor,
+
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -155,16 +190,72 @@ function renderGrid() {
       userSelect: "none"
     });
 
-    (function(index){
+
+    (function(index) {
+
       $cell.on("click", function() {
-        if (showingFeedback) {return;}
+
+        if (showingFeedback) {
+          return;
+        }
+
         activeIndex = index;
+
         renderGrid();
+
         updateSubmitEnabled();
+
       });
+
     })(i);
 
-    $grid.append($cell);
+
+
+    // parent's answer
+
+
+    var $parentCell = $("<div></div>");
+
+    var parentValue =
+      transmittedAnswers[key] !== undefined
+        ? transmittedAnswers[key]
+        : null;
+
+    if (parentValue == null) {
+      $parentCell.text("?");
+    } else {
+      $parentCell.text(arrowLabel(parentValue));
+    }
+
+    var parentBackground = "#fafbfd";
+
+    if (generalizedPositions.includes(i)) {
+      parentBackground = "#e8f5ff";
+    }
+
+    $parentCell.css({
+      width: "60px",
+      height: "30px",
+      border: "1px dashed #bbb",
+      borderRadius: "3px",
+      backgroundColor: parentBackground,
+
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+
+      fontSize: "20px",
+      color: parentValue == null ? "#aaa" : "#777",
+
+      userSelect: "none"
+    });
+
+
+    // Put both into the same position
+    $position.append($cell);
+    $position.append($parentCell);
+
+    $grid.append($position);
   }
 }
 

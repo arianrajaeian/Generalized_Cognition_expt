@@ -211,24 +211,23 @@ var Question_3 = "";
 var Question_4 = "";
 var Question_5 = "";
 
-var attempts = 0
+var local_attempts = 0
+var global_attempts = dallinger.storage.get("comp_attempts") || 0
 
-function pingButton(type, response, correctness){
-    if(type == "Task"){
-      $("#Task").html(response);  
-    } else if(type == "Q1"){
+function pingButton(question, response, correctness){
+    if(question == "Q1"){
       $("#Q1").html(response);
       Question_1 = correctness;  
-    } else if(type == "Q2"){
+    } else if(question == "Q2"){
       $("#Q2").html(response);
       Question_2 = correctness; 
-    } else if(type == "Q3"){
+    } else if(question == "Q3"){
       $("#Q3").html(response);
       Question_3 = correctness;  
-    } else if (type == "Q4"){
+    } else if (question == "Q4"){
       $("#Q4").html(response);
       Question_4 = correctness;
-    } else if (type == "Q5"){
+    } else if (question == "Q5"){
       $("#Q5").html(response);
       Question_5 = correctness;
     }
@@ -236,24 +235,26 @@ function pingButton(type, response, correctness){
 
 function attemptAdvance() {
     $("#submit").prop("disabled", true);
-    attempts += 1;
+    local_attempts += 1;
     createCompQuestion().done(function() {
-        if (Question_1 == "correct" && Question_2 == "correct" && Question_3 == "correct" && Question_4 == "correct" && Question_5 == "correct") {
+    if (Question_1 == "correct" && Question_2 == "correct" && Question_3 == "correct" && Question_4 == "correct" && Question_5 == "correct") {
 
-    dallinger.storage.set("comp_attempts", attempts);
+        dallinger.storage.set("comp_attempts", local_attempts + global_attempts);
 
-    $("#correct").show();
-    $("#begin").show();
-    $("#warning").hide();
-    $("#re-read").hide();
+        $("#correct").show();
+        $("#begin").show();
+        $("#warning").hide();
+        $("#re-read").hide();
 
 
     } else {
-    if (attempts == 1) {
+    if (local_attempts == 1) {
         $("#submit").prop("disabled", false);
         $("#warning").show()
     } 
-    if (attempts == 2) {
+    if (local_attempts == 2) {
+        dallinger.storage.set("comp_attempts", local_attempts + global_attempts);
+
         $("#warning").html('You seem to be having trouble with the instructions. You will now be sent back to re-read the instructions. Press the "Re-read" button to go back to the instructions. Otherwise, you may also return the study if you wish.')
         $("#submit").hide();
         $("#re-read").show();
@@ -270,7 +271,7 @@ function createCompQuestion() {
       question: "comprehension_attempt",
       number: 1,
       response: JSON.stringify({
-        "Attempt": attempts, 
+        "Attempt": local_attempts + global_attempts, 
         "Question 1": Question_1, 
         "Question 2": Question_2, 
         "Question 3": Question_3, 

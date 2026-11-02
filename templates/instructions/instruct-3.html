@@ -54,7 +54,7 @@ Previous
 
 <button type="button" class="btn btn-primary btn-lg"
 style="margin-left: 12px;"
-onclick="dallinger.goToPage('experiment');">
+onclick="nextButton();">
 Next
 </button>
 </div>
@@ -62,4 +62,18 @@ Next
 </div>
 
 
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+
+function nextButton() {
+    if (dallinger.storage.get("comp_attempts") >= 1) {
+        dallinger.goToPage('instructions/instruct-ready');
+    } else {
+        dallinger.goToPage('experiment');
+    }
+}
+
+</script>
 {% endblock %}

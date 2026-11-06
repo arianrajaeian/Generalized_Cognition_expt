@@ -346,6 +346,8 @@ $container.append($row);
 
 function highlightActiveTask() {
   if (task === "A") {
+    $("#A-point").show();
+    $("#B-point").hide();
     $("#Task-A").css({
       border: "2px solid #b8c2d6",
       backgroundColor: "#eef2f8",
@@ -359,6 +361,8 @@ function highlightActiveTask() {
     $("#sequence-A").css({"font-weight": "bold", "font-size": "1.8em"});
     $("#sequence-B").css({"font-weight": "400", "font-size": "1.4em"});
   } else {
+    $("#A-point").hide();
+    $("#B-point").show();
     $("#Task-B").css({
       border: "2px solid #b8c2d6",
       backgroundColor: "#eef2f8",

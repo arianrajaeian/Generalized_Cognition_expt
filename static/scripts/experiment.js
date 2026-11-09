@@ -591,7 +591,7 @@ function initializeTimestep() {
       </p>
 
       <p>
-      Above your sequence, you can see parts of the answer from a previous player who attempted the same sequence. Once you 
+      Below your sequence, you can see parts of the answer from a previous player who attempted the same sequence. Once you 
       have filled your sequence and are happy with your answer, you can submit them by clicking the 'Submit' button or pressing 
       the 'Enter' key on you keyboard.
       </p>

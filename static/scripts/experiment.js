@@ -258,53 +258,12 @@ function renderGrid() {
 function renderOtherGrid() {
 if (task_other === "A") {
   var $container = $("#grid-A")
-  var $parent_container = $("#parent-grid-A")
 } else {
   var $container = $("#grid-B")
-  var $parent_container = $("#parent-grid-B")
 }
 
 $container.empty();
-$parent_container.empty();
 
-// parent row
-var $parentRow = $("<div></div>").css({
-display: "flex",
-gap: "8px"
-});
-
-for (var i = 0; i < toSolve_other; i++) {
-var $cell = $("<div></div>");
-var key = String(i);
-
-var backgroundColor = "white";
-if (generalizedPositions_other.includes(i)) {
-  backgroundColor = "transparent";
-}
-
-
-var textColor = "#999";
-
-$cell.text("?");
-
-$cell.css({
-width: "60px",
-height: "60px",
-border: "1px dashed #bbb",
-backgroundColor: backgroundColor,
-display: "flex",
-alignItems: "center",
-justifyContent: "center",
-fontSize: "30px",
-color: textColor,
-userSelect: "none",
-cursor: "default"
-});
-
-$parentRow.append($cell);
-}
-
-$parent_container.append($parentRow);
 
 // "your answers" row (STATIC, not editable)
 var $row = $("<div></div>").css({

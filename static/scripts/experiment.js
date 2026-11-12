@@ -140,10 +140,6 @@ function renderGrid() {
       backgroundColor = "#d0ebff";
     }
 
-    if (!showingFeedback && transmittedAnswers[key] !== undefined) {
-      textColor = "#555";
-    }
-
     if (
       showingFeedback &&
       feedbackCorrectness[key] !== undefined

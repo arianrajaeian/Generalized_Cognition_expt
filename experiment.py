@@ -839,7 +839,20 @@ class GenCogExperiment(Experiment):
     def data_check(self, participant):
         print("??checking data for Participant ", participant.id)
 
-        for node in participant.nodes():
+        nodes = participant.nodes()
+        
+        practice_nodes = [node for node in nodes if node.network.role == "practice"]
+        experiment_nodes = [node for node in nodes if node.network.role == "experiment"]
+
+        if len(practice_nodes) != self.practice_repeats:
+            print("??Participant ", participant.id, " has wrong number of practice nodes")
+            return False
+
+        if len(experiment_nodes) != self.experiment_repeats:
+            print("??Participant ", participant.id, " has wrong number of experiment nodes")
+            return False
+
+        for node in nodes:
             if node.failed:
                 return False
             if len(node.infos(type=self.models.AnswerCorrectness)) != int(node.lifespan):

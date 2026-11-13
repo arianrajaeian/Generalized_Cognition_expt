@@ -333,60 +333,6 @@ function highlightActiveTask() {
   }
 }
 
-function renderParentGrid() {
-  if (task === "A") {
-    var $grid = $("#parent-grid-A");
-  } else {
-    var $grid = $("#parent-grid-B");
-  }
-  $grid.empty();
-  $grid.css({
-    display: "flex",
-    flexDirection: "row", 
-    gap: "8px"
-  })
-  
-  for (var i = 0; i < toSolve; i++) {
-  var $cell = $("<div></div>");
-  $cell.addClass("gc-cell");
-  
-  var key = String(i);
-  var parentValue = transmittedAnswers[key] !== undefined ? transmittedAnswers[key] : null;
-  if (parentValue == null) {
-    $cell.text("?");
-  }
-  else {
-    $cell.text(arrowLabel(parentValue));
-  }
-  
-  
-  var backgroundColor = "transparent";
-  var textColor = "#777";
-  
-  if (generalizedPositions.includes(i)) {
-  backgroundColor = "#e8f5ff";
-  }
-
-  if (parentValue == null) {
-    textColor = "#999";
-  }
-  
-  $cell.css({
-  width: "60px",
-  height: "60px",
-  border: "1px dashed #bbb",
-  backgroundColor: backgroundColor,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "30px",
-  color: textColor,
-  userSelect: "none"
-  });
-  
-  $grid.append($cell);
-  }
-  }
 
   
 function handleKeydown(e) {

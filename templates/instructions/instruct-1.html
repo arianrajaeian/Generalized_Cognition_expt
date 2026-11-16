@@ -6,49 +6,286 @@
 <hr>
 
 <p>
-    In this experiment your goal is to learn several different sequences of directions (<strong>↑ ↓ ← →</strong>) across multiple attempts.
-    Each sequence will contain a row of boxes, which you can fill using the arrow keys on your keyboard.       
+    In this experiment your goal is to learn sequences of directions (<strong>↑ ↓ ← →</strong>).
+    You will see a row of boxes, and your task is to fill in the correct sequence using the arrow keys on your keyboard.      
     <img src="{{ url_for('static', filename='images/arrow-keys.png') }}" style="height: 2.5em; vertical-align: bottom; margin-left: 10px;">
 </p>
 
 <hr>
 
-<p>Here's an example of a filled-in sequence:</p>
-
-<div id="instruction-container">
-<div style="margin-top: 20px;">
-<img src="{{ url_for('static', filename='images/sequence.png') }}" width="760px" height="70px"/>
-</div>
-</div>
-
-<br>
-<br>
-
-<p>After each attempt, you may get feedback on some parts of the sequence:</p>
-
-<img src="{{ url_for('static', filename='images/seq_feedback.png') }}" width="760px" height="70px"/>
-
 <p>
-<span style="color: green;"><strong>Green</strong></span> = Correct.
-<span style="color: red;"><strong>Red</strong></span> = Incorrect.
-<span style="color: black;"><strong>White</strong></span> = No feedback
+    Try filling in the boxes below.
+    You can enter any sequence of directions you like. You can use the
+    Backspace key to delete your current answer for the last box that you have filled in.
+    You can also click on a box to select it.
+</p>
+
+<p> Once you are happy with your answer for a sequence, you can submit it by clicking the "Submit" button below or 
+    pressing the Enter key on your keyboard. 
 </p>
 
 <br>
+<br>
 
-<p>Use the feedback from each attempt to improve your next answer.</p>
+<div id="tutorial-grid"></div>
 
-<div id="button-row" style="margin-top: 28px;">
-<button type="button" class="btn btn-primary btn-lg"
-onclick="dallinger.goToPage('instructions/instruct-2');">
-Next
+<button
+    style="margin-top: 20px;"
+    id="tutorial-submit"
+    type="button"
+    class="btn btn-primary btn-lg"
+    disabled>
+    Submit
 </button>
+
+
+
+<div id="tutorial-feedback-explanation"
+     style="display: none; margin-top: 25px;">
+
+    <p>
+        After submitting an answer, you may receive feedback about some of the boxes.
+    </p>
+
+    <p>
+        <strong style="color: green;">Green</strong> means that your choice for that box
+        was correct. <strong style="color: red;">Red</strong> means
+        that your choice for that box was incorrect.
+    </p>
+
+    <p>
+       In this example, the second box is red, so you know that your choice for the second box was 
+       incorrect. The fourth box is green, so you know that your choice for the fourth box was correct.
+    </p>
+
+    <p>
+        Notice that the other boxes did not change color. This means that you did not receive feedback 
+        about those answers. You won't always receive feedback for every box, and might sometimes
+        receive feedback for none of the boxes. 
+    </p>
+
 </div>
+
+
+
+
+<div id="button-row" style="margin-top: 40px; display:none;">
+    <button
+        type="button"
+        class="btn btn-primary btn-lg"
+        onclick="dallinger.goToPage('instructions/instruct-2');">
+        Continue
+    </button>
+</div>
+
+
+
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script type="text/javascript">
 dallinger.createParticipant();
+
+var tutorialAnswers = [null, null, null, null, null, null];
+var tutorialActiveIndex = 0;
+var tutorialShowingFeedback = false;
+
+
+function tutorialArrowLabel(value) {
+    switch (value) {
+        case "UP": return "↑";
+        case "DOWN": return "↓";
+        case "LEFT": return "←";
+        case "RIGHT": return "→";
+        default: return "";
+    }
+}
+
+
+function renderTutorialGrid() {
+    var $grid = $("#tutorial-grid");
+
+    $grid.empty();
+
+    $grid.css({
+        display: "flex",
+        flexDirection: "row",
+        gap: "8px"
+    });
+
+    for (var i = 0; i < tutorialAnswers.length; i++) {
+        var $cell = $("<div></div>");
+
+        var borderStyle = "1px solid #999";
+        var backgroundColor = "white";
+        var textColor = "black";
+
+        // Highlight the active box while entering answers
+        if (!tutorialShowingFeedback && i === tutorialActiveIndex) {
+            borderStyle = "3px solid #000";
+        }
+
+        // Demonstration feedback:
+        // second box = incorrect
+        // fourth box = correct
+        if (tutorialShowingFeedback) {
+            if (i === 1) {
+                borderStyle = "3px solid red";
+                backgroundColor = "#f8d7da";
+                textColor = "red";
+            }
+
+            if (i === 3) {
+                borderStyle = "3px solid green";
+                backgroundColor = "#d4edda";
+                textColor = "green";
+            }
+        }
+
+        $cell.text(tutorialArrowLabel(tutorialAnswers[i]));
+
+        $cell.css({
+            width: "60px",
+            height: "60px",
+            border: borderStyle,
+            backgroundColor: backgroundColor,
+            color: textColor,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "30px",
+            userSelect: "none"
+        });
+
+        (function(index) {
+        $cell.on("click", function() {
+        if (tutorialShowingFeedback) {
+            return;
+        }
+
+        tutorialActiveIndex = index;
+        renderTutorialGrid();
+        });
+        })(i);
+
+        $grid.append($cell);
+    }
+
+    // Submit is enabled only after all six boxes have answers
+    var allFilled = tutorialAnswers.every(function(answer) {
+        return answer !== null;
+    });
+
+    $("#tutorial-submit").prop(
+        "disabled",
+        !allFilled || tutorialShowingFeedback
+    );
+}
+
+
+function handleTutorialKeydown(e) {
+
+    // Don't allow answers to change after submission
+    if (tutorialShowingFeedback) {
+        return;
+    }
+
+    // Enter = Submit
+    if (e.which === 13) {
+        e.preventDefault();
+
+        if (!$("#tutorial-submit").prop("disabled")) {
+            submitTutorial();
+        }
+
+        return;
+    }
+
+    // Backspace = remove most recent answer
+    if (e.which === 8) {
+        e.preventDefault();
+
+        var lastFilled = -1;
+
+        for (var i = tutorialAnswers.length - 1; i >= 0; i--) {
+            if (tutorialAnswers[i] !== null) {
+                lastFilled = i;
+                break;
+            }
+        }
+
+        if (lastFilled >= 0) {
+            tutorialAnswers[lastFilled] = null;
+            tutorialActiveIndex = lastFilled;
+            renderTutorialGrid();
+        }
+
+        return;
+    }
+
+    // Arrow keys
+    var map = {
+        37: "LEFT",
+        38: "UP",
+        39: "RIGHT",
+        40: "DOWN"
+    };
+
+    var val = map[e.which || e.keyCode];
+
+    if (!val) {
+        return;
+    }
+
+    e.preventDefault();
+
+    tutorialAnswers[tutorialActiveIndex] = val;
+
+    // Move to the next box
+    if (tutorialActiveIndex < tutorialAnswers.length - 1) {
+        tutorialActiveIndex += 1;
+    }
+
+    renderTutorialGrid();
+}
+
+
+function submitTutorial() {
+
+    // Prevent accidental double submission
+    if (tutorialShowingFeedback) {
+        return;
+    }
+
+    tutorialShowingFeedback = true;
+
+    // Submit is no longer needed
+    $("#tutorial-submit").hide();
+
+    // Show explanation of feedback
+    $("#tutorial-feedback-explanation").show();
+
+    // Redraw grid with feedback
+    renderTutorialGrid();
+
+    //show the continue button
+    $("#button-row").show();
+}
+
+
+// Keyboard controls
+$(document).on("keydown.tutorial", handleTutorialKeydown);
+
+
+// Submit button
+$("#tutorial-submit").on("click", function() {
+    submitTutorial();
+});
+
+
+// Draw empty grid when page loads
+renderTutorialGrid();
+
 </script>
 {% endblock %}

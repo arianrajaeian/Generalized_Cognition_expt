@@ -76,7 +76,11 @@ class GenCogExperiment(Experiment):
         super(GenCogExperiment, self).__init__(session, no_configure=no_configure)
         from . import models
 
+        self.practice_repeats = 1
         self.models = models
+        self.known_classes["PracticeNetwork"] = self.models.PracticeNetwork
+        self.known_classes["ExpEnvironment"] = self.models.ExpEnvironment
+        self.known_classes['DiscreteGeneration'] = self.models.DiscreteGeneration
         self.known_classes["CogAgent"] = self.models.CogAgent
         self.known_classes["TaskAnswer"] = self.models.TaskAnswer
         self.known_classes["FeedbackInfo"] = self.models.FeedbackInfo
@@ -108,12 +112,38 @@ class GenCogExperiment(Experiment):
 
     def setup(self):
         """First time setup."""
-        super(GenCogExperiment, self).setup()
+        
+        if not self.networks():
+            for _ in range(self.practice_repeats):
+                network = self.create_network("practice")
+                db.session.add(network)
+            for _ in range(self.experiment_repeats):
+                network = self.create_network("experiment")
+                db.session.add(network)
+            db.session.commit()
 
-        for net in self.networks():
+
+        for net in self.networks(role="practice"):
+            net.max_size = 2000 
+            net.lifespan = 2
+            env = self.models.ExpEnvironment(network=net)
+            A_answer = ["UP", "LEFT", "RIGHT", "UP", "LEFT", "DOWN", "DOWN", "UP", "RIGHT", "RIGHT", "LEFT"]
+            B_answer = ["RIGHT", "DOWN", "LEFT", "LEFT", "UP", "RIGHT", "UP", "DOWN", "RIGHT", "LEFT", "DOWN"]
+            self.models.CorrectSequenceA(
+                origin=env,
+                contents=json.dumps(A_answer),
+            )
+            self.models.CorrectSequenceB(
+                origin=env,
+                contents=json.dumps(B_answer),
+            )
+            self.session.commit()
+        
+
+        for i, net in enumerate(self.networks(role="experiment")):
             net.max_size = net.max_size + 1  # make room for environment node.
-            net.complexity = p_values[int(net.id) - 1]
-            net.lifespan = lifespan_values[int(net.id) - 1]
+            net.complexity = p_values[i]
+            net.lifespan = lifespan_values[i]
             env = self.models.ExpEnvironment(network=net)
             self.models.CorrectSequenceA( # generate a canonical sequence for the whole network
             origin=env,
@@ -151,13 +181,21 @@ class GenCogExperiment(Experiment):
         return json.loads(info.contents)
 
 
-    def create_network(self):
+    def create_network(self, net_role):
         """Create a new network."""
-        network = self.models.DiscreteGeneration(
-            generations=self.generations,
-            generation_size=self.generation_size,
-            initial_source=False,
-        )
+        
+        if net_role == "practice":
+            network = self.models.PracticeNetwork()
+            network.role = net_role
+        
+        
+        if net_role == "experiment":
+            network = self.models.DiscreteGeneration(
+                generations=self.generations,
+                generation_size=self.generation_size,
+                initial_source=False
+            )
+            network.role = net_role
 
         status = {
             "unfailed_nodes": 0,
@@ -223,7 +261,7 @@ class GenCogExperiment(Experiment):
     
 
     def get_network_for_participant(self, participant):
-        """Place participant in a network depending in which they have already completed"""
+        """Place participant in a network depending on which they have already completed"""
         key = participant.id
         networks_with_space = self.networks(full=False)
         networks_participated_in = [
@@ -246,6 +284,11 @@ class GenCogExperiment(Experiment):
         if not legal_networks:
             self.log("No networks available, returning None", key)
             return None
+
+        legal_practice_networks = [net for net in legal_networks if net.role == "practice"]
+        
+        if legal_practice_networks:
+            return legal_practice_networks[0]
         
         else:
             return random.choice(legal_networks)
@@ -263,50 +306,83 @@ class GenCogExperiment(Experiment):
     def node_post_request(self, participant, node):
         """Assign properties to the node, give it its alleles, and start the timestp"""
 
-        if node.generation == 0:
-            rng = np.random.default_rng()
-            
-            s = int(min(5, rng.choice(range_s)))
+        if node.network.role == "practice":
             self.models.Specialization(
                 origin=node,
-                contents=s
+                contents=2
             )
 
-            g = float(min(1, rng.choice(range_g)))
             self.models.Generalization(
                 origin=node,
-                contents=g
+                contents=0.6
             )
 
-            r = float(min(1, rng.choice(range_r)))
             self.models.LearningSpeed(
                 origin=node,
-                contents=r
+                contents=1
             )
 
-            v = float(min(1, rng.choice(range_v)))
             self.models.VerticalTransmission(
                 origin=node,
-                contents=v
+                contents=1
             )
 
-
-            cultural_info = {
-                "transmitted_positions_a": [],
-                "transmitted_answers_a": {},
-                "transmitted_positions_b": [],
-                "transmitted_answers_b": {}
+            cultural_info = { # some correct, some incorrect
+                "transmitted_positions_a": [0, 2, 3],
+                "transmitted_answers_a": {0: "UP", 2: "LEFT", 3: "UP"},
+                "transmitted_positions_b": [1, 5, 6, 7],
+                "transmitted_answers_b": {1: "RIGHT", 5: "RIGHT", 6: "LEFT", 7: "DOWN"}
             }
-            # they won't get cultural inheritnac since they're not receiving info (update creates their cultural inheritanc info)
-            # so we create it here manually
             self.models.CulturalInheritance(
                 origin=node,
                 contents=json.dumps(cultural_info) # record what social info they see 
             ) 
 
-        else:
-            node.receive()
+        if node.network.role == "experiment":
         
+            if node.generation == 0:
+                rng = np.random.default_rng()
+                
+                s = int(min(5, rng.choice(range_s)))
+                self.models.Specialization(
+                    origin=node,
+                    contents=s
+                )
+
+                g = float(min(1, rng.choice(range_g)))
+                self.models.Generalization(
+                    origin=node,
+                    contents=g
+                )
+
+                r = float(min(1, rng.choice(range_r)))
+                self.models.LearningSpeed(
+                    origin=node,
+                    contents=r
+                )
+
+                v = float(min(1, rng.choice(range_v)))
+                self.models.VerticalTransmission(
+                    origin=node,
+                    contents=v
+                )
+
+
+                cultural_info = {
+                    "transmitted_positions_a": [],
+                    "transmitted_answers_a": {},
+                    "transmitted_positions_b": [],
+                    "transmitted_answers_b": {}
+                }
+
+                self.models.CulturalInheritance(
+                    origin=node,
+                    contents=json.dumps(cultural_info) # record what social info they see 
+                ) 
+
+            else:
+                node.receive()
+            
         node.score = 0 # start with a score of 0
 
         self.create_timestep_info(node, 1)
@@ -317,11 +393,11 @@ class GenCogExperiment(Experiment):
         """Add participant's node to a network."""
 
         node.lifespan = network.lifespan
-
-        status = json.loads(network.status)
-        status["unfailed_nodes"] += 1
-        status["ready_for_next_gen"] = "No"
-        network.status = json.dumps(status)
+        if network.role == "experiment": 
+            status = json.loads(network.status)
+            status["unfailed_nodes"] += 1
+            status["ready_for_next_gen"] = "No"
+            network.status = json.dumps(status)
         
         network.add_node(node)
 
@@ -484,28 +560,32 @@ class GenCogExperiment(Experiment):
 
             if node.participant.points is None:
                 node.participant.points = "0"
-            node.participant.points += result["answered_correct"] # adding positions the participants got correct
+
+            if node.network.role == "experiment":
+                node.participant.points += result["answered_correct"] # adding positions the participants got correct
 
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
             lifespan = int(payload["lifespan"])
 
             if timestep >= lifespan:
-                node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
-                status = json.loads(node.network.status)
-                status["completed_nodes"] +=1
-                generation = node.generation
-                network_nodes = node.network.nodes(type=self.models.CogAgent)
-                horizontal_nodes = [n for n in network_nodes if n.generation == generation and not n.failed and n.fitness is not None]
-                if len(horizontal_nodes) < self.generation_size:
-                    status["ready_for_next_gen"] = "No"
-                else:
-                    status["last_completed_gen"] = generation + 1
-                    if generation + 1 == self.generations:
-                        status["ready_for_next_gen"] = "Complete"
+                if node.network.role == "experiment": 
+                    node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
+                    status = json.loads(node.network.status)
+                    status["completed_nodes"] +=1
+                    generation = node.generation
+                    network_nodes = node.network.nodes(type=self.models.CogAgent)
+                    horizontal_nodes = [n for n in network_nodes if n.generation == generation and not n.failed and n.fitness is not None]
+                    if len(horizontal_nodes) < self.generation_size:
+                        status["ready_for_next_gen"] = "No"
                     else:
-                        status["ready_for_next_gen"] = "Yes"
-                node.network.status = json.dumps(status)
+                        status["last_completed_gen"] = generation + 1
+                        if generation + 1 == self.generations:
+                            status["ready_for_next_gen"] = "Complete"
+                        else:
+                            status["ready_for_next_gen"] = "Yes"
+                    node.network.status = json.dumps(status)
+
             else:
                 self.create_timestep_info(node, timestep + 1)
 
@@ -674,9 +754,16 @@ class GenCogExperiment(Experiment):
 
     def create_timestep_info(self, node, timestep):
         task_A, task_B = self.build_info_for_timestep(node, timestep)
-        
-        p = float(node.network.complexity)
-        task = "A" if random.random() < p else "B"
+
+        if node.network.role == "experiment": 
+            p = float(node.network.complexity)
+            task = "A" if random.random() < p else "B" 
+        else:
+            if timestep == 1:
+                task = "A"
+            else:
+                task = "B"
+
 
         if task == "A":
             payload = task_A
@@ -738,20 +825,34 @@ class GenCogExperiment(Experiment):
             for info in infos:
                 info.fail()
             node.fail()
-            status = json.loads(node.network.status)
-            status["ready_for_next_gen"] = "No"
-            status["unfailed_nodes"] -= 1
-            if node.fitness is not None:
-                status["completed_nodes"] -= 1
-            node.fitness = None
-            node.network.status = json.dumps(status)
+            if node.network.role == "experiment":
+                status = json.loads(node.network.status)
+                status["ready_for_next_gen"] = "No"
+                status["unfailed_nodes"] -= 1
+                if node.fitness is not None:
+                    status["completed_nodes"] -= 1
+                node.fitness = None
+                node.network.status = json.dumps(status)
         self.session.commit()
 
     
     def data_check(self, participant):
         print("??checking data for Participant ", participant.id)
 
-        for node in participant.nodes():
+        nodes = participant.nodes()
+        
+        practice_nodes = [node for node in nodes if node.network.role == "practice"]
+        experiment_nodes = [node for node in nodes if node.network.role == "experiment"]
+
+        if len(practice_nodes) != self.practice_repeats:
+            print("??Participant ", participant.id, " has wrong number of practice nodes")
+            return False
+
+        if len(experiment_nodes) != self.experiment_repeats:
+            print("??Participant ", participant.id, " has wrong number of experiment nodes")
+            return False
+
+        for node in nodes:
             if node.failed:
                 return False
             if len(node.infos(type=self.models.AnswerCorrectness)) != int(node.lifespan):

@@ -23,13 +23,20 @@ var lifespan = null;  // lifespan established at front end
 var feedbackCorrectness = {};
 var showingFeedback = false;
 
+
+var practiceRounds = 1;
 var currentRound = 1;
 var TotalRounds = 5; // will want this to equal the number of available networks
+var roundType = ""; // "practice" or "experiment"
+
+var experimentRound = 0;
 
 var submittedTimesteps = [];
 
 var transitioning = false;
 var submitting = false;
+
+var practiceMessageShowing = false;
 
 
 
@@ -84,62 +91,93 @@ function pressContinue() {
 }
 
 function renderGrid() {
-  renderParentGrid();
   highlightActiveTask();
+
   if (task === "A") {
     var $grid = $("#grid-A");
   } else {
     var $grid = $("#grid-B");
   }
+
   $grid.empty();
+
   $grid.css({
     display: "flex",
-    flexDirection: "row", 
+    flexDirection: "row",
     gap: "8px"
-  })
+  });
 
   for (var i = 0; i < toSolve; i++) {
+
+    var key = String(i);
+
+    // Each position contains player and parent answers
+    var $position = $("<div></div>");
+
+    $position.css({
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "5px"
+    });
+
+
+
+    // Player's asnwer
+
+
     var $cell = $("<div></div>");
+
     $cell.addClass("gc-cell");
     $cell.attr("data-index", i);
     $cell.text(arrowLabel(answers[i]));
 
-    var key = String(i);
     var borderStyle = "1px solid #999";
     var backgroundColor = "white";
     var textColor = "black";
 
-    // generalized positions always blue
     if (generalizedPositions.includes(i)) {
-    backgroundColor = "#d0ebff";
+      backgroundColor = "#d0ebff";
     }
 
-    if (!showingFeedback && transmittedAnswers[key] !== undefined) {
-    textColor = "#555";
-    }
+    if (
+      showingFeedback &&
+      feedbackCorrectness[key] !== undefined
+    ) {
 
-    // feedback overrides background
-    if (showingFeedback && feedbackCorrectness[key] !== undefined) {
-    if (feedbackCorrectness[key]) {
-    borderStyle = "3px solid green";
-    backgroundColor = "#d4edda";
-    } else {
-    borderStyle = "3px solid red";
-    backgroundColor = "#f8d7da";
-    }
+      if (feedbackCorrectness[key]) {
+        borderStyle = "3px solid green";
+        backgroundColor = "#d4edda";
+      } else {
+        borderStyle = "3px solid red";
+        backgroundColor = "#f8d7da";
+      }
+
     } else if (!showingFeedback && i === activeIndex) {
-    borderStyle = "3px solid #000";
-    }
 
+      borderStyle = "3px solid #000";
+
+    }
 
     $cell.css({
       width: "60px",
       height: "60px",
       border: borderStyle,
       backgroundColor: backgroundColor,
-      color: showingFeedback && Object.prototype.hasOwnProperty.call(feedbackCorrectness, key)
-        ? (feedbackCorrectness[key] === true ? "green" : "red")
-        : textColor,
+
+      color:
+        showingFeedback &&
+        Object.prototype.hasOwnProperty.call(
+          feedbackCorrectness,
+          key
+        )
+          ? (
+              feedbackCorrectness[key] === true
+                ? "green"
+                : "red"
+            )
+          : textColor,
+
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -148,69 +186,84 @@ function renderGrid() {
       userSelect: "none"
     });
 
-    (function(index){
+
+    (function(index) {
+
       $cell.on("click", function() {
-        if (showingFeedback) {return;}
+
+        if (showingFeedback) {
+          return;
+        }
+
         activeIndex = index;
+
         renderGrid();
+
         updateSubmitEnabled();
+
       });
+
     })(i);
 
-    $grid.append($cell);
+
+
+    // parent's answer
+
+
+    var $parentCell = $("<div></div>");
+
+    var parentValue =
+      transmittedAnswers[key] !== undefined
+        ? transmittedAnswers[key]
+        : null;
+
+    if (parentValue == null) {
+      $parentCell.text("?");
+    } else {
+      $parentCell.text(arrowLabel(parentValue));
+    }
+
+    var parentBackground = "#fafbfd";
+
+    if (generalizedPositions.includes(i)) {
+      parentBackground = "#e8f5ff";
+    }
+
+    $parentCell.css({
+      width: "60px",
+      height: "30px",
+      border: "1px dashed #bbb",
+      borderRadius: "3px",
+      backgroundColor: parentBackground,
+
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+
+      fontSize: "20px",
+      color: parentValue == null ? "#aaa" : "#777",
+
+      userSelect: "none"
+    });
+
+
+    // Put both into the same position
+    $position.append($cell);
+    $position.append($parentCell);
+
+    $grid.append($position);
   }
 }
 
 function renderOtherGrid() {
 if (task_other === "A") {
   var $container = $("#grid-A")
-  var $parent_container = $("#parent-grid-A")
 } else {
   var $container = $("#grid-B")
-  var $parent_container = $("#parent-grid-B")
 }
 
 $container.empty();
-$parent_container.empty();
 
-// parent row
-var $parentRow = $("<div></div>").css({
-display: "flex",
-gap: "8px"
-});
-
-for (var i = 0; i < toSolve_other; i++) {
-var $cell = $("<div></div>");
-var key = String(i);
-
-var backgroundColor = "white";
-if (generalizedPositions_other.includes(i)) {
-  backgroundColor = "#d0ebff";
-}
-
-
-var textColor = "#999";
-
-$cell.text("?");
-
-$cell.css({
-width: "60px",
-height: "60px",
-border: "1px solid #999",
-backgroundColor: backgroundColor,
-display: "flex",
-alignItems: "center",
-justifyContent: "center",
-fontSize: "30px",
-color: textColor,
-userSelect: "none",
-cursor: "default"
-});
-
-$parentRow.append($cell);
-}
-
-$parent_container.append($parentRow);
 
 // "your answers" row (STATIC, not editable)
 var $row = $("<div></div>").css({
@@ -248,87 +301,45 @@ $container.append($row);
 
 function highlightActiveTask() {
   if (task === "A") {
+    $("#parent-answer-A").show();
+    $("#parent-answer-B").hide();
     $("#Task-A").css({
-      border: "1px solid #d6dbe7",
-      backgroundColor: "#f4f6fb"
+      border: "2px solid #b8c2d6",
+      backgroundColor: "#eef2f8",
+      padding: "15px"
     })
     $("#Task-B").css({
-      border: "none",
-      backgroundColor: "transparent"
+      border: "2px solid transparent",
+      backgroundColor: "transparent",
+      padding: "15px"
     })
     $("#sequence-A").css({"font-weight": "bold", "font-size": "1.8em"});
     $("#sequence-B").css({"font-weight": "400", "font-size": "1.4em"});
   } else {
+    $("#parent-answer-A").hide();
+    $("#parent-answer-B").show();
     $("#Task-B").css({
-      border: "1px solid #d6dbe7",
-      backgroundColor: "#f4f6fb"
+      border: "2px solid #b8c2d6",
+      backgroundColor: "#eef2f8",
+      padding: "15px"
     })
     $("#Task-A").css({
-      border: "none",
-      backgroundColor: "transparent"
+      border: "2px solid transparent",
+      backgroundColor: "transparent",
+      padding: "15px"
     })
     $("#sequence-A").css({"font-weight": "400", "font-size": "1.4em"});
     $("#sequence-B").css({"font-weight": "bold", "font-size": "1.8em"});
   }
 }
 
-function renderParentGrid() {
-  if (task === "A") {
-    var $grid = $("#parent-grid-A");
-  } else {
-    var $grid = $("#parent-grid-B");
-  }
-  $grid.empty();
-  $grid.css({
-    display: "flex",
-    flexDirection: "row", 
-    gap: "8px"
-  })
-  
-  for (var i = 0; i < toSolve; i++) {
-  var $cell = $("<div></div>");
-  $cell.addClass("gc-cell");
-  
-  var key = String(i);
-  var parentValue = transmittedAnswers[key] !== undefined ? transmittedAnswers[key] : null;
-  if (parentValue == null) {
-    $cell.text("?");
-  }
-  else {
-    $cell.text(arrowLabel(parentValue));
-  }
-  
-  
-  var backgroundColor = "white";
-  var textColor = "#555"
-  
-  if (generalizedPositions.includes(i)) {
-  backgroundColor = "#d0ebff";
-  }
-
-  if (parentValue == null) {
-    textColor = "#999";
-  }
-  
-  $cell.css({
-  width: "60px",
-  height: "60px",
-  border: "1px solid #999",
-  backgroundColor: backgroundColor,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "30px",
-  color: textColor,
-  userSelect: "none"
-  });
-  
-  $grid.append($cell);
-  }
-  }
 
   
 function handleKeydown(e) {
+    if (practiceMessageShowing) {
+      return;
+    }
+  
   if (e.which === 13) {
     e.preventDefault();
     
@@ -434,13 +445,20 @@ create_agent = function() {
 function finishedRound() {
   currentRound += 1;
   dallinger.storage.set("currentRound", currentRound)
-  
-  if (currentRound <= TotalRounds) {
-    dallinger.goToPage("between-rounds");
-  } else {
-    dallinger.allowExit();
-    dallinger.goToPage("questionnaire");
+
+  if (roundType === "experiment") {
+    experimentRound = currentRound - practiceRounds;
+    
+    if (experimentRound <= TotalRounds) {
+      dallinger.goToPage("between-rounds");
+    } else {
+      dallinger.allowExit();
+      dallinger.goToPage("questionnaire");
+    }
+  } else if (roundType === "practice") {
+    dallinger.goToPage("instructions/instruct-ready");
   }
+
 }
 
 function initializeTimestep() {
@@ -453,7 +471,40 @@ function initializeTimestep() {
   }
   currentTimestep += 1;
   console.log("continue worked")
-   
+
+  if (currentRound > practiceRounds) {
+    roundType = "experiment";
+  } else {
+    roundType = "practice";
+  }
+
+  console.log("Round type", roundType);
+
+  if (roundType === "practice") {
+
+    if (currentTimestep === 1) {
+      showPracticeMessage(
+      "Practice",
+      `
+      <p>
+      You will now attempt a practice round of the experiment. This round will consist of two attempts. 
+      You will first attempt Sequence X, which is currently highlighted.
+      </p>
+
+      <p>
+      Below your sequence, you can see parts of the answer from a previous player who attempted the same sequence. Once you 
+      have filled your sequence and are happy with your answer, you can submit them by clicking the 'Submit' button or pressing 
+      the 'Enter' key on you keyboard.
+      </p>
+      
+      `
+    )
+    }
+  } else if (roundType === "experiment") {
+      experimentRound = currentRound - practiceRounds;
+      hidePracticeMessage();
+  }
+
   $("#submit").prop("disabled", true);
   
   dallinger.getInfos(my_node_id).done(function(resp) {
@@ -514,22 +565,28 @@ function initializeTimestep() {
   $("#submit").show();
   $("#submit").prop("disabled", false); 
   
- $("#Main-header").html("Round " + currentRound + " of " + TotalRounds)
+ $("#Main-header").html("Round " + experimentRound + " of " + TotalRounds)
  $("#timestep").html("Attempt " + currentTimestep + " of " + lifespan)
 
- if (currentRound === 1) {
+ if (currentRound <= practiceRounds) {
+   $("#Main-header").html("Practice Trial " + currentRound);
+   $("#timestep").html("Attempt " + currentTimestep + " of " + lifespan);
+   $("#sequence-A").html("Sequence X").css("color", "palevioletred");
+   $("#sequence-B").html("Sequence Y").css("color", "cadetblue")
+
+ } else if (experimentRound === 1) {
   $("#sequence-A").html("Sequence A").css("color", "palevioletred");
   $("#sequence-B").html("Sequence B").css("color", "cadetblue")
- } else if (currentRound === 2) {
+ } else if (experimentRound === 2) {
   $("#sequence-A").html("Sequence C").css("color", "firebrick");
   $("#sequence-B").html("Sequence D").css("color", "teal")
- } else if (currentRound === 3) {
+ } else if (experimentRound === 3) {
   $("#sequence-A").html("Sequence E").css("color", "slateblue");
   $("#sequence-B").html("Sequence F").css("color", "darkslategray")
- } else if (currentRound === 4) {
+ } else if (experimentRound === 4) {
   $("#sequence-A").html("Sequence G").css("color", "sienna");
   $("#sequence-B").html("Sequence H").css("color", "midnightblue")
- } else if (currentRound === 5) {
+ } else if (experimentRound === 5) {
   $("#sequence-A").html("Sequence I").css("color", "peru");
   $("#sequence-B").html("Sequence J").css("color", "darkolivegreen")
  } 
@@ -569,7 +626,8 @@ function submitTimestep() {
     transmittedPositions: transmittedPositions,
     generalizedPositions: generalizedPositions
   };
-
+  
+  submitting = true;
   $("#submit").prop("disabled", true);
 
   if (submittedTimesteps.includes(currentTimestep)) {
@@ -584,7 +642,7 @@ function submitTimestep() {
     info_type: "TaskAnswer"
   })
   .done(function() {
-    submitting = true;
+    
     submittedTimesteps.push(currentTimestep);
     showFeedback();
 
@@ -650,7 +708,39 @@ function showFeedback() {
     $("#continue").show();
     
     renderGrid();
+
+    if (roundType === "practice") {
+    if (currentTimestep === 1) {
+      showPracticeMessage(
+      "Practice",
+      `
+      <p>
+      You will now see full feedback on your attempt of Sequence X. After you have a chance to view your feedback, you can press 
+      'Continue' or the 'Enter' key on your keyboard to move on to your next attempt.
+      </p>
+      
+      <p>
+      Your next attempt will be on Sequence Y. Pay attention to what parts of your feedback on Sequence X can help you on Sequence Y.
+      </p>
+      `
+      
+    )
+    }
+  }
+
     });
 
 }
 
+function showPracticeMessage(title, message) {
+    $("#practice-modal-title").html(title);
+    $("#practice-modal-body").html(message);
+
+    practiceMessageShowing = true;
+    $("#practice-modal").css("display", "flex");
+}
+
+function hidePracticeMessage() {
+    practiceMessageShowing = false;
+    $("#practice-modal").hide();
+}

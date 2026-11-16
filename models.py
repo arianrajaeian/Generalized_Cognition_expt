@@ -9,7 +9,7 @@ from sqlalchemy.sql.expression import cast
 from dallinger.information import Gene, State
 from dallinger.models import Info, Participant, Transmission
 from dallinger.nodes import Agent, Source
-from dallinger.networks import DiscreteGenerational
+from dallinger.networks import DiscreteGenerational, Burst
 
 import json
 
@@ -432,6 +432,23 @@ class DiscreteGeneration(DiscreteGenerational):
                 return prev_agents[i]
             
 
+class PracticeNetwork(Burst):
+    """A network for practice trials."""
+
+    @hybrid_property
+    def lifespan(self):
+        """Convert property1 to lifespan."""
+        return int(self.property1)
+    
+    @lifespan.setter
+    def lifespan(self, lifespan):
+        self.property1 = repr(lifespan)
+    
+    @lifespan.expression
+    def lifespan(self):
+        return cast(self.property1, Integer)
+
+    __mapper_args__ = {"polymorphic_identity": "practice_network"}
 
 
 

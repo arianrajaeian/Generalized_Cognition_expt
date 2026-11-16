@@ -12,55 +12,51 @@
 
   <div id="Task-A">
     <h4 id="sequence-A"></h4>
+
+      <div>
+      <p style="margin-bottom: 8px;"><strong>Your answer</strong></p>
   
-    <div>
-      <p><strong>Previous player's answer</strong></p>
-      <div id="parent-grid-A"></div>
-    </div>
-        
-    <div style="margin-top: 20px;">
-      <p><strong>Your answer</strong></p>
-  
-      <div style="display: flex; gap: 20px; align-items: flex-start;">
+      <div style="display: flex; gap: 15px; align-items: flex-start;">
         
         <div id="grid-A"></div>
   
         <div>
           <p id="feedback-A"></p>
         </div>
-  
+
       </div>
+      <p id="parent-answer-A" style="margin-top: 8px; margin-bottom: 0; color: #676666; font-size: 0.85em;">
+        Previous player's answer
+      </p>
     </div>
   
-    <br>
+  
   </div>
 
   <hr>
 
   <div id="Task-B">
-    <br>
     <h4 id="sequence-B"></h4>
   
     <div>
-      <p><strong>Previous player's answers</strong></p>
-      <div id="parent-grid-B"></div>
-    </div>
-        
-    <div style="margin-top: 20px;">
-      <p><strong>Your answers</strong></p>
+      <p style="margin-bottom: 8px;"><strong>Your answer</strong></p>
   
 
-      <div style="display: flex; gap: 20px; align-items: flex-start;">
+      <div style="display: flex; gap: 15px; align-items: flex-start;">
         
         <div id="grid-B"></div>
 
         <div>
           <p id="feedback-B"></p>
         </div>
-  
-      </div>
+
     </div>
+    <p id="parent-answer-B" style="margin-top: 8px; margin-bottom: 0; color: #676666; font-size: 0.85em;"> 
+      Previous player's answer
+    </p>
   </div>
+</div>
+
 
   
   <div id="button-row" style="margin-top: 24px;">
@@ -76,7 +72,50 @@
   </div>
 
 
+
+<!-- Practice instructions popup -->
+<div id="practice-modal"
+     style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+        align-items: center;
+        justify-content: center;
+     ">
+
+    <div style="
+        background-color: white;
+        width: 500px;
+        max-width: 90%;
+        border-radius: 6px;
+        padding: 24px;
+     ">
+
+        <h4 id="practice-modal-title">
+            Practice
+        </h4>
+
+        <div id="practice-modal-body"
+             style="margin-top: 15px;">
+        </div>
+
+        <div style="margin-top: 20px; text-align: right;">
+            <button type="button"
+                    class="btn btn-primary"
+                    id="practice-modal-continue"
+                    onclick="hidePracticeMessage();">
+                Got it
+            </button>
+        </div>
+
+    </div>
 </div>
+
 {% endblock %}
 
 {% block libs %}

@@ -566,7 +566,7 @@ class GenCogExperiment(Experiment):
 
             payload = json.loads(info.contents)
             timestep = payload["timestep"]
-            lifespan = int(payload["lifespan"])
+            lifespan = int(node.lifespan)
 
             if timestep >= lifespan:
                 if node.network.role == "experiment": 

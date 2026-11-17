@@ -82,7 +82,6 @@ function pressContinue() {
   $("#continue").prop("disabled", true);
   feedbackCorrectness = {};
   showingFeedback = false;
-  $("#submit").prop("disabled", false);
   if (currentTimestep < lifespan) {
     initializeTimestep();
   } else {

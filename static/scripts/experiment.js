@@ -336,7 +336,7 @@ function highlightActiveTask() {
 
   
 function handleKeydown(e) {
-    if (practiceMessageShowing) {
+    if (practiceMessageShowing || submitting) {
       return;
     }
   

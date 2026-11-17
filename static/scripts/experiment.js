@@ -562,7 +562,6 @@ function initializeTimestep() {
   
   $("#continue").hide();
   $("#submit").show();
-  $("#submit").prop("disabled", false); 
   
  $("#Main-header").html("Round " + experimentRound + " of " + TotalRounds)
  $("#timestep").html("Attempt " + currentTimestep + " of " + lifespan)

@@ -651,6 +651,7 @@ function submitTimestep() {
   .fail(function(err) {
     console.log("SUBMIT FAILED:", err);
     $("#submit").prop("disabled", false);
+    submitting = false;
   });
 }
 

@@ -615,6 +615,12 @@ function submitTimestep() {
   
   if (my_node_id === null) return;
 
+  if (submittedTimesteps.includes(currentTimestep)) {
+    $("#submit").hide();
+    $("#continue").show(); 
+    return;
+  }
+
   var payload = {
     timestep: currentTimestep,
     lifespan: lifespan,
@@ -629,12 +635,6 @@ function submitTimestep() {
   submitting = true;
   $("#submit").prop("disabled", true);
 
-  if (submittedTimesteps.includes(currentTimestep)) {
-    $("#submit").hide();
-    $("#continue").show(); 
-    renderGrid();
-    return;
-  }
 
   dallinger.createInfo(my_node_id, {
     contents: JSON.stringify(payload),

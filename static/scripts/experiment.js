@@ -53,11 +53,9 @@ function arrowLabel(value) {
 }
 
 function updateSubmitEnabled() {
-  if (my_node_id !== null) {
-    $("#submit").prop("disabled", false);
-  } else {
+  if (my_node_id === null) {
     $("#submit").prop("disabled", true);
-  }
+  } else {
   // check if all positions are filled
   var allFilled = true;
   for (var i = 0; i < toSolve; i++) {
@@ -67,9 +65,12 @@ function updateSubmitEnabled() {
     }
   }
 
-  if (!allFilled) {
+  if (allFilled) {
+    $("#submit").prop("disabled", false);
+  } else {
     $("#submit").prop("disabled", true);
   }
+}
 }
 
 function pressContinue() {

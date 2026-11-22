@@ -657,7 +657,6 @@ function submitTimestep() {
 
 function showFeedback() {
 
-  submitting = false;
 
   dallinger.getInfos(my_node_id).done(function(resp) {
     var infos = resp.infos;
@@ -693,6 +692,7 @@ function showFeedback() {
     }
     
     feedbackCorrectness = feedback.feedback_correctness || {};
+    submitting = false;
     showingFeedback = true;
 
     if (Object.keys(feedbackCorrectness).length === 0) {

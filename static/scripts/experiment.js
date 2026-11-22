@@ -191,7 +191,7 @@ function renderGrid() {
 
       $cell.on("click", function() {
 
-        if (showingFeedback) {
+        if (showingFeedback || submitting || practiceMessageShowing) {
           return;
         }
 

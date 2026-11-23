@@ -391,15 +391,12 @@ class GenCogExperiment(Experiment):
 
     def add_node_to_network(self, node, network):
         """Add participant's node to a network."""
-
-        node.lifespan = network.lifespan
-        if network.role == "experiment": 
-            status = json.loads(network.status)
-            status["unfailed_nodes"] += 1
-            status["ready_for_next_gen"] = "No"
-            network.status = json.dumps(status)
         
+        node.lifespan = network.lifespan
         network.add_node(node)
+
+        if network.role == "experiment": 
+            self.update_network_status(network)
 
 
     def generalize(self, node): # this is where we create the actual correct answers for participants
@@ -571,21 +568,7 @@ class GenCogExperiment(Experiment):
             if timestep >= lifespan:
                 if node.network.role == "experiment": 
                     node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
-                    status = json.loads(node.network.status)
-                    status["completed_nodes"] +=1
-                    generation = node.generation
-                    network_nodes = node.network.nodes(type=self.models.CogAgent)
-                    horizontal_nodes = [n for n in network_nodes if n.generation == generation and not n.failed and n.fitness is not None]
-                    if len(horizontal_nodes) < self.generation_size:
-                        status["ready_for_next_gen"] = "No"
-                    else:
-                        status["last_completed_gen"] = generation + 1
-                        if generation + 1 == self.generations:
-                            status["ready_for_next_gen"] = "Complete"
-                        else:
-                            status["ready_for_next_gen"] = "Yes"
-                    node.network.status = json.dumps(status)
-
+                    self.update_network_status(node.network, node=node)
             else:
                 self.create_timestep_info(node, timestep + 1)
 
@@ -614,10 +597,9 @@ class GenCogExperiment(Experiment):
 
         networks = self.models.DiscreteGeneration.query.all()
 
-        complete = all(json.loads(net.status)["ready_for_next_gen"] == "Complete" for net in networks)
         end_of_generation = all(json.loads(net.status)["ready_for_next_gen"] == "Yes" for net in networks)
 
-        if complete:
+        if not self.networks(role="experiment", full=False):
             self.log("All generations complete: closing recruitment", "-----")
             self.recruiter.close_recruitment()
             return
@@ -826,13 +808,7 @@ class GenCogExperiment(Experiment):
                 info.fail()
             node.fail()
             if node.network.role == "experiment":
-                status = json.loads(node.network.status)
-                status["ready_for_next_gen"] = "No"
-                status["unfailed_nodes"] -= 1
-                if node.fitness is not None:
-                    status["completed_nodes"] -= 1
-                node.fitness = None
-                node.network.status = json.dumps(status)
+                self.update_network_status(node.network, node=node)
         self.session.commit()
 
     
@@ -859,8 +835,32 @@ class GenCogExperiment(Experiment):
                 print("??Node ", node.id, " for Participant ", participant.id, " has bad data")
                 return False
         return True
-    
 
+
+    def update_network_status(self, network, node=None):
+        """Update the status property of a network"""
+        if network.role != "experiment":
+            return
+
+        status = json.loads(network.status)
+
+        unfailed_nodes = len([n for n in network.nodes(type=self.models.CogAgent) if not n.failed])
+        completed_nodes = len([n for n in network.nodes(type=self.models.CogAgent) if not n.failed and n.fitness is not None])
+
+        if node is not None:
+            horizontal_nodes = [n for n in network.nodes(type=self.models.CogAgent) if n.generation == node.generation and not n.failed and n.fitness is not None]
+            if len(horizontal_nodes) < self.generation_size:
+                status["ready_for_next_gen"] = "No"
+            else:
+                status["last_completed_gen"] = node.generation + 1
+                if node.generation + 1 == self.generations:
+                    status["ready_for_next_gen"] = "Complete"
+                else:
+                    status["ready_for_next_gen"] = "Yes"
+
+        status["unfailed_nodes"] = unfailed_nodes
+        status["completed_nodes"] = completed_nodes
+        network.status = json.dumps(status)
 
 
 

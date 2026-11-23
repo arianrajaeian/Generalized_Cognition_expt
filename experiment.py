@@ -197,13 +197,13 @@ class GenCogExperiment(Experiment):
             )
             network.role = net_role
 
-        status = {
-            "unfailed_nodes": 0,
-            "completed_nodes": 0,
-            "ready_for_next_gen": "No",
-            "last_completed_gen": None
-        }
-        network.status = json.dumps(status)
+            status = {
+                "unfailed_nodes": 0,
+                "completed_nodes": 0,
+                "ready_for_next_gen": "No",
+                "last_completed_gen": None
+            }
+            network.status = json.dumps(status)
         
         return network
     
@@ -568,7 +568,7 @@ class GenCogExperiment(Experiment):
             if timestep >= lifespan:
                 if node.network.role == "experiment": 
                     node.fitness = self.compute_fitness(node, lifespan, fitness_exponent, cog_cost) # if last timestep in lifespan, compute fitness
-                    self.update_network_status(node.network, node=node)
+                    self.update_network_status(node.network)
             else:
                 self.create_timestep_info(node, timestep + 1)
 
@@ -596,6 +596,11 @@ class GenCogExperiment(Experiment):
         """Recruit participants for next generation."""
 
         networks = self.models.DiscreteGeneration.query.all()
+
+        for net in networks:
+            self.update_network_status(net)
+
+        self.session.commit()
 
         end_of_generation = all(json.loads(net.status)["ready_for_next_gen"] == "Yes" for net in networks)
 
@@ -808,7 +813,7 @@ class GenCogExperiment(Experiment):
                 info.fail()
             node.fail()
             if node.network.role == "experiment":
-                self.update_network_status(node.network, node=node)
+                self.update_network_status(node.network)
         self.session.commit()
 
     
@@ -837,29 +842,40 @@ class GenCogExperiment(Experiment):
         return True
 
 
-    def update_network_status(self, network, node=None):
+    def update_network_status(self, network):
         """Update the status property of a network"""
         if network.role != "experiment":
             return
 
         status = json.loads(network.status)
 
-        unfailed_nodes = len([n for n in network.nodes(type=self.models.CogAgent) if not n.failed])
-        completed_nodes = len([n for n in network.nodes(type=self.models.CogAgent) if not n.failed and n.fitness is not None])
+        nodes = network.nodes(type=self.models.CogAgent)
 
-        if node is not None:
-            horizontal_nodes = [n for n in network.nodes(type=self.models.CogAgent) if n.generation == node.generation and not n.failed and n.fitness is not None]
-            if len(horizontal_nodes) < self.generation_size:
+        unfailed_nodes = [n for n in nodes if not n.failed]
+        completed_nodes = [n for n in nodes if not n.failed and n.fitness is not None]
+
+        if unfailed_nodes:
+            current_generation = max(n.generation for n in unfailed_nodes)
+            completed_generation_nodes = [n for n in completed_nodes if n.generation == current_generation]
+            if len(completed_generation_nodes) < self.generation_size:
                 status["ready_for_next_gen"] = "No"
+                if current_generation == 0:
+                    status["last_completed_gen"] = None
+                else:
+                    status["last_completed_gen"] = current_generation - 1
             else:
-                status["last_completed_gen"] = node.generation + 1
-                if node.generation + 1 == self.generations:
+                status["last_completed_gen"] = current_generation
+                if current_generation + 1 == self.generations:
                     status["ready_for_next_gen"] = "Complete"
                 else:
                     status["ready_for_next_gen"] = "Yes"
 
-        status["unfailed_nodes"] = unfailed_nodes
-        status["completed_nodes"] = completed_nodes
+        else:
+            status["ready_for_next_gen"] = "No"
+            status["last_completed_gen"] = None
+
+        status["unfailed_nodes"] = len(unfailed_nodes)
+        status["completed_nodes"] = len(completed_nodes)
         network.status = json.dumps(status)
 
 

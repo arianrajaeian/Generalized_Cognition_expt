@@ -395,9 +395,6 @@ class GenCogExperiment(Experiment):
         node.lifespan = network.lifespan
         network.add_node(node)
 
-        if network.role == "experiment": 
-            self.update_network_status(network)
-
 
     def generalize(self, node): # this is where we create the actual correct answers for participants
         """Return the positions generalized between A and B for this node."""

@@ -853,7 +853,7 @@ class GenCogExperiment(Experiment):
         nodes = network.nodes(type=self.models.CogAgent)
 
         unfailed_nodes = [n for n in nodes if not n.failed and n.generation is not None]
-        completed_nodes = [n for n in nodes if not n.failed and n.fitness is not None]
+        completed_nodes = [n for n in nodes if not n.failed and n.generation is not None and n.fitness is not None]
 
         if unfailed_nodes:
             current_generation = max(n.generation for n in unfailed_nodes)

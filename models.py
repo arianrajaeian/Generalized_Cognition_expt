@@ -114,6 +114,8 @@ class CogAgent(Agent):
     @hybrid_property
     def generation(self):
         """Convert property2 to generation."""
+        if self.property2 is None:
+            return None
         return int(self.property2)
 
     @generation.setter

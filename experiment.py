@@ -848,7 +848,7 @@ class GenCogExperiment(Experiment):
 
         nodes = network.nodes(type=self.models.CogAgent)
 
-        unfailed_nodes = [n for n in nodes if not n.failed]
+        unfailed_nodes = [n for n in nodes if not n.failed and n.generation is not None]
         completed_nodes = [n for n in nodes if not n.failed and n.fitness is not None]
 
         if unfailed_nodes:

@@ -826,6 +826,10 @@ class GenCogExperiment(Experiment):
             print("??Participant ", participant.id, " has wrong number of practice nodes")
             return False
 
+        if not experiment_nodes:
+            print("??Participant ", participant.id, " has no experiment nodes")
+            return False
+
         if len(experiment_nodes) != self.experiment_repeats:
             print("??Participant ", participant.id, " has wrong number of experiment nodes")
             return False

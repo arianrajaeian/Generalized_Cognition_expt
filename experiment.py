@@ -393,6 +393,9 @@ class GenCogExperiment(Experiment):
         """Add participant's node to a network."""
         
         node.lifespan = network.lifespan
+        if node.network.role == "practice":
+            node.parents = "practice_node"
+
         network.add_node(node)
 
 

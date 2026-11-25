@@ -715,20 +715,62 @@ function showFeedback() {
 
     if (roundType === "practice") {
     if (currentTimestep === 1) {
-      showPracticeMessage(
-      "Practice",
-      `
-      <p>
-      You will now see full feedback on your attempt of Sequence X. After you have a chance to view your feedback, you can press 
-      'Continue' or the 'Enter' key on your keyboard to move on to your next attempt.
-      </p>
+
       
-      <p>
-      Your next attempt will be on Sequence Y. Pay attention to what parts of your feedback on Sequence X can help you on Sequence Y.
-      </p>
+      
+       if (feedbackCorrectness[0]) {
+        showPracticeMessage(
+        "Practice",
+        `
+        <p>
+        You will now see full feedback on your attempt of Sequence X.
+        </p>
+        
+        <p>
+        Your answer for the first box was <span style="color: green;">correct</span>. Because this box is <span style="color: #88bde3;">blue</span>,
+        you know that the answer for the first box in Sequence Y will also be <strong>↑</strong>.
+        </p>
+
+        <p>
+        Review the feedback, then press 'Continue' or the 'Enter' key on your keyboard to attempt Sequence Y.
+        </p>
       `
       
     )
+       } else {
+        
+        dallinger.getInfos(my_node_id).done(function(resp) {
+        var infos = resp.infos;  
+        var AnswerInfos = infos.filter(function(info) { 
+        return info.type === "task_answer"; // getting relevant info about how many to solve, generalized, etc.
+        }); 
+          
+        var AnswerInfo = JSON.parse(AnswerInfos[AnswerInfos.length - 1].contents);
+
+        var firstAnswer = arrowLabel(AnswerInfo.answers[0]);
+        
+
+
+        showPracticeMessage(
+        "Practice",
+        `
+        <p>
+        You will now see full feedback on your attempt of Sequence X.
+        </p>
+        
+        <p>
+        Your answer for the first box was <span style="color: red;">incorrect</span>. Because this box is <span style="color: #88bde3;">blue</span>, 
+        you know that the answer for the first box in Sequence Y also can't be <strong>${firstAnswer}</strong>.
+        </p>
+
+        <p>
+        Review the feedback, then press 'Continue' or the 'Enter' key on your keyboard to attempt Sequence Y.
+        </p>
+      `
+        )});
+       }
+
+      
     }
   }
 

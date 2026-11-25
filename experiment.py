@@ -314,7 +314,7 @@ class GenCogExperiment(Experiment):
 
             self.models.Generalization(
                 origin=node,
-                contents=0.6
+                contents=0.3
             )
 
             self.models.LearningSpeed(

@@ -817,6 +817,13 @@ class GenCogExperiment(Experiment):
     def data_check(self, participant):
         print("??checking data for Participant ", participant.id)
 
+        questionnaire = json.loads([q for q in participant.questions() if q.question == "questionnaire"][0].response)
+
+        comp_attempts = int(questionnaire["comp_attempts"])
+        if comp_attempts >= 15:
+            print("??Participant ", participant.id, " has too many comprehension attempts: ", comp_attempts)
+            return False
+
         nodes = participant.nodes()
         
         practice_nodes = [node for node in nodes if node.network.role == "practice"]

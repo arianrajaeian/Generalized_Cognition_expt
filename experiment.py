@@ -817,13 +817,6 @@ class GenCogExperiment(Experiment):
     def data_check(self, participant):
         print("??checking data for Participant ", participant.id)
 
-        questionnaire = json.loads([q for q in participant.questions() if q.question == "questionnaire"][0].response)
-
-        comp_attempts = int(questionnaire["comp_attempts"])
-        if comp_attempts >= 15:
-            print("??Participant ", participant.id, " has too many comprehension attempts: ", comp_attempts)
-            return False
-
         nodes = participant.nodes()
         
         practice_nodes = [node for node in nodes if node.network.role == "practice"]
@@ -847,6 +840,18 @@ class GenCogExperiment(Experiment):
             if len(node.infos(type=self.models.AnswerCorrectness)) != int(node.lifespan):
                 print("??Node ", node.id, " for Participant ", participant.id, " has bad data")
                 return False
+
+        questionnaires = [q for q in participant.questions() if q.question == "questionnaire"]
+        if not questionnaires:
+            print("??Participant ", participant.id, " has no questionnaire")
+            return False
+
+        questionnaire = json.loads(questionnaires[0].response)
+        comp_attempts = int(questionnaire["comp_attempts"])
+        if comp_attempts >= 15:
+            print("??Participant ", participant.id, " has too many comprehension attempts: ", comp_attempts)
+            return False
+            
         return True
 
 

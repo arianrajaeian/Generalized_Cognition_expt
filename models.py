@@ -359,64 +359,69 @@ class DiscreteGeneration(DiscreteGenerational):
     
     def add_node(self, node):
         """Link to the agent from a parent based on the parent's fitness"""
-        num_agents = len(self.nodes(type=CogAgent))
-        curr_generation = int((num_agents - 1) / float(self.generation_size))
-        node.generation = curr_generation # !!!! Will maybe want generation to come from participant?
+        
+        if node.network.role == "practice":
+            node.generation = 0
+            node.parents = "practice_node"
+        else: 
+            num_agents = len(self.nodes(type=CogAgent))
+            curr_generation = int((num_agents - 1) / float(self.generation_size))
+            node.generation = curr_generation # !!!! Will maybe want generation to come from participant?
 
-        if node.generation != node.participant.ppt_generation:
-            from .experiment import GenCogExperiment
-            exp = GenCogExperiment()
-            exp.fail_participant(node.participant)
-            raise ValueError("Participant generation does not match node generation. Failing participant.")
-            
+            if node.generation != node.participant.ppt_generation:
+                from .experiment import GenCogExperiment
+                exp = GenCogExperiment()
+                exp.fail_participant(node.participant)
+                raise ValueError("Participant generation does not match node generation. Failing participant.")
+                
 
-        if curr_generation == 0:
-            parent1 = None
-            parent2 = None
-            node.parents = json.dumps({"Parent_1": None, "Parent_2": None})
-        else:
-            parent1 = self._select_fit_node_from_generation(
-                node_type=CogAgent, generation=curr_generation - 1
-            )
-            parent2 = self._select_fit_node_from_generation(
-                node_type=CogAgent, generation=curr_generation - 1
-            )
-
-            tries = 0
-            while parent2.id == parent1.id and tries < 50: # potentially worth it
-                parent2 = self._select_fit_node_from_generation(
-                node_type=CogAgent, generation=curr_generation - 1
+            if curr_generation == 0:
+                parent1 = None
+                parent2 = None
+                node.parents = json.dumps({"Parent_1": None, "Parent_2": None})
+            else:
+                parent1 = self._select_fit_node_from_generation(
+                    node_type=CogAgent, generation=curr_generation - 1
                 )
-                tries += 1
-            
-            node.parents = json.dumps({"Parent_1": parent1.id, "Parent_2": parent2.id})
+                parent2 = self._select_fit_node_from_generation(
+                    node_type=CogAgent, generation=curr_generation - 1
+                )
 
-        if parent1 is not None and parent2 is not None:
-            # can transmit both alleles and social info here. In the add_node_to_network function in experiment.py, you need to say that
-            # if generation == 0, then have some random value for the alleles, and no social info
+                tries = 0
+                while parent2.id == parent1.id and tries < 50: # potentially worth it
+                    parent2 = self._select_fit_node_from_generation(
+                    node_type=CogAgent, generation=curr_generation - 1
+                    )
+                    tries += 1
+                
+                node.parents = json.dumps({"Parent_1": parent1.id, "Parent_2": parent2.id})
 
-            # if we have them transmit answer correctness, the the children will just have the importnat info they need, right?
-            parent1.connect(whom=node)
-            parent1.transmit(to_whom=node, what=[Specialization, Generalization, VerticalTransmission, LearningSpeed])
-            p1_answer_infos = parent1.infos(type=AnswerCorrectness)
-            p1_A_infos = [i for i in p1_answer_infos if i.details == "A"]
-            p1_B_infos = [i for i in p1_answer_infos if i.details == "B"]
-            if len(p1_A_infos) >= 1:
-                parent1.transmit(to_whom=node, what=max(p1_A_infos, key=attrgetter("id")))
-            
-            if len(p1_B_infos) >= 1:
-                parent1.transmit(to_whom=node, what=max(p1_B_infos, key=attrgetter("id"))) 
+            if parent1 is not None and parent2 is not None:
+                # can transmit both alleles and social info here. In the add_node_to_network function in experiment.py, you need to say that
+                # if generation == 0, then have some random value for the alleles, and no social info
 
-            parent2.connect(whom=node)
-            parent2.transmit(to_whom=node, what=[Specialization, Generalization, VerticalTransmission, LearningSpeed])
-            p2_answer_infos = parent2.infos(type=AnswerCorrectness)
-            p2_A_infos = [i for i in p2_answer_infos if i.details == "A"]
-            p2_B_infos = [i for i in p2_answer_infos if i.details == "B"]
-            if len(p2_A_infos) >= 1:
-                parent2.transmit(to_whom=node, what=max(p2_A_infos, key=attrgetter("id")))
-            
-            if len(p2_B_infos) >= 1:
-                parent2.transmit(to_whom=node, what=max(p2_B_infos, key=attrgetter("id"))) 
+                # if we have them transmit answer correctness, the the children will just have the importnat info they need, right?
+                parent1.connect(whom=node)
+                parent1.transmit(to_whom=node, what=[Specialization, Generalization, VerticalTransmission, LearningSpeed])
+                p1_answer_infos = parent1.infos(type=AnswerCorrectness)
+                p1_A_infos = [i for i in p1_answer_infos if i.details == "A"]
+                p1_B_infos = [i for i in p1_answer_infos if i.details == "B"]
+                if len(p1_A_infos) >= 1:
+                    parent1.transmit(to_whom=node, what=max(p1_A_infos, key=attrgetter("id")))
+                
+                if len(p1_B_infos) >= 1:
+                    parent1.transmit(to_whom=node, what=max(p1_B_infos, key=attrgetter("id"))) 
+
+                parent2.connect(whom=node)
+                parent2.transmit(to_whom=node, what=[Specialization, Generalization, VerticalTransmission, LearningSpeed])
+                p2_answer_infos = parent2.infos(type=AnswerCorrectness)
+                p2_A_infos = [i for i in p2_answer_infos if i.details == "A"]
+                p2_B_infos = [i for i in p2_answer_infos if i.details == "B"]
+                if len(p2_A_infos) >= 1:
+                    parent2.transmit(to_whom=node, what=max(p2_A_infos, key=attrgetter("id")))
+                
+                if len(p2_B_infos) >= 1:
+                    parent2.transmit(to_whom=node, what=max(p2_B_infos, key=attrgetter("id"))) 
     
 
     def _select_fit_node_from_generation(self, node_type, generation):

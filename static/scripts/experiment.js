@@ -739,15 +739,9 @@ function showFeedback() {
     )
        } else {
         
-        dallinger.getInfos(my_node_id).done(function(resp) {
-        var infos = resp.infos;  
-        var AnswerInfos = infos.filter(function(info) { 
-        return info.type === "task_answer"; // getting relevant info about how many to solve, generalized, etc.
-        }); 
-          
-        var AnswerInfo = JSON.parse(AnswerInfos[AnswerInfos.length - 1].contents);
 
-        var firstAnswer = arrowLabel(AnswerInfo.answers[0]);
+
+        var firstAnswer = arrowLabel(answers[0]);
         
 
 
@@ -767,12 +761,11 @@ function showFeedback() {
         Review the feedback, then press 'Continue' or the 'Enter' key on your keyboard to attempt Sequence Y.
         </p>
       `
-        )});
+        )};
        }
 
       
     }
-  }
 
     });
 
